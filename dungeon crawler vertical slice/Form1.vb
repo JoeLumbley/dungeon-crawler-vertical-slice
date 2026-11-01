@@ -50,6 +50,16 @@ Public Class Form1
     Private Const BossRadius As Single = 60.0F
     Private Const MeleeRange As Single = 70.0F
     Private Const HallwayHalfWidth As Single = 180.0F
+    Private Const GridSize As Single = 40.0F
+
+    Private mapEditorActive As Boolean
+    Private selectedMapType As MapObjectType = MapObjectType.Wall
+    Private selectedMapObject As MapObject
+    Private isResizingMapObject As Boolean
+    Private resizeStart As PointF
+    Private resizeOriginalBounds As RectangleF
+    Private editorPan As PointF
+    Private ReadOnly mapObjects As New List(Of MapObject)
 
 
 
@@ -83,6 +93,9 @@ Public Class Form1
         InitializeComponent()
 
         DoubleBuffered = True
+        KeyPreview = True
+        FormBorderStyle = FormBorderStyle.Sizable
+        MinimumSize = New Size(500, 400)
 
         ' we draw background
 
@@ -122,6 +135,42 @@ Public Class Form1
 
     End Sub
 
+    Private ReadOnly Property ViewportOffset As PointF
+        Get
+            If mapEditorActive Then Return editorPan
+
+            Return New PointF(
+                heroPos.X - ClientSize.Width / 2.0F,
+                heroPos.Y - ClientSize.Height / 2.0F)
+        End Get
+    End Property
+
+    Private Function ScreenToWorld(screenPoint As Point) As PointF
+        Dim view = ViewportOffset
+
+        Return New PointF(
+            screenPoint.X + view.X,
+            screenPoint.Y + view.Y)
+    End Function
+
+    Private Function SnapToGrid(value As Single) As Single
+        Return CSng(Math.Floor(value / GridSize) * GridSize)
+    End Function
+
+    Private Function SnapPoint(point As PointF) As PointF
+        Return New PointF(SnapToGrid(point.X), SnapToGrid(point.Y))
+    End Function
+
+    Private Function MapObjectAt(worldPoint As PointF) As MapObject
+        For i As Integer = mapObjects.Count - 1 To 0 Step -1
+            If mapObjects(i).Bounds.Contains(worldPoint) Then
+                Return mapObjects(i)
+            End If
+        Next
+
+        Return Nothing
+    End Function
+
     Private Sub GameLoop(
         sender As Object,
         e As EventArgs)
@@ -136,6 +185,7 @@ Public Class Form1
 
     Private Sub UpdateGame(dt As Double)
 
+        If mapEditorActive Then Return
 
 
 
@@ -254,23 +304,150 @@ Public Class Form1
 
         MyBase.OnMouseDown(e)
 
+        If mapEditorActive Then
+            HandleEditorMouseDown(e)
+            Return
+        End If
+
         If e.Button <> MouseButtons.Left Then Return
 
         If heroHealth <= 0 Then Return
 
+        Dim worldPoint As PointF = ScreenToWorld(e.Location)
+
         If bossHealth > 0 AndAlso
-       BossBounds.Contains(e.Location) Then
+       BossBounds.Contains(worldPoint) Then
 
             HandleBossClick()
 
         Else
 
             pendingAttack = False
-            heroTarget = e.Location
+            heroTarget = worldPoint
 
         End If
 
     End Sub
+
+    Protected Overrides Sub OnMouseMove(e As MouseEventArgs)
+        MyBase.OnMouseMove(e)
+
+        If mapEditorActive AndAlso
+           isResizingMapObject AndAlso
+           selectedMapObject IsNot Nothing Then
+
+            Dim current As PointF = SnapPoint(ScreenToWorld(e.Location))
+            Dim left As Single = Math.Min(resizeStart.X, current.X)
+            Dim top As Single = Math.Min(resizeStart.Y, current.Y)
+            Dim right As Single = Math.Max(resizeStart.X + GridSize, current.X + GridSize)
+            Dim bottom As Single = Math.Max(resizeStart.Y + GridSize, current.Y + GridSize)
+
+            selectedMapObject.Bounds = New RectangleF(
+                left,
+                top,
+                Math.Max(GridSize, right - left),
+                Math.Max(GridSize, bottom - top))
+
+            Invalidate()
+        End If
+
+    End Sub
+
+    Protected Overrides Sub OnMouseUp(e As MouseEventArgs)
+        MyBase.OnMouseUp(e)
+
+        If mapEditorActive AndAlso e.Button = MouseButtons.Left Then
+            isResizingMapObject = False
+        End If
+
+    End Sub
+
+    Protected Overrides Sub OnKeyDown(e As KeyEventArgs)
+        MyBase.OnKeyDown(e)
+
+        If e.KeyCode = Keys.E Then
+            mapEditorActive = Not mapEditorActive
+            isResizingMapObject = False
+            selectedMapObject = Nothing
+            Invalidate()
+            Return
+        End If
+
+        If Not mapEditorActive Then Return
+
+        Select Case e.KeyCode
+            Case Keys.Left
+                editorPan.X -= GridSize
+            Case Keys.Right
+                editorPan.X += GridSize
+            Case Keys.Up
+                editorPan.Y -= GridSize
+            Case Keys.Down
+                editorPan.Y += GridSize
+            Case Keys.Delete
+                If selectedMapObject IsNot Nothing Then
+                    mapObjects.Remove(selectedMapObject)
+                    selectedMapObject = Nothing
+                End If
+        End Select
+
+        Invalidate()
+    End Sub
+
+    Private Sub HandleEditorMouseDown(e As MouseEventArgs)
+
+        If e.Button = MouseButtons.Right Then
+            Dim objectToRemove = MapObjectAt(ScreenToWorld(e.Location))
+            If objectToRemove IsNot Nothing Then mapObjects.Remove(objectToRemove)
+            If selectedMapObject Is objectToRemove Then selectedMapObject = Nothing
+            Invalidate()
+            Return
+        End If
+
+        If e.Button <> MouseButtons.Left Then Return
+
+        Dim toolbarType As MapObjectType
+        If TryGetToolbarType(e.Location, toolbarType) Then
+            selectedMapType = toolbarType
+            selectedMapObject = Nothing
+            Invalidate()
+            Return
+        End If
+
+        Dim worldPoint As PointF = SnapPoint(ScreenToWorld(e.Location))
+        Dim existing As MapObject = MapObjectAt(ScreenToWorld(e.Location))
+
+        If existing IsNot Nothing Then
+            selectedMapObject = existing
+            resizeStart = worldPoint
+            resizeOriginalBounds = existing.Bounds
+            isResizingMapObject = True
+        Else
+            Dim newObject As New MapObject With {
+                .ObjectType = selectedMapType,
+                .Bounds = New RectangleF(worldPoint.X, worldPoint.Y, GridSize, GridSize)
+            }
+            mapObjects.Add(newObject)
+            selectedMapObject = newObject
+            resizeStart = worldPoint
+            resizeOriginalBounds = newObject.Bounds
+            isResizingMapObject = True
+        End If
+
+        Invalidate()
+    End Sub
+
+    Private Function TryGetToolbarType(point As Point, ByRef objectType As MapObjectType) As Boolean
+        For i As Integer = 0 To 2
+            Dim button As New Rectangle(8 + i * 104, 8, 96, 32)
+            If button.Contains(point) Then
+                objectType = CType(i, MapObjectType)
+                Return True
+            End If
+        Next
+
+        Return False
+    End Function
 
     Private Sub HandleBossClick()
 
@@ -815,7 +992,20 @@ Public Class Form1
 
         g.SmoothingMode = SmoothingMode.AntiAlias
 
+        Dim view = ViewportOffset
+        g.TranslateTransform(-view.X, -view.Y)
+
         DrawBackground(g)
+
+        If mapEditorActive Then
+            DrawEditorGrid(g, view)
+            DrawMapObjects(g)
+            g.ResetTransform()
+            DrawEditorOverlay(g)
+            Return
+        End If
+
+        DrawMapObjects(g)
 
         DrawCombatIndicator(g)
 
@@ -845,6 +1035,8 @@ Public Class Form1
 
         DrawHero(g)
 
+        g.ResetTransform()
+
         DrawPlayerHealthBar(g)
 
         DrawBossHealthBar(g)
@@ -855,20 +1047,78 @@ Public Class Form1
 
     End Sub
 
+    Private Sub ResolveMapObjectCollisions()
+
+        For Each mapObject In mapObjects
+            If mapObject.ObjectType = MapObjectType.Column Then
+                ResolveColumnCollision(mapObject.Bounds)
+                Continue For
+            End If
+
+            Dim expanded As New RectangleF(
+                mapObject.Bounds.X - HeroRadius,
+                mapObject.Bounds.Y - HeroRadius,
+                mapObject.Bounds.Width + HeroRadius * 2,
+                mapObject.Bounds.Height + HeroRadius * 2)
+
+            If Not expanded.Contains(heroPos) Then Continue For
+
+            Dim pushLeft As Single = heroPos.X - expanded.Left
+            Dim pushRight As Single = expanded.Right - heroPos.X
+            Dim pushTop As Single = heroPos.Y - expanded.Top
+            Dim pushBottom As Single = expanded.Bottom - heroPos.Y
+            Dim smallestPush As Single = Math.Min(Math.Min(pushLeft, pushRight), Math.Min(pushTop, pushBottom))
+
+            If smallestPush = pushLeft Then
+                heroPos.X = expanded.Left
+            ElseIf smallestPush = pushRight Then
+                heroPos.X = expanded.Right
+            ElseIf smallestPush = pushTop Then
+                heroPos.Y = expanded.Top
+            Else
+                heroPos.Y = expanded.Bottom
+            End If
+        Next
+
+    End Sub
+
+    Private Sub ResolveColumnCollision(bounds As RectangleF)
+
+        Dim centerX As Single = bounds.X + bounds.Width / 2.0F
+        Dim centerY As Single = bounds.Y + bounds.Height / 2.0F
+        Dim radiusX As Single = Math.Max(1.0F, bounds.Width / 2.0F + HeroRadius)
+        Dim radiusY As Single = Math.Max(1.0F, bounds.Height / 2.0F + HeroRadius)
+        Dim normalizedX As Single = (heroPos.X - centerX) / radiusX
+        Dim normalizedY As Single = (heroPos.Y - centerY) / radiusY
+        Dim distanceSquared As Single = normalizedX * normalizedX + normalizedY * normalizedY
+
+        If distanceSquared > 1.0F Then Return
+
+        If distanceSquared < 0.0001F Then
+            heroPos.Y = centerY - radiusY
+            Return
+        End If
+
+        Dim scale As Single = CSng(1.0 / Math.Sqrt(distanceSquared))
+        heroPos.X = centerX + normalizedX * radiusX * scale
+        heroPos.Y = centerY + normalizedY * radiusY * scale
+
+    End Sub
+
     Private Sub DrawBackground(
         g As Graphics)
 
-        g.Clear(Color.DeepPink)
+        g.FillRectangle(Brushes.DeepPink, -5000, -5000, 10000, 10000)
 
         Using hallwayBrush As New SolidBrush(
             Color.FromArgb(45, 45, 45))
 
             g.FillRectangle(
                 hallwayBrush,
-                ClientSize.Width \ 2 - 180,
-                0,
+                450 - 180,
+                -5000,
                 360,
-                ClientSize.Height)
+                10000)
 
         End Using
 
@@ -877,17 +1127,17 @@ Public Class Form1
 
             g.FillRectangle(
                 wallBrush,
-                0,
-                0,
-                ClientSize.Width \ 2 - 180,
-                ClientSize.Height)
+                -5000,
+                -5000,
+                5000 + 450 - 180,
+                10000)
 
             g.FillRectangle(
                 wallBrush,
-                ClientSize.Width \ 2 + 180,
-                0,
-                ClientSize.Width,
-                ClientSize.Height)
+                450 + 180,
+                -5000,
+                5000,
+                10000)
 
         End Using
 
@@ -895,12 +1145,97 @@ Public Class Form1
 
             g.DrawLine(
                 Pens.DimGray,
-                ClientSize.Width \ 2 - 180,
+                450 - 180,
                 y,
-                ClientSize.Width \ 2 + 180,
+                450 + 180,
                 y)
 
         Next
+
+    End Sub
+
+    Private Sub DrawEditorGrid(g As Graphics, view As PointF)
+
+        Using gridPen As New Pen(Color.FromArgb(70, Color.White))
+            Dim startX As Single = SnapToGrid(view.X) - GridSize
+            Dim endX As Single = view.X + ClientSize.Width + GridSize
+            Dim startY As Single = SnapToGrid(view.Y) - GridSize
+            Dim endY As Single = view.Y + ClientSize.Height + GridSize
+
+            For x As Single = startX To endX Step GridSize
+                g.DrawLine(gridPen, x, startY, x, endY)
+            Next
+
+            For y As Single = startY To endY Step GridSize
+                g.DrawLine(gridPen, startX, y, endX, y)
+            Next
+        End Using
+
+    End Sub
+
+    Private Sub DrawMapObjects(g As Graphics)
+
+        For Each mapObject In mapObjects
+            Dim fillColor As Color
+            Select Case mapObject.ObjectType
+                Case MapObjectType.Wall
+                    fillColor = Color.SaddleBrown
+                Case MapObjectType.Column
+                    fillColor = Color.SlateGray
+                Case Else
+                    fillColor = Color.Goldenrod
+            End Select
+
+            Using brush As New SolidBrush(fillColor)
+                If mapObject.ObjectType = MapObjectType.Column Then
+                    g.FillEllipse(brush, mapObject.Bounds)
+                Else
+                    g.FillRectangle(brush, mapObject.Bounds)
+                End If
+            End Using
+
+            If mapObject.ObjectType = MapObjectType.Column Then
+                g.DrawEllipse(Pens.Black, mapObject.Bounds)
+            Else
+                g.DrawRectangle(Pens.Black, mapObject.Bounds.X, mapObject.Bounds.Y,
+                                mapObject.Bounds.Width, mapObject.Bounds.Height)
+            End If
+
+            If mapObject Is selectedMapObject Then
+                Using selectionPen As New Pen(Color.Lime, 3)
+                    If mapObject.ObjectType = MapObjectType.Column Then
+                        g.DrawEllipse(selectionPen, mapObject.Bounds)
+                    Else
+                        g.DrawRectangle(selectionPen, mapObject.Bounds.X, mapObject.Bounds.Y,
+                                        mapObject.Bounds.Width, mapObject.Bounds.Height)
+                    End If
+                End Using
+            End If
+        Next
+
+    End Sub
+
+    Private Sub DrawEditorOverlay(g As Graphics)
+
+        Using toolbarBrush As New SolidBrush(Color.FromArgb(220, 20, 20, 20))
+            g.FillRectangle(toolbarBrush, 0, 0, 328, 48)
+        End Using
+
+        For i As Integer = 0 To 2
+            Dim button As New Rectangle(8 + i * 104, 8, 96, 32)
+            Dim buttonColor As Color = If(selectedMapType = CType(i, MapObjectType), Color.DarkGreen, Color.DimGray)
+
+            Using brush As New SolidBrush(buttonColor)
+                g.FillRectangle(brush, button)
+            End Using
+
+            g.DrawRectangle(Pens.White, button)
+            Dim label As String = [Enum].GetName(GetType(MapObjectType), CType(i, MapObjectType))
+            g.DrawString(label, Font, Brushes.White, button.X + 22, button.Y + 7)
+        Next
+
+        g.DrawString("E: gameplay   Arrows: pan   Drag: resize   Right-click/Delete: remove",
+                     Font, Brushes.White, 8, 56)
 
     End Sub
 
@@ -1287,6 +1622,20 @@ Public Class Form1
 
 
 
+
+End Class
+
+Public Enum MapObjectType
+    Wall
+    Column
+    Door
+End Enum
+
+Public Class MapObject
+
+    Public Property ObjectType As MapObjectType
+
+    Public Property Bounds As RectangleF
 
 End Class
 
