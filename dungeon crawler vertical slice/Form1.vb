@@ -959,13 +959,16 @@ Public Class Form1
 
         DrawHero(g)
 
+        DrawDamageNumbers(g)
+
+
+
         g.ResetTransform()
 
         DrawPlayerHealthBar(g)
 
         DrawBossHealthBar(g)
 
-        DrawDamageNumbers(g)
 
         DrawInstructions(g)
 
@@ -1352,17 +1355,35 @@ Public Class Form1
 
         If heroHealth <= 0 Then
 
-            Using f As New Font(
-                "Segoe UI",
-                24,
-                FontStyle.Bold)
+            'Using f As New Font(
+            '    "Segoe UI",
+            '    24,
+            '    FontStyle.Bold)
 
-                g.DrawString(
-                    "YOU DIED",
-                    f,
-                    Brushes.Red,
-                    320,
-                    320)
+            '    g.DrawString(
+            '        "YOU DIED",
+            '        f,
+            '        Brushes.Red,
+            '       ClientSize.Width \ 2,
+            '        ClientSize.Height \ 2, New StringFormat(StringAlignment.Center,)
+
+
+            'End Using
+
+
+            Using f As New Font("Segoe UI", 24, FontStyle.Bold)
+
+                Using sf As New StringFormat()
+                    sf.Alignment = StringAlignment.Center
+                    sf.LineAlignment = StringAlignment.Center
+
+                    g.DrawString(
+                        "YOU DIED",
+                        f,
+                        Brushes.Red,
+                        New RectangleF(0, 0, ClientSize.Width, ClientSize.Height),
+                        sf)
+                End Using
 
             End Using
 
