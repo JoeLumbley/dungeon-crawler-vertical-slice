@@ -198,7 +198,7 @@ Public Class Form1
         UpdateFireballs(dt)
 
 
-        ResolveBossCollision()
+        'ResolveBossCollision()
 
 
         If attackCooldown > 0 Then
@@ -690,11 +690,6 @@ Public Class Form1
         Dim distance As Single =
         CSng(Math.Sqrt(dx * dx + dy * dy))
 
-        If distance < 2 Then
-            ClampHeroToHallway()
-            Return
-        End If
-
         Dim moveDistance As Single =
         HeroSpeed * CSng(dt)
 
@@ -705,53 +700,10 @@ Public Class Form1
             heroPos.Y += dy / distance * moveDistance
         End If
 
-        ClampHeroToHallway()
-
         ResolveBossCollision()
-        ClampHeroToHallway()
+        ResolveMapObjectCollisions()
 
     End Sub
-
-    Private Sub ClampHeroToHallway()
-
-        Dim leftWallEdge As Single =
-            ClientSize.Width / 2.0F - HallwayHalfWidth
-
-        Dim rightWallEdge As Single =
-            ClientSize.Width / 2.0F + HallwayHalfWidth
-
-        heroPos.X = Math.Max(
-            leftWallEdge + HeroRadius,
-            Math.Min(rightWallEdge - HeroRadius, heroPos.X))
-
-    End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     Private Sub ResolveBossCollision()
@@ -784,16 +736,6 @@ Public Class Form1
         End If
 
     End Sub
-
-
-
-
-
-
-
-
-
-
 
     Private Sub UpdateBossAI(dt As Double)
 
@@ -857,7 +799,6 @@ Public Class Form1
 
             If HitHero(fireball) Then
 
-                'heroHealth -= 10
                 heroHealth -= 10
 
                 If heroHealth < 0 Then
@@ -900,27 +841,10 @@ Public Class Form1
     End Function
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     Private Sub AttackBoss()
 
-        'If heroAttackAnim > 0 Then Return
         If attackCooldown > 0 Then Return
         attackCooldown = AttackCooldownDuration
-
-
 
         ' lunge toward the boss
         Dim dx As Single =
@@ -1108,49 +1032,17 @@ Public Class Form1
     Private Sub DrawBackground(
         g As Graphics)
 
-        g.FillRectangle(Brushes.DeepPink, -5000, -5000, 10000, 10000)
-
-        Using hallwayBrush As New SolidBrush(
-            Color.FromArgb(45, 45, 45))
+        Using backgroundBrush As New SolidBrush(
+            Color.Black)
 
             g.FillRectangle(
-                hallwayBrush,
-                450 - 180,
-                -5000,
-                360,
-                10000)
+                backgroundBrush,
+                -10000,
+                -10000,
+                20000,
+                20000)
 
         End Using
-
-        Using wallBrush As New SolidBrush(
-            Color.FromArgb(32, 32, 32))
-
-            g.FillRectangle(
-                wallBrush,
-                -5000,
-                -5000,
-                5000 + 450 - 180,
-                10000)
-
-            g.FillRectangle(
-                wallBrush,
-                450 + 180,
-                -5000,
-                5000,
-                10000)
-
-        End Using
-
-        For y As Integer = 0 To ClientSize.Height Step 40
-
-            g.DrawLine(
-                Pens.DimGray,
-                450 - 180,
-                y,
-                450 + 180,
-                y)
-
-        Next
 
     End Sub
 
@@ -1545,23 +1437,6 @@ Public Class Form1
     End Sub
 
 
-
-
-
-
-
-    'Private Sub DrawMoveTarget(
-    'g As Graphics)
-
-    '    g.DrawEllipse(
-    '        Pens.Yellow,
-    '        heroTarget.X - 8,
-    '        heroTarget.Y - 8,
-    '        16,
-    '        16)
-
-    'End Sub
-
     Private Sub DrawMoveTarget(
     g As Graphics)
 
@@ -1580,7 +1455,6 @@ Public Class Form1
     Private Sub DrawCombatIndicator(
     g As Graphics)
 
-        'If Not playerTargetingBoss Then Return
         If Not pendingAttack Then Return
 
         Using pen As New Pen(
@@ -1609,19 +1483,6 @@ Public Class Form1
         MeleeRange * 2)
 
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 End Class
 
