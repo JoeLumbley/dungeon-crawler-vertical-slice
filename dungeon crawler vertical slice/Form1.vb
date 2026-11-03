@@ -1,6 +1,17 @@
 ﻿Imports System.Drawing.Drawing2D
+Imports System.Runtime.InteropServices
 
 Public Class Form1
+
+    'Private Const DwmwaUseImmersiveDarkMode As Integer = 20
+
+    '<DllImport("dwmapi.dll")>
+    'Private Shared Function DwmSetWindowAttribute(
+    '    hWnd As IntPtr,
+    '    attribute As Integer,
+    '    ByRef value As Integer,
+    '    valueSize As Integer) As Integer
+    'End Function
 
     Private ReadOnly gameTimer As New Timer()
 
@@ -60,6 +71,7 @@ Public Class Form1
     Private resizeStart As PointF
     Private resizeOriginalBounds As RectangleF
     Private editorPan As PointF
+    Private editorZoom As Single = 1.0F
     Private ReadOnly mapObjects As New List(Of MapObject)
 
 
@@ -80,11 +92,15 @@ Public Class Form1
 
 
 
+    Private HeroCollisionRingPen As New Pen(Color.Lime, 2)
+    Private BossCollisionRingPen As New Pen(Color.Red, 2)
+    Private MoveTargetPen As New Pen(Color.Yellow, 2)
+    Private BossRangePen As New Pen(Color.DarkOrange, 2)
 
 
 
 
-
+    Private windowManager As WindowManager
 
 
 
@@ -134,7 +150,22 @@ Public Class Form1
 
         gameTimer.Start()
 
+
+
+
+
     End Sub
+
+    'Protected Overrides Sub OnHandleCreated(e As EventArgs)
+    '    MyBase.OnHandleCreated(e)
+
+    '    Dim useDarkMode As Integer = 1
+    '    DwmSetWindowAttribute(
+    '        Handle,
+    '        DwmwaUseImmersiveDarkMode,
+    '        useDarkMode,
+    '        Marshal.SizeOf(useDarkMode))
+    'End Sub
 
     Private ReadOnly Property ViewportOffset As PointF
         Get
@@ -154,10 +185,11 @@ Public Class Form1
 
     Private Function ScreenToWorld(screenPoint As Point) As PointF
         Dim view = ViewportOffset
+        Dim zoom As Single = If(mapEditorActive, editorZoom, 1.0F)
 
         Return New PointF(
-            screenPoint.X + view.X,
-            screenPoint.Y + view.Y)
+            view.X + screenPoint.X / zoom,
+            view.Y + screenPoint.Y / zoom)
     End Function
 
     Private Function SnapToGrid(value As Single) As Single
@@ -387,6 +419,12 @@ Public Class Form1
         If Not mapEditorActive Then Return
 
         Select Case e.KeyCode
+            Case Keys.Add, Keys.Oemplus
+                SetEditorZoom(editorZoom * 1.25F)
+            Case Keys.Subtract, Keys.OemMinus
+                SetEditorZoom(editorZoom / 1.25F)
+            Case Keys.D0, Keys.NumPad0
+                SetEditorZoom(1.0F)
             Case Keys.Left
                 editorPan.X -= GridSize
             Case Keys.Right
@@ -400,9 +438,39 @@ Public Class Form1
                     mapObjects.Remove(selectedMapObject)
                     selectedMapObject = Nothing
                 End If
+
+            Case Keys.F, Keys.F11
+                windowManager.ToggleFullscreen()
+
         End Select
 
+
+
+
+
+
+
+
+
+
+
+
+
         Invalidate()
+    End Sub
+
+    Private Sub SetEditorZoom(newZoom As Single)
+
+        Dim clampedZoom As Single = Math.Max(0.25F, Math.Min(4.0F, newZoom))
+        Dim centerWorld As New PointF(
+            editorPan.X + ClientSize.Width / (2.0F * editorZoom),
+            editorPan.Y + ClientSize.Height / (2.0F * editorZoom))
+
+        editorZoom = clampedZoom
+        editorPan = New PointF(
+            centerWorld.X - ClientSize.Width / (2.0F * editorZoom),
+            centerWorld.Y - ClientSize.Height / (2.0F * editorZoom))
+
     End Sub
 
     Private Sub HandleEditorMouseDown(e As MouseEventArgs)
@@ -927,15 +995,26 @@ Public Class Form1
 
         Dim g = e.Graphics
 
-        g.SmoothingMode = SmoothingMode.AntiAlias
+        g.SmoothingMode = SmoothingMode.HighQuality
         g.TextRenderingHint = Drawing.Text.TextRenderingHint.AntiAlias
+        g.InterpolationMode = InterpolationMode.HighQualityBicubic
 
 
 
         Dim view = ViewportOffset
 
 
-        g.TranslateTransform(-view.X, -view.Y)
+        If mapEditorActive Then
+            g.Transform = New Matrix(
+                editorZoom,
+                0,
+                0,
+                editorZoom,
+                -view.X * editorZoom,
+                -view.Y * editorZoom)
+        Else
+            g.TranslateTransform(-view.X, -view.Y)
+        End If
 
         DrawBackground(g)
 
@@ -957,13 +1036,15 @@ Public Class Form1
 
         DrawBoss(g)
 
-        DrawFireballs(g)
 
 
         DrawHero(g)
 
         DrawHeroLight(g)
 
+
+
+        DrawFireballs(g)
 
 
         DrawMoveTarget(g)
@@ -973,21 +1054,25 @@ Public Class Form1
 
         ' Draw Hero Collision Ring
         g.DrawEllipse(
-            Pens.Lime,
+            HeroCollisionRingPen,
             heroPos.X - HeroRadius,
             heroPos.Y - HeroRadius,
             HeroRadius * 2,
             HeroRadius * 2)
 
-        ' Draw Boss Collision Ring
-        g.DrawEllipse(
-            Pens.Red,
-            bossPos.X - BossRadius,
-            bossPos.Y - BossRadius,
-            BossRadius * 2,
-            BossRadius * 2)
+        '' Draw Boss Collision Ring
+        'g.DrawEllipse(
+        '    BossCollisionRingPen,
+        '    bossPos.X - BossRadius,
+        '    bossPos.Y - BossRadius,
+        '    BossRadius * 2,
+        '    BossRadius * 2)
 
-        DrawBossRange(g)
+        'DrawBossRange(g)
+
+
+
+
 
 
         g.ResetTransform()
@@ -1065,17 +1150,22 @@ Public Class Form1
     Private Sub DrawBackground(
         g As Graphics)
 
-        Using backgroundBrush As New SolidBrush(
-            Color.Black)
+        g.Clear(Color.Black)
 
-            g.FillRectangle(
-                backgroundBrush,
-                -10000,
-                -10000,
-                20000,
-                20000)
+        'Using backgroundBrush As New SolidBrush(
+        '    Color.Black)
 
-        End Using
+
+
+
+        '    g.FillRectangle(
+        '        backgroundBrush,
+        '        -10000,
+        '        -10000,
+        '        20000,
+        '        20000)
+
+        'End Using
 
     End Sub
 
@@ -1083,9 +1173,9 @@ Public Class Form1
 
         Using gridPen As New Pen(Color.FromArgb(70, Color.White))
             Dim startX As Single = SnapToGrid(view.X) - GridSize
-            Dim endX As Single = view.X + ClientSize.Width + GridSize
+            Dim endX As Single = view.X + ClientSize.Width / editorZoom + GridSize
             Dim startY As Single = SnapToGrid(view.Y) - GridSize
-            Dim endY As Single = view.Y + ClientSize.Height + GridSize
+            Dim endY As Single = view.Y + ClientSize.Height / editorZoom + GridSize
 
             For x As Single = startX To endX Step GridSize
                 g.DrawLine(gridPen, x, startY, x, endY)
@@ -1119,11 +1209,11 @@ Public Class Form1
         Dim fillColor As Color
         Select Case mapObject.ObjectType
             Case MapObjectType.Floor
-                fillColor = Color.DimGray
+                fillColor = Color.FromArgb(100, 100, 100)
             Case MapObjectType.Wall
-                fillColor = Color.SaddleBrown
+                fillColor = Color.FromArgb(64, 64, 64)
             Case MapObjectType.Column
-                fillColor = Color.SlateGray
+                fillColor = Color.FromArgb(64, 64, 64)
             Case Else
                 fillColor = Color.Goldenrod
         End Select
@@ -1136,12 +1226,12 @@ Public Class Form1
             End If
         End Using
 
-        If mapObject.ObjectType = MapObjectType.Column Then
-            g.DrawEllipse(Pens.Black, mapObject.Bounds)
-        Else
-            g.DrawRectangle(Pens.Black, mapObject.Bounds.X, mapObject.Bounds.Y,
-                            mapObject.Bounds.Width, mapObject.Bounds.Height)
-        End If
+        'If mapObject.ObjectType = MapObjectType.Column Then
+        '    g.DrawEllipse(Pens.Black, mapObject.Bounds)
+        'Else
+        '    g.DrawRectangle(Pens.Black, mapObject.Bounds.X, mapObject.Bounds.Y,
+        '                    mapObject.Bounds.Width, mapObject.Bounds.Height)
+        'End If
 
         If mapObject Is selectedMapObject Then
             Using selectionPen As New Pen(Color.Lime, 3)
@@ -1262,7 +1352,7 @@ Public Class Form1
                 blend.Colors = New Color() {
                 Color.FromArgb(255, Color.Black),      ' fully visible
                 Color.FromArgb(255, Color.Black),    ' partially dark
-                Color.FromArgb(32, Color.Black)     ' full darkness
+                Color.FromArgb(0, Color.Black)     ' full darkness
             }
 
                 lightBrush.InterpolationColors = blend
@@ -1594,12 +1684,12 @@ Public Class Form1
 
             End Using
 
-            g.DrawEllipse(
-                Pens.Yellow,
-                fireball.Position.X - r,
-                fireball.Position.Y - r,
-                r * 2,
-                r * 2)
+            'g.DrawEllipse(
+            '    Pens.Yellow,
+            '    fireball.Position.X - r,
+            '    fireball.Position.Y - r,
+            '    r * 2,
+            '    r * 2)
 
         Next
 
@@ -1648,7 +1738,7 @@ Public Class Form1
         If pendingAttack Then Return
 
         g.DrawEllipse(
-        Pens.Yellow,
+        MoveTargetPen,
         heroTarget.X - 8,
         heroTarget.Y - 8,
         16,
@@ -1681,7 +1771,7 @@ Public Class Form1
     g As Graphics)
 
         g.DrawEllipse(
-        Pens.DarkOrange,
+        BossRangePen,
         bossPos.X - MeleeRange,
         bossPos.Y - MeleeRange,
         MeleeRange * 2,
@@ -1699,10 +1789,56 @@ Public Class Form1
 
 
 
+    ' ============================================================
+    '  SYSTEM THEME CHANGE DETECTION
+    '
+    '  Windows sends WM_SETTINGCHANGE whenever a system setting
+    '  changes. We use this notification to detect Light/Dark
+    '  theme changes and update the title bar appearance without
+    '  requiring the application to restart.
+    ' ============================================================
+    Protected Overrides Sub WndProc(ByRef m As Message)
+
+        Const WM_SETTINGCHANGE As Integer = &H1A
+
+        If m.Msg = WM_SETTINGCHANGE Then
+            windowManager?.ApplySystemTheme()
+        End If
+
+        MyBase.WndProc(m)
 
 
+    End Sub
 
+    Private Sub Form1_Shown(sender As Object, e As EventArgs) Handles Me.Shown
+        windowManager = New WindowManager(Me)
+        windowManager.Initialize()
+
+
+    End Sub
 End Class
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Public Enum MapObjectType
     Floor
