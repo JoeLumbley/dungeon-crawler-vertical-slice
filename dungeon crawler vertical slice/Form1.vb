@@ -47,6 +47,7 @@ Public Class Form1
 
 
     Private Const HeroRadius As Single = 20.0F
+    Private HeroLightRadius As Single = 260.0F
     Private Const BossRadius As Single = 60.0F
     Private Const MeleeRange As Single = 70.0F
     Private Const HallwayHalfWidth As Single = 180.0F
@@ -139,6 +140,12 @@ Public Class Form1
         Get
             If mapEditorActive Then Return editorPan
 
+            Return GameplayViewportOffset
+        End Get
+    End Property
+
+    Private ReadOnly Property GameplayViewportOffset As PointF
+        Get
             Return New PointF(
                 heroPos.X - ClientSize.Width / 2.0F,
                 heroPos.Y - ClientSize.Height / 2.0F)
@@ -366,6 +373,10 @@ Public Class Form1
         MyBase.OnKeyDown(e)
 
         If e.KeyCode = Keys.E Then
+            If Not mapEditorActive Then
+                editorPan = GameplayViewportOffset
+            End If
+
             mapEditorActive = Not mapEditorActive
             isResizingMapObject = False
             selectedMapObject = Nothing
@@ -417,7 +428,9 @@ Public Class Form1
         Dim worldPoint As PointF = SnapPoint(ScreenToWorld(e.Location))
         Dim existing As MapObject = MapObjectAt(ScreenToWorld(e.Location))
 
-        If existing IsNot Nothing Then
+        If existing IsNot Nothing AndAlso
+           (selectedMapType = MapObjectType.Floor OrElse
+            existing.ObjectType <> MapObjectType.Floor) Then
             selectedMapObject = existing
             resizeStart = worldPoint
             resizeOriginalBounds = existing.Bounds
@@ -438,7 +451,7 @@ Public Class Form1
     End Sub
 
     Private Function TryGetToolbarType(point As Point, ByRef objectType As MapObjectType) As Boolean
-        For i As Integer = 0 To 2
+        For i As Integer = 0 To 3
             Dim button As New Rectangle(8 + i * 104, 8, 96, 32)
             If button.Contains(point) Then
                 objectType = CType(i, MapObjectType)
@@ -915,8 +928,13 @@ Public Class Form1
         Dim g = e.Graphics
 
         g.SmoothingMode = SmoothingMode.AntiAlias
+        g.TextRenderingHint = Drawing.Text.TextRenderingHint.AntiAlias
+
+
 
         Dim view = ViewportOffset
+
+
         g.TranslateTransform(-view.X, -view.Y)
 
         DrawBackground(g)
@@ -931,23 +949,27 @@ Public Class Form1
 
         DrawMapObjects(g)
 
+
         DrawCombatIndicator(g)
 
-        DrawMoveTarget(g)
 
-        DrawBossRange(g)
 
-        ' Draw Boss Collision Ring
-        g.DrawEllipse(
-            Pens.Red,
-            bossPos.X - BossRadius,
-            bossPos.Y - BossRadius,
-            BossRadius * 2,
-            BossRadius * 2)
 
         DrawBoss(g)
 
         DrawFireballs(g)
+
+
+        DrawHero(g)
+
+        DrawHeroLight(g)
+
+
+
+        DrawMoveTarget(g)
+
+
+        DrawDamageNumbers(g)
 
         ' Draw Hero Collision Ring
         g.DrawEllipse(
@@ -957,10 +979,15 @@ Public Class Form1
             HeroRadius * 2,
             HeroRadius * 2)
 
-        DrawHero(g)
+        ' Draw Boss Collision Ring
+        g.DrawEllipse(
+            Pens.Red,
+            bossPos.X - BossRadius,
+            bossPos.Y - BossRadius,
+            BossRadius * 2,
+            BossRadius * 2)
 
-        DrawDamageNumbers(g)
-
+        DrawBossRange(g)
 
 
         g.ResetTransform()
@@ -969,7 +996,6 @@ Public Class Form1
 
         DrawBossHealthBar(g)
 
-
         DrawInstructions(g)
 
     End Sub
@@ -977,6 +1003,10 @@ Public Class Form1
     Private Sub ResolveMapObjectCollisions()
 
         For Each mapObject In mapObjects
+            If mapObject.ObjectType = MapObjectType.Floor Then
+                Continue For
+            End If
+
             If mapObject.ObjectType = MapObjectType.Column Then
                 ResolveColumnCollision(mapObject.Bounds)
                 Continue For
@@ -1071,52 +1101,206 @@ Public Class Form1
     Private Sub DrawMapObjects(g As Graphics)
 
         For Each mapObject In mapObjects
-            Dim fillColor As Color
-            Select Case mapObject.ObjectType
-                Case MapObjectType.Wall
-                    fillColor = Color.SaddleBrown
-                Case MapObjectType.Column
-                    fillColor = Color.SlateGray
-                Case Else
-                    fillColor = Color.Goldenrod
-            End Select
-
-            Using brush As New SolidBrush(fillColor)
-                If mapObject.ObjectType = MapObjectType.Column Then
-                    g.FillEllipse(brush, mapObject.Bounds)
-                Else
-                    g.FillRectangle(brush, mapObject.Bounds)
-                End If
-            End Using
-
-            If mapObject.ObjectType = MapObjectType.Column Then
-                g.DrawEllipse(Pens.Black, mapObject.Bounds)
-            Else
-                g.DrawRectangle(Pens.Black, mapObject.Bounds.X, mapObject.Bounds.Y,
-                                mapObject.Bounds.Width, mapObject.Bounds.Height)
+            If mapObject.ObjectType = MapObjectType.Floor Then
+                DrawMapObject(g, mapObject)
             End If
+        Next
 
-            If mapObject Is selectedMapObject Then
-                Using selectionPen As New Pen(Color.Lime, 3)
-                    If mapObject.ObjectType = MapObjectType.Column Then
-                        g.DrawEllipse(selectionPen, mapObject.Bounds)
-                    Else
-                        g.DrawRectangle(selectionPen, mapObject.Bounds.X, mapObject.Bounds.Y,
-                                        mapObject.Bounds.Width, mapObject.Bounds.Height)
-                    End If
-                End Using
+        For Each mapObject In mapObjects
+            If mapObject.ObjectType <> MapObjectType.Floor Then
+                DrawMapObject(g, mapObject)
             End If
         Next
 
     End Sub
 
+    Private Sub DrawMapObject(g As Graphics, mapObject As MapObject)
+
+        Dim fillColor As Color
+        Select Case mapObject.ObjectType
+            Case MapObjectType.Floor
+                fillColor = Color.DimGray
+            Case MapObjectType.Wall
+                fillColor = Color.SaddleBrown
+            Case MapObjectType.Column
+                fillColor = Color.SlateGray
+            Case Else
+                fillColor = Color.Goldenrod
+        End Select
+
+        Using brush As New SolidBrush(fillColor)
+            If mapObject.ObjectType = MapObjectType.Column Then
+                g.FillEllipse(brush, mapObject.Bounds)
+            Else
+                g.FillRectangle(brush, mapObject.Bounds)
+            End If
+        End Using
+
+        If mapObject.ObjectType = MapObjectType.Column Then
+            g.DrawEllipse(Pens.Black, mapObject.Bounds)
+        Else
+            g.DrawRectangle(Pens.Black, mapObject.Bounds.X, mapObject.Bounds.Y,
+                            mapObject.Bounds.Width, mapObject.Bounds.Height)
+        End If
+
+        If mapObject Is selectedMapObject Then
+            Using selectionPen As New Pen(Color.Lime, 3)
+                If mapObject.ObjectType = MapObjectType.Column Then
+                    g.DrawEllipse(selectionPen, mapObject.Bounds)
+                Else
+                    g.DrawRectangle(selectionPen, mapObject.Bounds.X, mapObject.Bounds.Y,
+                                    mapObject.Bounds.Width, mapObject.Bounds.Height)
+                End If
+            End Using
+        End If
+
+    End Sub
+
+    'Private Sub DrawHeroLight(g As Graphics)
+
+    '    'Dim lightBounds As New RectangleF(
+    '    '    heroPos.X - HeroLightRadius,
+    '    '    heroPos.Y - HeroLightRadius,
+    '    '    HeroLightRadius * 2,
+    '    '    HeroLightRadius * 2)
+
+
+    '    Dim lightBounds As New RectangleF(
+    '        heroPos.X - HeroLightRadius,
+    '        heroPos.Y - HeroLightRadius,
+    '        HeroLightRadius * 2,
+    '        HeroLightRadius * 2)
+
+
+    '    Using path As New GraphicsPath()
+    '        path.AddEllipse(lightBounds)
+
+    '        Using lightBrush As New PathGradientBrush(path)
+    '            lightBrush.CenterColor = Color.Transparent
+    '            lightBrush.SurroundColors = New Color() {
+    '                Color.Black}
+
+    '            g.FillPath(lightBrush, path)
+    '        End Using
+    '    End Using
+
+    'End Sub
+
+
+
+
+
+
+    Private Sub DrawDarkness(g As Graphics)
+
+        ' Draw darkness over the whole screen first.
+        Using darknessBrush As New SolidBrush(Color.FromArgb(220, Color.Black))
+            g.FillRectangle(darknessBrush, ClientRectangle)
+        End Using
+
+    End Sub
+
+    'Private Sub DrawHeroLight(g As Graphics)
+
+    '    Dim lightBounds As New RectangleF(
+    '    heroPos.X - HeroLightRadius,
+    '    heroPos.Y - HeroLightRadius,
+    '    HeroLightRadius * 2,
+    '    HeroLightRadius * 2)
+
+    '    Using path As New GraphicsPath()
+    '        path.AddEllipse(lightBounds)
+
+    '        'Using lightBrush As New PathGradientBrush(path)
+
+    '        '    lightBrush.CenterColor = Color.FromArgb(64, Color.White)
+    '        '    lightBrush.SurroundColors =
+    '        '    New Color() {Color.FromArgb(220, Color.Black)}
+
+    '        '    g.FillPath(lightBrush, path)
+
+    '        'End Using
+
+
+    '        Using lightBrush As New PathGradientBrush(path)
+
+    '            lightBrush.CenterColor = Color.FromArgb(0, Color.Black)
+    '            lightBrush.SurroundColors =
+    '            New Color() {Color.FromArgb(255, Color.Black)}
+
+    '            g.FillPath(lightBrush, path)
+
+    '        End Using
+
+    '    End Using
+
+    'End Sub
+
+
+    Private Sub DrawHeroLight(g As Graphics)
+
+        Dim lightBounds As New RectangleF(
+        heroPos.X - HeroLightRadius - HeroLightRadius \ 13,
+        heroPos.Y - HeroLightRadius,
+        HeroLightRadius * 2,
+        HeroLightRadius * 2)
+
+        Using path As New GraphicsPath()
+
+            path.AddEllipse(lightBounds)
+
+            Using lightBrush As New PathGradientBrush(path)
+
+                Dim blend As New ColorBlend()
+
+                blend.Positions = New Single() {
+                0.0F,   ' center
+                0.4F,   ' middle
+                1.0F    ' edge
+            }
+
+                blend.Colors = New Color() {
+                Color.FromArgb(255, Color.Black),      ' fully visible
+                Color.FromArgb(255, Color.Black),    ' partially dark
+                Color.FromArgb(32, Color.Black)     ' full darkness
+            }
+
+                lightBrush.InterpolationColors = blend
+
+                g.FillPath(lightBrush, path)
+
+            End Using
+
+        End Using
+
+    End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     Private Sub DrawEditorOverlay(g As Graphics)
 
         Using toolbarBrush As New SolidBrush(Color.FromArgb(220, 20, 20, 20))
-            g.FillRectangle(toolbarBrush, 0, 0, 328, 48)
+            g.FillRectangle(toolbarBrush, 0, 0, 432, 48)
         End Using
 
-        For i As Integer = 0 To 2
+        For i As Integer = 0 To 3
             Dim button As New Rectangle(8 + i * 104, 8, 96, 32)
             Dim buttonColor As Color = If(selectedMapType = CType(i, MapObjectType), Color.DarkGreen, Color.DimGray)
 
@@ -1151,14 +1335,14 @@ Public Class Form1
             size,
             size)
 
-        'Using brush As New SolidBrush(
-        '    Color.DeepSkyBlue)
+        Using brush As New SolidBrush(
+            Color.DeepSkyBlue)
 
-        '    g.FillEllipse(
-        '        brush,
-        '        rect)
+            g.FillEllipse(
+                brush,
+                rect)
 
-        'End Using
+        End Using
 
         'g.DrawEllipse(
         '    Pens.White,
@@ -1505,12 +1689,26 @@ Public Class Form1
 
     End Sub
 
+    Private Sub Form1_Resize(sender As Object, e As EventArgs) Handles Me.Resize
+
+        HeroLightRadius = ClientSize.Width
+
+
+
+    End Sub
+
+
+
+
+
+
 End Class
 
 Public Enum MapObjectType
+    Floor
     Wall
-    Column
     Door
+    Column
 End Enum
 
 Public Class MapObject
