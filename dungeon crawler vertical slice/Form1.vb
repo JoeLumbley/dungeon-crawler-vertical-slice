@@ -3,15 +3,6 @@ Imports System.Runtime.InteropServices
 
 Public Class Form1
 
-    'Private Const DwmwaUseImmersiveDarkMode As Integer = 20
-
-    '<DllImport("dwmapi.dll")>
-    'Private Shared Function DwmSetWindowAttribute(
-    '    hWnd As IntPtr,
-    '    attribute As Integer,
-    '    ByRef value As Integer,
-    '    valueSize As Integer) As Integer
-    'End Function
 
     Private ReadOnly gameTimer As New Timer()
 
@@ -29,7 +20,6 @@ Public Class Form1
 
     Private rand As New Random()
 
-    'Private attackCooldown As Double
 
 
     Private heroTarget As PointF
@@ -46,14 +36,6 @@ Public Class Form1
 
 
 
-
-    'Private heroAttackCooldown As Double
-
-    'Private Const AttackInterval As Double = 0.5
-
-    'Private Const MeleeRange As Single = 85.0F
-
-    'Private playerTargetingBoss As Boolean
 
 
 
@@ -156,16 +138,6 @@ Public Class Form1
 
     End Sub
 
-    'Protected Overrides Sub OnHandleCreated(e As EventArgs)
-    '    MyBase.OnHandleCreated(e)
-
-    '    Dim useDarkMode As Integer = 1
-    '    DwmSetWindowAttribute(
-    '        Handle,
-    '        DwmwaUseImmersiveDarkMode,
-    '        useDarkMode,
-    '        Marshal.SizeOf(useDarkMode))
-    'End Sub
 
     Private ReadOnly Property ViewportOffset As PointF
         Get
@@ -281,63 +253,6 @@ Public Class Form1
 
     End Sub
 
-    'Protected Overrides Sub OnMouseDown(
-    '    e As MouseEventArgs)
-
-    '    MyBase.OnMouseDown(e)
-
-    '    If e.Button <> MouseButtons.Left Then Return
-
-    '    If bossHealth <= 0 Then Return
-
-    '    If BossBounds.Contains(e.Location) Then
-
-    '        AttackBoss()
-
-    '    End If
-
-    'End Sub
-
-
-
-    'Protected Overrides Sub OnMouseDown(
-    'e As MouseEventArgs)
-
-    '    MyBase.OnMouseDown(e)
-
-    '    If e.Button = MouseButtons.Left Then
-
-    '        ' If bossHealth > 0 AndAlso
-    '        'BossBounds.Contains(e.Location) Then
-
-    '        '     AttackBoss()
-
-    '        ' End If
-
-    '        If bossHealth > 0 AndAlso
-    '           BossBounds.Contains(e.Location) Then
-
-    '            playerTargetingBoss = True
-
-    '        End If
-
-
-    '    End If
-
-
-    '    If e.Button = MouseButtons.Right Then
-
-    '        'heroTarget = e.Location
-
-    '        heroTarget = e.Location
-
-    '        playerTargetingBoss = False
-
-
-    '    End If
-
-    'End Sub
-
     Protected Overrides Sub OnMouseDown(
     e As MouseEventArgs)
 
@@ -445,17 +360,6 @@ Public Class Form1
         End Select
 
 
-
-
-
-
-
-
-
-
-
-
-
         Invalidate()
     End Sub
 
@@ -555,91 +459,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    'Private Sub UpdateCombat(dt As Double)
-
-    '    If bossHealth <= 0 Then
-    '        playerTargetingBoss = False
-    '        Return
-    '    End If
-
-    '    If Not playerTargetingBoss Then Return
-
-    '    Dim dx As Single =
-    '    bossPos.X - heroPos.X
-
-    '    Dim dy As Single =
-    '    bossPos.Y - heroPos.Y
-
-    '    Dim distance As Single =
-    '    CSng(Math.Sqrt(dx * dx + dy * dy))
-
-    '    'If distance > MeleeRange Then
-
-    '    '    heroTarget = bossPos
-
-    '    'Else
-
-    '    '    heroAttackCooldown -= dt
-
-    '    '    If heroAttackCooldown <= 0 Then
-
-    '    '        heroAttackCooldown = AttackInterval
-
-    '    '        AttackBoss()
-
-    '    '    End If
-
-    '    'End If
-
-
-    '    If distance > CombatDistance Then
-
-    '        Dim nx As Single = dx / distance
-    '        Dim ny As Single = dy / distance
-
-    '        heroTarget = New PointF(
-    '            bossPos.X - nx * CombatDistance,
-    '            bossPos.Y - ny * CombatDistance)
-
-    '    Else
-
-    '        heroAttackCooldown -= dt
-
-    '        If heroAttackCooldown <= 0 Then
-
-    '            heroAttackCooldown = AttackInterval
-
-    '            AttackBoss()
-
-    '        End If
-
-    '    End If
-
-    'End Sub
-
-
-
-
     Private Sub UpdateCombat()
 
         If Not pendingAttack Then Return
@@ -682,83 +501,6 @@ Public Class Form1
 
 
 
-
-
-
-
-
-
-
-    'Private Sub UpdateHeroMovement(dt As Double)
-
-    '    'Dim dx As Single =
-    '    'heroTarget.X - heroPos.X
-
-    '    'Dim dy As Single =
-    '    'heroTarget.Y - heroPos.Y
-
-    '    Dim target As PointF = heroTarget
-
-    '    If playerTargetingBoss Then
-
-    '        Dim bossDx =
-    '    bossPos.X - heroPos.X
-
-    '        Dim bossDy =
-    '    bossPos.Y - heroPos.Y
-
-    '        Dim bossDistance =
-    '    CSng(Math.Sqrt(
-    '        bossDx * bossDx +
-    '        bossDy * bossDy))
-
-    '        If bossDistance <= MeleeRange Then
-
-    '            Return
-
-    '        End If
-
-    '    End If
-
-    '    Dim dx As Single =
-    'target.X - heroPos.X
-
-    '    Dim dy As Single =
-    'target.Y - heroPos.Y
-
-
-
-
-
-
-
-
-
-
-
-
-    '    Dim distance As Single =
-    '    CSng(Math.Sqrt(dx * dx + dy * dy))
-
-    '    If distance < 2 Then Return
-
-    '    Dim moveDistance As Single =
-    '    HeroSpeed * CSng(dt)
-
-    '    If moveDistance > distance Then
-
-    '        heroPos = heroTarget
-    '        Return
-
-    '    End If
-
-    '    heroPos.X += dx / distance * moveDistance
-    '    heroPos.Y += dy / distance * moveDistance
-
-
-    '    'ResolveBossCollision()
-
-    'End Sub
 
     Private Sub UpdateHeroMovement(dt As Double)
 
@@ -1246,40 +988,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub DrawHeroLight(g As Graphics)
-
-    '    'Dim lightBounds As New RectangleF(
-    '    '    heroPos.X - HeroLightRadius,
-    '    '    heroPos.Y - HeroLightRadius,
-    '    '    HeroLightRadius * 2,
-    '    '    HeroLightRadius * 2)
-
-
-    '    Dim lightBounds As New RectangleF(
-    '        heroPos.X - HeroLightRadius,
-    '        heroPos.Y - HeroLightRadius,
-    '        HeroLightRadius * 2,
-    '        HeroLightRadius * 2)
-
-
-    '    Using path As New GraphicsPath()
-    '        path.AddEllipse(lightBounds)
-
-    '        Using lightBrush As New PathGradientBrush(path)
-    '            lightBrush.CenterColor = Color.Transparent
-    '            lightBrush.SurroundColors = New Color() {
-    '                Color.Black}
-
-    '            g.FillPath(lightBrush, path)
-    '        End Using
-    '    End Using
-
-    'End Sub
-
-
-
-
-
 
     Private Sub DrawDarkness(g As Graphics)
 
@@ -1289,42 +997,6 @@ Public Class Form1
         End Using
 
     End Sub
-
-    'Private Sub DrawHeroLight(g As Graphics)
-
-    '    Dim lightBounds As New RectangleF(
-    '    heroPos.X - HeroLightRadius,
-    '    heroPos.Y - HeroLightRadius,
-    '    HeroLightRadius * 2,
-    '    HeroLightRadius * 2)
-
-    '    Using path As New GraphicsPath()
-    '        path.AddEllipse(lightBounds)
-
-    '        'Using lightBrush As New PathGradientBrush(path)
-
-    '        '    lightBrush.CenterColor = Color.FromArgb(64, Color.White)
-    '        '    lightBrush.SurroundColors =
-    '        '    New Color() {Color.FromArgb(220, Color.Black)}
-
-    '        '    g.FillPath(lightBrush, path)
-
-    '        'End Using
-
-
-    '        Using lightBrush As New PathGradientBrush(path)
-
-    '            lightBrush.CenterColor = Color.FromArgb(0, Color.Black)
-    '            lightBrush.SurroundColors =
-    '            New Color() {Color.FromArgb(255, Color.Black)}
-
-    '            g.FillPath(lightBrush, path)
-
-    '        End Using
-
-    '    End Using
-
-    'End Sub
 
 
     Private Sub DrawHeroLight(g As Graphics)
@@ -1364,23 +1036,6 @@ Public Class Form1
         End Using
 
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
