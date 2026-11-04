@@ -1870,57 +1870,30 @@ Public Class Form1
     End Sub
 
 
-
     Private Sub DrawBossRange(
     g As Graphics)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        'Dim BossSightRangeBrush = New SolidBrush(Color.FromArgb(16, Color.Purple))
-
-
-
         If Not bossActive Then
+
             g.FillEllipse(
-            BossSightRangeBrush,
-            bossPos.X - BossSightRange,
-            bossPos.Y - BossSightRange,
-            BossSightRange * 2,
-            BossSightRange * 2)
+                BossSightRangeBrush,
+                bossPos.X - BossSightRange,
+                bossPos.Y - BossSightRange,
+                BossSightRange * 2,
+                BossSightRange * 2)
 
             g.DrawEllipse(
-        BossSightRangePen,
-        bossPos.X - BossSightRange,
-        bossPos.Y - BossSightRange,
-        BossSightRange * 2,
-        BossSightRange * 2)
+                BossSightRangePen,
+                bossPos.X - BossSightRange,
+                bossPos.Y - BossSightRange,
+                BossSightRange * 2,
+                BossSightRange * 2)
 
         End If
 
 
-
-
-
-
-
         Dim BossFireballRangeBrush = New SolidBrush(Color.FromArgb(16, Color.DarkOrange))
-
 
         g.FillEllipse(
         BossFireballRangeBrush,
@@ -1928,9 +1901,6 @@ Public Class Form1
         bossPos.Y - BossFireballRange,
         BossFireballRange * 2,
         BossFireballRange * 2)
-
-
-
 
         g.DrawEllipse(
         BossRangePen,
@@ -1940,12 +1910,7 @@ Public Class Form1
         BossFireballRange * 2)
 
 
-
-
-
-
         Dim BossPreferredDistanceBrush = New SolidBrush(Color.FromArgb(16, Color.Yellow))
-
 
         g.FillEllipse(
         BossPreferredDistanceBrush,
@@ -1953,8 +1918,6 @@ Public Class Form1
         bossPos.Y - BossPreferredDistance,
         BossPreferredDistance * 2,
         BossPreferredDistance * 2)
-
-
 
         g.DrawEllipse(
         BossPreferredDistancePen,
@@ -1964,9 +1927,9 @@ Public Class Form1
         BossPreferredDistance * 2)
 
 
-
-
     End Sub
+
+
 
     Private Sub Form1_Resize(sender As Object, e As EventArgs) Handles Me.Resize
 
