@@ -345,6 +345,13 @@ Public Class Form1
                 Math.Max(GridSize, right - left),
                 Math.Max(GridSize, bottom - top))
 
+            If selectedMapObject.ObjectType = MapObjectType.Hero Then
+                heroPos = New PointF(
+                    selectedMapObject.Bounds.X + selectedMapObject.Bounds.Width / 2.0F,
+                    selectedMapObject.Bounds.Y + selectedMapObject.Bounds.Height / 2.0F)
+                heroTarget = heroPos
+            End If
+
             Invalidate()
         End If
 
@@ -438,6 +445,8 @@ Public Class Form1
             If dialog.ShowDialog(Me) <> DialogResult.OK Then Return
 
             Try
+                EnsureSingleHeroPlacement()
+
                 Using writer As New StreamWriter(dialog.FileName, False)
                     For Each mapObject In mapObjects
                         writer.WriteLine(String.Join("|", {
@@ -507,6 +516,18 @@ Public Class Form1
 
             mapObjects.Clear()
             mapObjects.AddRange(loadedObjects)
+            EnsureSingleHeroPlacement()
+
+            For Each mapObject In mapObjects
+                If mapObject.ObjectType = MapObjectType.Hero Then
+                    heroPos = New PointF(
+                        mapObject.Bounds.X + mapObject.Bounds.Width / 2.0F,
+                        mapObject.Bounds.Y + mapObject.Bounds.Height / 2.0F)
+                    heroTarget = heroPos
+                    Exit For
+                End If
+            Next
+
             selectedMapObject = Nothing
             isResizingMapObject = False
             Invalidate()
@@ -514,6 +535,22 @@ Public Class Form1
             MessageBox.Show(Me, $"Unable to open the map: {ex.Message}",
                             "Open Map", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
+
+    End Sub
+
+    Private Sub EnsureSingleHeroPlacement()
+
+        Dim heroFound As Boolean = False
+
+        For i As Integer = mapObjects.Count - 1 To 0 Step -1
+            If mapObjects(i).ObjectType <> MapObjectType.Hero Then Continue For
+
+            If heroFound Then
+                mapObjects.RemoveAt(i)
+            Else
+                heroFound = True
+            End If
+        Next
 
     End Sub
 
@@ -577,7 +614,7 @@ Public Class Form1
     End Sub
 
     Private Function TryGetToolbarType(point As Point, ByRef objectType As MapObjectType) As Boolean
-        For i As Integer = 0 To 3
+        For i As Integer = 0 To 4
             Dim button As New Rectangle(8 + i * 104, 8, 96, 32)
             If button.Contains(point) Then
                 objectType = CType(i, MapObjectType)
@@ -1002,7 +1039,8 @@ Public Class Form1
     Private Sub ResolveMapObjectCollisions()
 
         For Each mapObject In mapObjects
-            If mapObject.ObjectType = MapObjectType.Floor Then
+            If mapObject.ObjectType = MapObjectType.Floor OrElse
+               mapObject.ObjectType = MapObjectType.Hero Then
                 Continue For
             End If
 
@@ -1105,13 +1143,15 @@ Public Class Form1
     Private Sub DrawMapObjects(g As Graphics)
 
         For Each mapObject In mapObjects
-            If mapObject.ObjectType = MapObjectType.Floor Then
+            If mapObject.ObjectType = MapObjectType.Floor OrElse
+               mapObject.ObjectType = MapObjectType.Hero Then
                 DrawMapObject(g, mapObject)
             End If
         Next
 
         For Each mapObject In mapObjects
-            If mapObject.ObjectType <> MapObjectType.Floor Then
+            If mapObject.ObjectType <> MapObjectType.Floor AndAlso
+               mapObject.ObjectType <> MapObjectType.Hero Then
                 DrawMapObject(g, mapObject)
             End If
         Next
@@ -1149,7 +1189,8 @@ Public Class Form1
 
         If mapObject Is selectedMapObject Then
             Using selectionPen As New Pen(Color.Lime, 3)
-                If mapObject.ObjectType = MapObjectType.Column Then
+                If mapObject.ObjectType = MapObjectType.Column OrElse
+                   mapObject.ObjectType = MapObjectType.Hero Then
                     g.DrawEllipse(selectionPen, mapObject.Bounds)
                 Else
                     g.DrawRectangle(selectionPen, mapObject.Bounds.X, mapObject.Bounds.Y,
@@ -1214,10 +1255,10 @@ Public Class Form1
     Private Sub DrawEditorOverlay(g As Graphics)
 
         Using toolbarBrush As New SolidBrush(Color.FromArgb(220, 20, 20, 20))
-            g.FillRectangle(toolbarBrush, 0, 0, 432, 48)
+            g.FillRectangle(toolbarBrush, 0, 0, 536, 48)
         End Using
 
-        For i As Integer = 0 To 3
+        For i As Integer = 0 To 4
             Dim button As New Rectangle(8 + i * 104, 8, 96, 32)
             Dim buttonColor As Color = If(selectedMapType = CType(i, MapObjectType), Color.DarkGreen, Color.DimGray)
 
@@ -1722,6 +1763,7 @@ Public Enum MapObjectType
     Wall
     Door
     Column
+    Hero
 End Enum
 
 Public Class MapObject
