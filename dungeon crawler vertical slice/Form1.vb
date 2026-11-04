@@ -35,9 +35,13 @@ Public Class Form1
     Private Const HeroSpeed As Single = 200.0F
 
 
-    Private Const BossFireballRange As Single = 135.0F
-    Private Const BossPreferredDistance As Single = 75.0F
-    Private Const BossSightRange As Single = 175.0F
+    Private Const DefaultBossFireballRange As Single = 135.0F
+    Private Const DefaultBossPreferredDistance As Single = 75.0F
+    Private Const DefaultBossSightRange As Single = 175.0F
+
+    Private bossFireballRange As Single = DefaultBossFireballRange
+    Private bossPreferredDistance As Single = DefaultBossPreferredDistance
+    Private bossSightRange As Single = DefaultBossSightRange
 
 
     Private Const BossMoveSpeed As Single = 90.0F
@@ -53,6 +57,14 @@ Public Class Form1
 
     Private bossAttackTimer As Double
     Private bossActive As Boolean
+    Private activeBossRangeHandle As BossRangeHandle
+
+    Private Enum BossRangeHandle
+        None
+        Fireball
+        PreferredDistance
+        Sight
+    End Enum
 
     Private ReadOnly fireballs As New List(Of Fireball)
 
@@ -335,9 +347,14 @@ Public Class Form1
 
         If e.Button <> MouseButtons.Left Then Return
 
-        If heroHealth <= 0 Then Return
-
         Dim worldPoint As PointF = ScreenToWorld(e.Location)
+        Dim rangeHandle As BossRangeHandle
+        If TryGetBossRangeHandle(worldPoint, rangeHandle) Then
+            activeBossRangeHandle = rangeHandle
+            Return
+        End If
+
+        If heroHealth <= 0 Then Return
 
         If bossHealth > 0 AndAlso
        BossBounds.Contains(worldPoint) Then
@@ -355,6 +372,12 @@ Public Class Form1
 
     Protected Overrides Sub OnMouseMove(e As MouseEventArgs)
         MyBase.OnMouseMove(e)
+
+        If Not mapEditorActive AndAlso activeBossRangeHandle <> BossRangeHandle.None Then
+            UpdateBossRangeHandle(ScreenToWorld(e.Location))
+            Invalidate()
+            Return
+        End If
 
         If mapEditorActive AndAlso
            isResizingMapObject AndAlso
@@ -398,7 +421,73 @@ Public Class Form1
             isResizingMapObject = False
         End If
 
+        If e.Button = MouseButtons.Left Then
+            activeBossRangeHandle = BossRangeHandle.None
+        End If
+
     End Sub
+
+    Private Function TryGetBossRangeHandle(
+        worldPoint As PointF,
+        ByRef rangeHandle As BossRangeHandle) As Boolean
+
+        Const handleRadius As Single = 12.0F
+        Dim handleDistanceSquared As Single = handleRadius * handleRadius
+
+        Dim fireballHandle As New PointF(
+            bossPos.X + bossFireballRange,
+            bossPos.Y)
+        If DistanceSquared(worldPoint, fireballHandle) <= handleDistanceSquared Then
+            rangeHandle = BossRangeHandle.Fireball
+            Return True
+        End If
+
+        Dim preferredHandle As New PointF(
+            bossPos.X + bossPreferredDistance,
+            bossPos.Y)
+        If DistanceSquared(worldPoint, preferredHandle) <= handleDistanceSquared Then
+            rangeHandle = BossRangeHandle.PreferredDistance
+            Return True
+        End If
+
+        Dim sightHandle As New PointF(
+            bossPos.X + bossSightRange,
+            bossPos.Y)
+        If DistanceSquared(worldPoint, sightHandle) <= handleDistanceSquared Then
+            rangeHandle = BossRangeHandle.Sight
+            Return True
+        End If
+
+        rangeHandle = BossRangeHandle.None
+        Return False
+
+    End Function
+
+    Private Sub UpdateBossRangeHandle(worldPoint As PointF)
+
+        Dim dx As Single = worldPoint.X - bossPos.X
+        Dim dy As Single = worldPoint.Y - bossPos.Y
+        Dim radius As Single = CSng(Math.Sqrt(dx * dx + dy * dy))
+        radius = Math.Max(25.0F, Math.Min(2000.0F, radius))
+
+        Select Case activeBossRangeHandle
+            Case BossRangeHandle.Fireball
+                bossFireballRange = radius
+            Case BossRangeHandle.PreferredDistance
+                bossPreferredDistance = radius
+            Case BossRangeHandle.Sight
+                bossSightRange = radius
+        End Select
+
+    End Sub
+
+    Private Function DistanceSquared(first As PointF, second As PointF) As Single
+
+        Dim dx As Single = first.X - second.X
+        Dim dy As Single = first.Y - second.Y
+        Return dx * dx + dy * dy
+
+    End Function
 
     Protected Overrides Sub OnKeyDown(e As KeyEventArgs)
         MyBase.OnKeyDown(e)
@@ -490,6 +579,19 @@ Public Class Form1
                             mapObject.Bounds.Width.ToString(CultureInfo.InvariantCulture),
                             mapObject.Bounds.Height.ToString(CultureInfo.InvariantCulture)}))
                     Next
+
+                    writer.WriteLine(String.Join("|", {
+                        "Setting",
+                        "BossFireballRange",
+                        bossFireballRange.ToString(CultureInfo.InvariantCulture)}))
+                    writer.WriteLine(String.Join("|", {
+                        "Setting",
+                        "BossPreferredDistance",
+                        bossPreferredDistance.ToString(CultureInfo.InvariantCulture)}))
+                    writer.WriteLine(String.Join("|", {
+                        "Setting",
+                        "BossSightRange",
+                        bossSightRange.ToString(CultureInfo.InvariantCulture)}))
                 End Using
             Catch ex As IOException
                 MessageBox.Show(Me, $"Unable to save the map: {ex.Message}",
@@ -520,10 +622,32 @@ Public Class Form1
         Dim loadedObjects As New List(Of MapObject)
 
         Try
+            bossFireballRange = DefaultBossFireballRange
+            bossPreferredDistance = DefaultBossPreferredDistance
+            bossSightRange = DefaultBossSightRange
+
             For Each line As String In File.ReadLines(filePath)
                 If String.IsNullOrWhiteSpace(line) Then Continue For
 
                 Dim fields() As String = line.Split("|"c)
+
+                If fields.Length = 3 AndAlso fields(0) = "Setting" Then
+                    Dim settingValue As Single
+                    If Single.TryParse(fields(2), NumberStyles.Float,
+                                       CultureInfo.InvariantCulture, settingValue) Then
+                        Select Case fields(1)
+                            Case "BossFireballRange"
+                                bossFireballRange = Math.Max(25.0F, Math.Min(2000.0F, settingValue))
+                            Case "BossPreferredDistance"
+                                bossPreferredDistance = Math.Max(25.0F, Math.Min(2000.0F, settingValue))
+                            Case "BossSightRange"
+                                bossSightRange = Math.Max(25.0F, Math.Min(2000.0F, settingValue))
+                        End Select
+                    End If
+
+                    Continue For
+                End If
+
                 If fields.Length <> 5 Then Continue For
 
                 Dim objectType As MapObjectType
@@ -834,7 +958,7 @@ Public Class Form1
         Dim distance As Single = CSng(Math.Sqrt(dx * dx + dy * dy))
 
         If Not bossActive Then
-            If distance > BossSightRange Then Return
+            If distance > bossSightRange Then Return
 
             bossActive = True
         End If
@@ -844,11 +968,11 @@ Public Class Form1
             Dim moveDirectionY As Single
 
             ' Determine movement direction based on distance
-            If distance > BossFireballRange Then
+            If distance > bossFireballRange Then
                 ' Move towards the hero if outside fireball range
                 moveDirectionX = dx / distance
                 moveDirectionY = dy / distance
-            ElseIf distance < BossPreferredDistance Then
+            ElseIf distance < bossPreferredDistance Then
                 ' Move away from the hero if too close
                 moveDirectionX = -dx / distance
                 moveDirectionY = -dy / distance
@@ -864,7 +988,7 @@ Public Class Form1
             ResolveBossMapObjectCollisions()
         End If
 
-        If distance <= BossFireballRange AndAlso distance > 0 Then
+        If distance <= bossFireballRange AndAlso distance > 0 Then
             bossAttackTimer += dt
         Else
             bossAttackTimer = 0
@@ -1028,7 +1152,7 @@ Public Class Form1
 
             If distance <= 0 Then Continue For
 
-            If distance > BossFireballRange Then
+            If distance > bossFireballRange Then
 
                 fireballs.RemoveAt(i)
 
@@ -1882,17 +2006,19 @@ Public Class Form1
 
             g.FillEllipse(
                 BossSightRangeBrush,
-                bossPos.X - BossSightRange,
-                bossPos.Y - BossSightRange,
-                BossSightRange * 2,
-                BossSightRange * 2)
+                bossPos.X - bossSightRange,
+                bossPos.Y - bossSightRange,
+                bossSightRange * 2,
+                bossSightRange * 2)
 
             g.DrawEllipse(
                 BossSightRangePen,
-                bossPos.X - BossSightRange,
-                bossPos.Y - BossSightRange,
-                BossSightRange * 2,
-                BossSightRange * 2)
+                bossPos.X - bossSightRange,
+                bossPos.Y - bossSightRange,
+                bossSightRange * 2,
+                bossSightRange * 2)
+
+            DrawBossRangeHandle(g, bossSightRange, BossSightRangePen.Color)
 
             'g.DrawString(
             '    "Boss Sight Range",
@@ -1901,7 +2027,7 @@ Public Class Form1
             '    bossPos.X - BossSightRange,
             '    bossPos.Y - BossSightRange)
 
-            DrawCenteredBossRangeLabel(g, "Sight Range", BossSightRange)
+            DrawCenteredBossRangeLabel(g, "Sight Range", bossSightRange)
 
 
 
@@ -1913,43 +2039,67 @@ Public Class Form1
 
         g.FillEllipse(
         BossFireballRangeBrush,
-        bossPos.X - BossFireballRange,
-        bossPos.Y - BossFireballRange,
-        BossFireballRange * 2,
-        BossFireballRange * 2)
+        bossPos.X - bossFireballRange,
+        bossPos.Y - bossFireballRange,
+        bossFireballRange * 2,
+        bossFireballRange * 2)
 
         g.DrawEllipse(
         BossRangePen,
-        bossPos.X - BossFireballRange,
-        bossPos.Y - BossFireballRange,
-        BossFireballRange * 2,
-        BossFireballRange * 2)
+        bossPos.X - bossFireballRange,
+        bossPos.Y - bossFireballRange,
+        bossFireballRange * 2,
+        bossFireballRange * 2)
+
+        DrawBossRangeHandle(g, bossFireballRange, BossRangePen.Color)
 
 
 
-        DrawCenteredBossRangeLabel(g, "Fireball Range", BossFireballRange)
+        DrawCenteredBossRangeLabel(g, "Fireball Range", bossFireballRange)
 
         Using bossPreferredDistanceBrush As New SolidBrush(Color.FromArgb(16, Color.Yellow))
             g.FillEllipse(
                 bossPreferredDistanceBrush,
-                bossPos.X - BossPreferredDistance,
-                bossPos.Y - BossPreferredDistance,
-                BossPreferredDistance * 2,
-                BossPreferredDistance * 2)
+                bossPos.X - bossPreferredDistance,
+                bossPos.Y - bossPreferredDistance,
+                bossPreferredDistance * 2,
+                bossPreferredDistance * 2)
         End Using
 
         g.DrawEllipse(
         BossPreferredDistancePen,
-        bossPos.X - BossPreferredDistance,
-        bossPos.Y - BossPreferredDistance,
-        BossPreferredDistance * 2,
-        BossPreferredDistance * 2)
+        bossPos.X - bossPreferredDistance,
+        bossPos.Y - bossPreferredDistance,
+        bossPreferredDistance * 2,
+        bossPreferredDistance * 2)
 
-        DrawCenteredBossRangeLabel(g, "Preferred Distance", BossPreferredDistance)
+        DrawBossRangeHandle(g, bossPreferredDistance, BossPreferredDistancePen.Color)
+
+        DrawCenteredBossRangeLabel(g, "Preferred Distance", bossPreferredDistance)
 
     End Sub
 
 
+
+    Private Sub DrawBossRangeHandle(
+        g As Graphics,
+        radius As Single,
+        color As Color)
+
+        Const handleSize As Single = 14.0F
+        Dim handleBounds As New RectangleF(
+            bossPos.X + radius - handleSize / 2.0F,
+            bossPos.Y - handleSize / 2.0F,
+            handleSize,
+            handleSize)
+
+        Using brush As New SolidBrush(color)
+            g.FillEllipse(brush, handleBounds)
+        End Using
+
+        g.DrawEllipse(Pens.White, handleBounds)
+
+    End Sub
 
     Private Sub DrawCenteredBossRangeLabel(
         g As Graphics,

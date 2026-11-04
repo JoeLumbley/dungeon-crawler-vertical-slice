@@ -79,8 +79,11 @@ Namespace My.Resources
         '''Wall|-520|680|1960|40
         '''Wall|1440|-840|40|1560
         '''Wall|-560|-840|40|1560
-        '''Boss|400|-80|40|40
         '''Hero|400|-2640|40|40
+        '''Boss|400|0|40|40
+        '''Setting|BossFireballRange|202.52982
+        '''Setting|BossPreferredDistance|135.30194
+        '''Setting|BossSightRange|259.5247
         '''.
         '''</summary>
         Friend Shared ReadOnly Property map() As String
