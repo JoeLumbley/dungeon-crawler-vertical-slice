@@ -1879,11 +1879,47 @@ Public Class Form1
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+        'Dim BossSightRangeBrush = New SolidBrush(Color.FromArgb(16, Color.Purple))
+
+
+
+        If Not bossActive Then
+            g.FillEllipse(
+            BossSightRangeBrush,
+            bossPos.X - BossSightRange,
+            bossPos.Y - BossSightRange,
+            BossSightRange * 2,
+            BossSightRange * 2)
+
+            g.DrawEllipse(
+        BossSightRangePen,
+        bossPos.X - BossSightRange,
+        bossPos.Y - BossSightRange,
+        BossSightRange * 2,
+        BossSightRange * 2)
+
+        End If
+
+
+
+
+
+
+
         Dim BossFireballRangeBrush = New SolidBrush(Color.FromArgb(16, Color.DarkOrange))
-
-
-
-
 
 
         g.FillEllipse(
@@ -1903,27 +1939,6 @@ Public Class Form1
         BossFireballRange * 2,
         BossFireballRange * 2)
 
-
-
-
-
-
-
-        'Dim BossSightRangeBrush = New SolidBrush(Color.FromArgb(16, Color.Purple))
-
-        g.FillEllipse(
-            BossSightRangeBrush,
-            bossPos.X - BossSightRange,
-            bossPos.Y - BossSightRange,
-            BossSightRange * 2,
-            BossSightRange * 2)
-
-        g.DrawEllipse(
-        BossSightRangePen,
-        bossPos.X - BossSightRange,
-        bossPos.Y - BossSightRange,
-        BossSightRange * 2,
-        BossSightRange * 2)
 
 
 
