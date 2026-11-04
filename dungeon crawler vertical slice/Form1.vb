@@ -91,39 +91,60 @@ Public Class Form1
 
 
 
-    Public Sub New()
+    'Public Sub New()
 
-        InitializeComponent()
+    '    InitializeComponent()
+
+    '    DoubleBuffered = True
+    '    KeyPreview = True
+    '    'FormBorderStyle = FormBorderStyle.Sizable
+    '    'MinimumSize = New Size(500, 400)
+
+    '    ' we draw background
+
+
+    '    'ClientSize = New Size(900, 700)
+
+    '    'Text = "Dungeon Combat Prototype"
+
+    '    heroPos = New PointF(
+    '        ClientSize.Width \ 2,
+    '        ClientSize.Height - 120)
+
+    '    heroTarget = heroPos
+
+    '    bossPos = New PointF(
+    '        ClientSize.Width \ 2,
+    '        120)
+
+    '    gameTimer.Interval = 16
+
+    '    AddHandler gameTimer.Tick,
+    '        AddressOf GameLoop
+
+    '    gameTimer.Start()
+
+    'End Sub
+
+
+    Protected Overrides Sub OnLoad(e As EventArgs)
+
+        MyBase.OnLoad(e)
 
         DoubleBuffered = True
         KeyPreview = True
-        FormBorderStyle = FormBorderStyle.Sizable
-        MinimumSize = New Size(500, 400)
-
-        ' we draw background
 
 
-        ClientSize = New Size(900, 700)
+        windowManager = New WindowManager(Me)
+        windowManager.Initialize()
 
-        Text = "Dungeon Combat Prototype"
+        'InitializeSystems()
 
         heroPos = New PointF(
             ClientSize.Width \ 2,
             ClientSize.Height - 120)
 
         heroTarget = heroPos
-
-
-
-
-
-
-
-
-
-
-
-
 
         bossPos = New PointF(
             ClientSize.Width \ 2,
@@ -137,10 +158,8 @@ Public Class Form1
         gameTimer.Start()
 
 
-
-
-
     End Sub
+
 
 
     Private ReadOnly Property ViewportOffset As PointF
@@ -743,16 +762,26 @@ Public Class Form1
 
             End If
 
-            If fireball.Position.X < -50 OrElse
-           fireball.Position.X > ClientSize.Width + 50 OrElse
-           fireball.Position.Y < -50 OrElse
-           fireball.Position.Y > ClientSize.Height + 50 Then
+            ' 
+            ' If fireball.Position.X < -50 OrElse
+            'fireball.Position.X > ClientSize.Width + 50 OrElse
+            'fireball.Position.Y < -50 OrElse
+            'fireball.Position.Y > ClientSize.Height + 50 Then
+
+            ' Expand fireball cleanup bounds
+            ' Extend the bounds check to account for the boss's position and a larger area around it
+            If fireball.Position.X < bossPos.X - (BossRadius * 9) OrElse
+               fireball.Position.X > bossPos.X + (BossRadius * 9) OrElse
+               fireball.Position.Y < bossPos.Y - (BossRadius * 9) OrElse
+               fireball.Position.Y > bossPos.Y + (BossRadius * 9) Then
+
 
                 fireballs.RemoveAt(i)
 
             End If
 
         Next
+
 
     End Sub
 
@@ -1207,20 +1236,36 @@ Public Class Form1
 
     End Sub
 
+
+
+
+
+
     Private Sub DrawBoss(
         g As Graphics)
 
         Dim brushColor As Color
 
-        If bossFlashTimer > 0 Then
 
-            brushColor = Color.White
+        If bossHealth <= 0 Then
+
+            brushColor = Color.Gray
 
         Else
 
-            brushColor = Color.DarkRed
+            If bossFlashTimer > 0 Then
+
+                brushColor = Color.White
+
+            Else
+
+                brushColor = Color.DarkRed
+
+            End If
+
 
         End If
+
 
         Using brush As New SolidBrush(
             brushColor)
@@ -1258,6 +1303,20 @@ Public Class Form1
         End Using
 
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub DrawBossHealthBar(
         g As Graphics)
@@ -1574,12 +1633,12 @@ Public Class Form1
 
     End Sub
 
-    Private Sub Form1_Shown(sender As Object, e As EventArgs) Handles Me.Shown
-        windowManager = New WindowManager(Me)
-        windowManager.Initialize()
+    'Private Sub Form1_Shown(sender As Object, e As EventArgs) Handles Me.Shown
+    '    windowManager = New WindowManager(Me)
+    '    windowManager.Initialize()
 
 
-    End Sub
+    'End Sub
 
     Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
         If e.KeyCode = Keys.F OrElse e.KeyCode = Keys.F11 Then
