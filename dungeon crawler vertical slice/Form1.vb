@@ -18,6 +18,7 @@ Public Class Form1
     Private bossMaxHealth As Integer = 500
 
     Private bossFlashTimer As Double
+    Private bossHealthBarTimer As Double
     Private heroFlashTimer As Double
 
     Private ReadOnly damageTexts As New List(Of DamageText)
@@ -271,6 +272,10 @@ Public Class Form1
 
             bossFlashTimer -= dt
 
+        End If
+
+        If bossHealthBarTimer > 0 Then
+            bossHealthBarTimer -= dt
         End If
 
         If heroFlashTimer > 0 Then
@@ -957,6 +962,7 @@ Public Class Form1
         heroAttackAnim = 0.15
 
         bossFlashTimer = 0.15
+        bossHealthBarTimer = 2.0
 
         damageTexts.Add(
             New DamageText With {
@@ -1032,6 +1038,8 @@ Public Class Form1
 
         DrawBoss(g)
 
+        DrawBossHealthBar(g)
+
 
 
 
@@ -1074,8 +1082,6 @@ Public Class Form1
         g.ResetTransform()
 
         DrawPlayerHealthBar(g)
-
-        DrawBossHealthBar(g)
 
         DrawInstructions(g)
 
@@ -1453,18 +1459,18 @@ Public Class Form1
     Private Sub DrawBossHealthBar(
         g As Graphics)
 
-        Const width As Integer = 400
-        Const height As Integer = 24
+        If bossHealthBarTimer <= 0 Then Return
 
-        Dim x =
-            (ClientSize.Width - width) \ 2
+        Const width As Integer = 160
+        Const height As Integer = 14
 
-        Dim y As Integer = 20
+        Dim x As Single = bossPos.X - width / 2.0F
+        Dim y As Single = bossPos.Y - BossRadius - height - 8
 
         g.FillRectangle(
             Brushes.Black,
-            x - 2,
-            y - 2,
+            x - 2.0F,
+            y - 2.0F,
             width + 4,
             height + 4)
 
@@ -1510,8 +1516,8 @@ Public Class Form1
                 hpText,
                 f,
                 Brushes.White,
-                CSng(x + width / 2 - sz.Width / 2),
-                CSng(y + 3))
+                x + width / 2.0F - sz.Width / 2.0F,
+                y - 2.0F)
 
         End Using
 
