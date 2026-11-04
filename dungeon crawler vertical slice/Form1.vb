@@ -33,15 +33,19 @@ Public Class Form1
     Private heroMaxHealth As Integer = 100
 
     Private Const HeroSpeed As Single = 200.0F
-    Private Const BossFireballRange As Single = 300.0F
-    Private Const BossPreferredDistance As Single = 250.0F
+
+
+    Private Const BossFireballRange As Single = 175.0F
+    Private Const BossPreferredDistance As Single = 100.0F
+    Private Const BossSightRange As Single = 225.0F
+
+
     Private Const BossMoveSpeed As Single = 90.0F
     Private Const BossAttackInterval As Double = 1.25
     Private Const FireballSpeed As Single = 350.0F
     Private Const FireballDamage As Integer = 15
 
 
-    Private Const BossSightRange As Single = 1000.0F
 
 
 
@@ -1890,6 +1894,16 @@ Public Class Form1
                 BossSightRange * 2,
                 BossSightRange * 2)
 
+            g.DrawString(
+                "Boss Sight Range",
+                New Font("Segoe UI", 10),
+                Brushes.White,
+                bossPos.X - BossSightRange,
+                bossPos.Y - BossSightRange)
+
+
+
+
         End If
 
 
@@ -1910,6 +1924,18 @@ Public Class Form1
         BossFireballRange * 2)
 
 
+
+        g.DrawString(
+                "Boss Fireball Range",
+                New Font("Segoe UI", 10),
+                Brushes.White,
+                CSng(bossPos.X - BossFireballRange * 1.5),
+                CSng(bossPos.Y - BossFireballRange * 1.5))
+
+
+
+
+
         Dim BossPreferredDistanceBrush = New SolidBrush(Color.FromArgb(16, Color.Yellow))
 
         g.FillEllipse(
@@ -1925,6 +1951,14 @@ Public Class Form1
         bossPos.Y - BossPreferredDistance,
         BossPreferredDistance * 2,
         BossPreferredDistance * 2)
+
+        g.DrawString(
+                "Preferred Distance",
+                New Font("Segoe UI", 10),
+                Brushes.White,
+                CSng(bossPos.X - BossPreferredDistance * 0.7),
+                CSng(bossPos.Y - BossPreferredDistance * 1.25))
+
 
 
     End Sub
@@ -1977,9 +2011,11 @@ Public Class Form1
 
     End Sub
 
+    Private Sub Form1_Shown(sender As Object, e As EventArgs) Handles Me.Shown
 
+        Me.WindowState = FormWindowState.Maximized
 
-
+    End Sub
 End Class
 
 
