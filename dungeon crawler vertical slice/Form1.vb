@@ -35,9 +35,9 @@ Public Class Form1
     Private Const HeroSpeed As Single = 200.0F
 
 
-    Private Const BossFireballRange As Single = 175.0F
-    Private Const BossPreferredDistance As Single = 100.0F
-    Private Const BossSightRange As Single = 225.0F
+    Private Const BossFireballRange As Single = 135.0F
+    Private Const BossPreferredDistance As Single = 75.0F
+    Private Const BossSightRange As Single = 175.0F
 
 
     Private Const BossMoveSpeed As Single = 90.0F
@@ -1894,12 +1894,14 @@ Public Class Form1
                 BossSightRange * 2,
                 BossSightRange * 2)
 
-            g.DrawString(
-                "Boss Sight Range",
-                New Font("Segoe UI", 10),
-                Brushes.White,
-                bossPos.X - BossSightRange,
-                bossPos.Y - BossSightRange)
+            'g.DrawString(
+            '    "Boss Sight Range",
+            '    New Font("Segoe UI", 10),
+            '    Brushes.White,
+            '    bossPos.X - BossSightRange,
+            '    bossPos.Y - BossSightRange)
+
+            DrawCenteredBossRangeLabel(g, "Sight Range", BossSightRange)
 
 
 
@@ -1925,25 +1927,16 @@ Public Class Form1
 
 
 
-        g.DrawString(
-                "Boss Fireball Range",
-                New Font("Segoe UI", 10),
-                Brushes.White,
-                CSng(bossPos.X - BossFireballRange * 1.5),
-                CSng(bossPos.Y - BossFireballRange * 1.5))
+        DrawCenteredBossRangeLabel(g, "Fireball Range", BossFireballRange)
 
-
-
-
-
-        Dim BossPreferredDistanceBrush = New SolidBrush(Color.FromArgb(16, Color.Yellow))
-
-        g.FillEllipse(
-        BossPreferredDistanceBrush,
-        bossPos.X - BossPreferredDistance,
-        bossPos.Y - BossPreferredDistance,
-        BossPreferredDistance * 2,
-        BossPreferredDistance * 2)
+        Using bossPreferredDistanceBrush As New SolidBrush(Color.FromArgb(16, Color.Yellow))
+            g.FillEllipse(
+                bossPreferredDistanceBrush,
+                bossPos.X - BossPreferredDistance,
+                bossPos.Y - BossPreferredDistance,
+                BossPreferredDistance * 2,
+                BossPreferredDistance * 2)
+        End Using
 
         g.DrawEllipse(
         BossPreferredDistancePen,
@@ -1952,18 +1945,28 @@ Public Class Form1
         BossPreferredDistance * 2,
         BossPreferredDistance * 2)
 
-        g.DrawString(
-                "Preferred Distance",
-                New Font("Segoe UI", 10),
-                Brushes.White,
-                CSng(bossPos.X - BossPreferredDistance * 0.7),
-                CSng(bossPos.Y - BossPreferredDistance * 1.25))
-
-
+        DrawCenteredBossRangeLabel(g, "Preferred Distance", BossPreferredDistance)
 
     End Sub
 
 
+
+    Private Sub DrawCenteredBossRangeLabel(
+        g As Graphics,
+        label As String,
+        radius As Single)
+
+        Using font As New Font("Segoe UI", 10)
+            Dim textSize As SizeF = g.MeasureString(label, font)
+            g.DrawString(
+                label,
+                font,
+                Brushes.White,
+                bossPos.X - textSize.Width / 2.0F,
+                bossPos.Y - radius - textSize.Height - 4.0F)
+        End Using
+
+    End Sub
 
     Private Sub Form1_Resize(sender As Object, e As EventArgs) Handles Me.Resize
 
