@@ -1155,6 +1155,8 @@ Public Class Form1
 
         DrawBoss(g)
 
+        DrawBossRange(g)
+
         DrawBossHealthBar(g)
 
 
@@ -1850,10 +1852,10 @@ Public Class Form1
 
         g.DrawEllipse(
         BossRangePen,
-        bossPos.X - MeleeRange,
-        bossPos.Y - MeleeRange,
-        MeleeRange * 2,
-        MeleeRange * 2)
+        bossPos.X - BossFireballRange,
+        bossPos.Y - BossFireballRange,
+        BossFireballRange * 2,
+        BossFireballRange * 2)
 
     End Sub
 
