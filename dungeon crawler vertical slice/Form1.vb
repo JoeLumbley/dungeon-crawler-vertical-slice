@@ -40,7 +40,15 @@ Public Class Form1
     Private Const FireballSpeed As Single = 350.0F
     Private Const FireballDamage As Integer = 15
 
+
+    Private Const BossSightRange As Single = 400.0F
+
+
+
+
+
     Private bossAttackTimer As Double
+    Private bossActive As Boolean
 
     Private ReadOnly fireballs As New List(Of Fireball)
 
@@ -536,6 +544,8 @@ Public Class Form1
             mapObjects.Clear()
             mapObjects.AddRange(loadedObjects)
             EnsureSingleHeroPlacement()
+            bossActive = False
+            bossAttackTimer = 0
 
             For Each mapObject In mapObjects
                 If mapObject.ObjectType = MapObjectType.Hero Then
@@ -810,23 +820,33 @@ Public Class Form1
 
     Private Sub UpdateBossAI(dt As Double)
 
-        If bossHealth <= 0 Then Return
+        If bossHealth <= 0 OrElse heroHealth <= 0 Then Return
 
         Dim dx As Single = heroPos.X - bossPos.X
         Dim dy As Single = heroPos.Y - bossPos.Y
         Dim distance As Single = CSng(Math.Sqrt(dx * dx + dy * dy))
 
+        If Not bossActive Then
+            If distance > BossSightRange Then Return
+
+            bossActive = True
+        End If
+
         If distance > 0 Then
             Dim moveDirectionX As Single
             Dim moveDirectionY As Single
 
+            ' Determine movement direction based on distance
             If distance > BossFireballRange Then
+                ' Move towards the hero if outside fireball range
                 moveDirectionX = dx / distance
                 moveDirectionY = dy / distance
             ElseIf distance < BossPreferredDistance Then
+                ' Move away from the hero if too close
                 moveDirectionX = -dx / distance
                 moveDirectionY = -dy / distance
             Else
+                ' Stay in place if within preferred distance
                 moveDirectionX = 0
                 moveDirectionY = 0
             End If
