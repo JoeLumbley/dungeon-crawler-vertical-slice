@@ -80,6 +80,7 @@ Namespace My.Resources
         '''Wall|120|-2880|40|2040
         '''Wall|680|-2880|40|2040
         '''Hero|360|-2640|40|40
+        '''Boss|400|280|40|40
         '''.
         '''</summary>
         Friend Shared ReadOnly Property map() As String

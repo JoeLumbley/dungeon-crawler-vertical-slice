@@ -345,11 +345,18 @@ Public Class Form1
                 Math.Max(GridSize, right - left),
                 Math.Max(GridSize, bottom - top))
 
-            If selectedMapObject.ObjectType = MapObjectType.Hero Then
-                heroPos = New PointF(
+            If selectedMapObject.ObjectType = MapObjectType.Hero OrElse
+               selectedMapObject.ObjectType = MapObjectType.Boss Then
+                Dim placementCenter As New PointF(
                     selectedMapObject.Bounds.X + selectedMapObject.Bounds.Width / 2.0F,
                     selectedMapObject.Bounds.Y + selectedMapObject.Bounds.Height / 2.0F)
-                heroTarget = heroPos
+
+                If selectedMapObject.ObjectType = MapObjectType.Hero Then
+                    heroPos = placementCenter
+                    heroTarget = heroPos
+                Else
+                    bossPos = placementCenter
+                End If
             End If
 
             Invalidate()
@@ -524,7 +531,10 @@ Public Class Form1
                         mapObject.Bounds.X + mapObject.Bounds.Width / 2.0F,
                         mapObject.Bounds.Y + mapObject.Bounds.Height / 2.0F)
                     heroTarget = heroPos
-                    Exit For
+                ElseIf mapObject.ObjectType = MapObjectType.Boss Then
+                    bossPos = New PointF(
+                        mapObject.Bounds.X + mapObject.Bounds.Width / 2.0F,
+                        mapObject.Bounds.Y + mapObject.Bounds.Height / 2.0F)
                 End If
             Next
 
@@ -541,14 +551,21 @@ Public Class Form1
     Private Sub EnsureSingleHeroPlacement()
 
         Dim heroFound As Boolean = False
+        Dim bossFound As Boolean = False
 
         For i As Integer = mapObjects.Count - 1 To 0 Step -1
-            If mapObjects(i).ObjectType <> MapObjectType.Hero Then Continue For
-
-            If heroFound Then
-                mapObjects.RemoveAt(i)
-            Else
-                heroFound = True
+            If mapObjects(i).ObjectType = MapObjectType.Hero Then
+                If heroFound Then
+                    mapObjects.RemoveAt(i)
+                Else
+                    heroFound = True
+                End If
+            ElseIf mapObjects(i).ObjectType = MapObjectType.Boss Then
+                If bossFound Then
+                    mapObjects.RemoveAt(i)
+                Else
+                    bossFound = True
+                End If
             End If
         Next
 
@@ -591,24 +608,33 @@ Public Class Form1
         Dim worldPoint As PointF = SnapPoint(ScreenToWorld(e.Location))
         Dim existing As MapObject = MapObjectAt(ScreenToWorld(e.Location))
 
-        If selectedMapType = MapObjectType.Hero Then
+        If selectedMapType = MapObjectType.Hero OrElse
+           selectedMapType = MapObjectType.Boss Then
             For i As Integer = mapObjects.Count - 1 To 0 Step -1
-                If mapObjects(i).ObjectType = MapObjectType.Hero Then
+                If mapObjects(i).ObjectType = selectedMapType Then
                     mapObjects.RemoveAt(i)
                 End If
             Next
 
-            Dim heroObject As New MapObject With {
-                .ObjectType = MapObjectType.Hero,
+            Dim placementObject As New MapObject With {
+                .ObjectType = selectedMapType,
                 .Bounds = New RectangleF(worldPoint.X, worldPoint.Y, GridSize, GridSize)
             }
-            mapObjects.Add(heroObject)
-            selectedMapObject = heroObject
-            heroPos = New PointF(worldPoint.X + GridSize / 2.0F,
-                                 worldPoint.Y + GridSize / 2.0F)
-            heroTarget = heroPos
+            mapObjects.Add(placementObject)
+            selectedMapObject = placementObject
+
+            Dim placementCenter As New PointF(
+                worldPoint.X + GridSize / 2.0F,
+                worldPoint.Y + GridSize / 2.0F)
+            If selectedMapType = MapObjectType.Hero Then
+                heroPos = placementCenter
+                heroTarget = heroPos
+            Else
+                bossPos = placementCenter
+            End If
+
             resizeStart = worldPoint
-            resizeOriginalBounds = heroObject.Bounds
+            resizeOriginalBounds = placementObject.Bounds
             isResizingMapObject = True
         ElseIf existing IsNot Nothing AndAlso
            (selectedMapType = MapObjectType.Floor OrElse
@@ -633,7 +659,7 @@ Public Class Form1
     End Sub
 
     Private Function TryGetToolbarType(point As Point, ByRef objectType As MapObjectType) As Boolean
-        For i As Integer = 0 To 4
+        For i As Integer = 0 To 5
             Dim button As New Rectangle(8 + i * 104, 8, 96, 32)
             If button.Contains(point) Then
                 objectType = CType(i, MapObjectType)
@@ -1059,7 +1085,8 @@ Public Class Form1
 
         For Each mapObject In mapObjects
             If mapObject.ObjectType = MapObjectType.Floor OrElse
-               mapObject.ObjectType = MapObjectType.Hero Then
+               mapObject.ObjectType = MapObjectType.Hero OrElse
+               mapObject.ObjectType = MapObjectType.Boss Then
                 Continue For
             End If
 
@@ -1163,14 +1190,16 @@ Public Class Form1
 
         For Each mapObject In mapObjects
             If mapObject.ObjectType = MapObjectType.Floor OrElse
-               mapObject.ObjectType = MapObjectType.Hero Then
+               mapObject.ObjectType = MapObjectType.Hero OrElse
+               mapObject.ObjectType = MapObjectType.Boss Then
                 DrawMapObject(g, mapObject)
             End If
         Next
 
         For Each mapObject In mapObjects
             If mapObject.ObjectType <> MapObjectType.Floor AndAlso
-               mapObject.ObjectType <> MapObjectType.Hero Then
+               mapObject.ObjectType <> MapObjectType.Hero AndAlso
+               mapObject.ObjectType <> MapObjectType.Boss Then
                 DrawMapObject(g, mapObject)
             End If
         Next
@@ -1208,8 +1237,9 @@ Public Class Form1
 
         If mapObject Is selectedMapObject Then
             Using selectionPen As New Pen(Color.Lime, 3)
-                If mapObject.ObjectType = MapObjectType.Column OrElse
-                   mapObject.ObjectType = MapObjectType.Hero Then
+            If mapObject.ObjectType = MapObjectType.Column OrElse
+               mapObject.ObjectType = MapObjectType.Hero OrElse
+               mapObject.ObjectType = MapObjectType.Boss Then
                     g.DrawEllipse(selectionPen, mapObject.Bounds)
                 Else
                     g.DrawRectangle(selectionPen, mapObject.Bounds.X, mapObject.Bounds.Y,
@@ -1277,7 +1307,7 @@ Public Class Form1
             g.FillRectangle(toolbarBrush, 0, 0, 536, 48)
         End Using
 
-        For i As Integer = 0 To 4
+        For i As Integer = 0 To 5
             Dim button As New Rectangle(8 + i * 104, 8, 96, 32)
             Dim buttonColor As Color = If(selectedMapType = CType(i, MapObjectType), Color.DarkGreen, Color.DimGray)
 
@@ -1783,6 +1813,7 @@ Public Enum MapObjectType
     Door
     Column
     Hero
+    Boss
 End Enum
 
 Public Class MapObject
