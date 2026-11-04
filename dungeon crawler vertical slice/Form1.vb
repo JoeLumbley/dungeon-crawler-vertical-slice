@@ -779,6 +779,13 @@ Public Class Form1
                 heroHealth -= 10
                 heroFlashTimer = 0.15
 
+                damageTexts.Add(New DamageText With {
+                    .X = heroPos.X - 10,
+                    .Y = heroPos.Y - 30,
+                    .Value = 10,
+                    .Lifetime = 1.0
+                })
+
                 If heroHealth < 0 Then
                     heroHealth = 0
                 End If
@@ -1245,9 +1252,14 @@ Public Class Form1
             size,
             size)
 
-        Dim heroColor As Color = If(heroFlashTimer > 0,
-                                    Color.White,
-                                    Color.DeepSkyBlue)
+        Dim heroColor As Color
+        If heroHealth <= 0 Then
+            heroColor = Color.Gray
+        ElseIf heroFlashTimer > 0 Then
+            heroColor = Color.White
+        Else
+            heroColor = Color.DeepSkyBlue
+        End If
 
         Using brush As New SolidBrush(heroColor)
 
