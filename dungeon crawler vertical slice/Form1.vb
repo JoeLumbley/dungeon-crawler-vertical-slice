@@ -41,7 +41,7 @@ Public Class Form1
     Private Const FireballDamage As Integer = 15
 
 
-    Private Const BossSightRange As Single = 400.0F
+    Private Const BossSightRange As Single = 1000.0F
 
 
 
@@ -101,6 +101,8 @@ Public Class Form1
     Private BossSightRangePen As New Pen(Color.Purple, 2)
 
 
+
+    Private BossSightRangeBrush = New SolidBrush(Color.FromArgb(16, Color.Purple))
 
 
     Private windowManager As WindowManager
@@ -1872,12 +1874,72 @@ Public Class Form1
     Private Sub DrawBossRange(
     g As Graphics)
 
+
+
+
+
+
+        Dim BossFireballRangeBrush = New SolidBrush(Color.FromArgb(16, Color.DarkOrange))
+
+
+
+
+
+
+        g.FillEllipse(
+        BossFireballRangeBrush,
+        bossPos.X - BossFireballRange,
+        bossPos.Y - BossFireballRange,
+        BossFireballRange * 2,
+        BossFireballRange * 2)
+
+
+
+
         g.DrawEllipse(
         BossRangePen,
         bossPos.X - BossFireballRange,
         bossPos.Y - BossFireballRange,
         BossFireballRange * 2,
         BossFireballRange * 2)
+
+
+
+
+
+
+
+        'Dim BossSightRangeBrush = New SolidBrush(Color.FromArgb(16, Color.Purple))
+
+        g.FillEllipse(
+            BossSightRangeBrush,
+            bossPos.X - BossSightRange,
+            bossPos.Y - BossSightRange,
+            BossSightRange * 2,
+            BossSightRange * 2)
+
+        g.DrawEllipse(
+        BossSightRangePen,
+        bossPos.X - BossSightRange,
+        bossPos.Y - BossSightRange,
+        BossSightRange * 2,
+        BossSightRange * 2)
+
+
+
+
+
+        Dim BossPreferredDistanceBrush = New SolidBrush(Color.FromArgb(16, Color.Yellow))
+
+
+        g.FillEllipse(
+        BossPreferredDistanceBrush,
+        bossPos.X - BossPreferredDistance,
+        bossPos.Y - BossPreferredDistance,
+        BossPreferredDistance * 2,
+        BossPreferredDistance * 2)
+
+
 
         g.DrawEllipse(
         BossPreferredDistancePen,
@@ -1886,12 +1948,8 @@ Public Class Form1
         BossPreferredDistance * 2,
         BossPreferredDistance * 2)
 
-        g.DrawEllipse(
-        BossSightRangePen,
-        bossPos.X - BossSightRange,
-        bossPos.Y - BossSightRange,
-        BossSightRange * 2,
-        BossSightRange * 2)
+
+
 
     End Sub
 
