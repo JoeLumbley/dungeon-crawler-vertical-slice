@@ -2,6 +2,7 @@
 Imports System.Globalization
 Imports System.IO
 Imports System.Runtime.InteropServices
+Imports System.Threading.Tasks
 
 Public Class Form1
 
@@ -127,7 +128,7 @@ Public Class Form1
     'End Sub
 
 
-    Protected Overrides Sub OnLoad(e As EventArgs)
+    Protected Overrides Async Sub OnLoad(e As EventArgs)
 
         MyBase.OnLoad(e)
 
@@ -157,6 +158,20 @@ Public Class Form1
 
         gameTimer.Start()
 
+        Dim mapPath As String = Path.Combine(Application.StartupPath, "map.dat")
+
+        If Not File.Exists(mapPath) Then
+            Try
+                File.WriteAllText(mapPath, My.Resources.Resource1.map)
+            Catch ex As IOException
+                MessageBox.Show(Me, $"Unable to create the default map: {ex.Message}",
+                                "Map Load", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Return
+            End Try
+        End If
+
+        Await Task.Delay(100)
+        LoadMapFile(mapPath)
 
     End Sub
 
@@ -447,47 +462,53 @@ Public Class Form1
         }
             If dialog.ShowDialog(Me) <> DialogResult.OK Then Return
 
-            Dim loadedObjects As New List(Of MapObject)
-
-            Try
-                For Each line As String In File.ReadLines(dialog.FileName)
-                    If String.IsNullOrWhiteSpace(line) Then Continue For
-
-                    Dim fields() As String = line.Split("|"c)
-                    If fields.Length <> 5 Then Continue For
-
-                    Dim objectType As MapObjectType
-                    Dim x As Single
-                    Dim y As Single
-                    Dim width As Single
-                    Dim height As Single
-
-                    If Not [Enum].TryParse(fields(0), objectType) OrElse
-                       Not Single.TryParse(fields(1), NumberStyles.Float, CultureInfo.InvariantCulture, x) OrElse
-                       Not Single.TryParse(fields(2), NumberStyles.Float, CultureInfo.InvariantCulture, y) OrElse
-                       Not Single.TryParse(fields(3), NumberStyles.Float, CultureInfo.InvariantCulture, width) OrElse
-                       Not Single.TryParse(fields(4), NumberStyles.Float, CultureInfo.InvariantCulture, height) Then
-                        Continue For
-                    End If
-
-                    If width <= 0 OrElse height <= 0 Then Continue For
-
-                    loadedObjects.Add(New MapObject With {
-                        .ObjectType = objectType,
-                        .Bounds = New RectangleF(x, y, width, height)
-                    })
-                Next
-
-                mapObjects.Clear()
-                mapObjects.AddRange(loadedObjects)
-                selectedMapObject = Nothing
-                isResizingMapObject = False
-                Invalidate()
-            Catch ex As IOException
-                MessageBox.Show(Me, $"Unable to open the map: {ex.Message}",
-                                "Open Map", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            End Try
+            LoadMapFile(dialog.FileName)
         End Using
+
+    End Sub
+
+    Private Sub LoadMapFile(filePath As String)
+
+        Dim loadedObjects As New List(Of MapObject)
+
+        Try
+            For Each line As String In File.ReadLines(filePath)
+                If String.IsNullOrWhiteSpace(line) Then Continue For
+
+                Dim fields() As String = line.Split("|"c)
+                If fields.Length <> 5 Then Continue For
+
+                Dim objectType As MapObjectType
+                Dim x As Single
+                Dim y As Single
+                Dim width As Single
+                Dim height As Single
+
+                If Not [Enum].TryParse(fields(0), objectType) OrElse
+                   Not Single.TryParse(fields(1), NumberStyles.Float, CultureInfo.InvariantCulture, x) OrElse
+                   Not Single.TryParse(fields(2), NumberStyles.Float, CultureInfo.InvariantCulture, y) OrElse
+                   Not Single.TryParse(fields(3), NumberStyles.Float, CultureInfo.InvariantCulture, width) OrElse
+                   Not Single.TryParse(fields(4), NumberStyles.Float, CultureInfo.InvariantCulture, height) Then
+                    Continue For
+                End If
+
+                If width <= 0 OrElse height <= 0 Then Continue For
+
+                loadedObjects.Add(New MapObject With {
+                    .ObjectType = objectType,
+                    .Bounds = New RectangleF(x, y, width, height)
+                })
+            Next
+
+            mapObjects.Clear()
+            mapObjects.AddRange(loadedObjects)
+            selectedMapObject = Nothing
+            isResizingMapObject = False
+            Invalidate()
+        Catch ex As IOException
+            MessageBox.Show(Me, $"Unable to open the map: {ex.Message}",
+                            "Open Map", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
 
     End Sub
 
