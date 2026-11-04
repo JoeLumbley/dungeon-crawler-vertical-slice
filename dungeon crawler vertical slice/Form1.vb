@@ -89,6 +89,7 @@ Public Class Form1
     Private BossCollisionRingPen As New Pen(Color.Red, 2)
     Private MoveTargetPen As New Pen(Color.Yellow, 2)
     Private BossRangePen As New Pen(Color.DarkOrange, 2)
+    Private BossPreferredDistancePen As New Pen(Color.Yellow, 2)
 
 
 
@@ -1856,6 +1857,13 @@ Public Class Form1
         bossPos.Y - BossFireballRange,
         BossFireballRange * 2,
         BossFireballRange * 2)
+
+        g.DrawEllipse(
+        BossPreferredDistancePen,
+        bossPos.X - BossPreferredDistance,
+        bossPos.Y - BossPreferredDistance,
+        BossPreferredDistance * 2,
+        BossPreferredDistance * 2)
 
     End Sub
 
