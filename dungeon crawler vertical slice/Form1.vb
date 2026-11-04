@@ -591,7 +591,26 @@ Public Class Form1
         Dim worldPoint As PointF = SnapPoint(ScreenToWorld(e.Location))
         Dim existing As MapObject = MapObjectAt(ScreenToWorld(e.Location))
 
-        If existing IsNot Nothing AndAlso
+        If selectedMapType = MapObjectType.Hero Then
+            For i As Integer = mapObjects.Count - 1 To 0 Step -1
+                If mapObjects(i).ObjectType = MapObjectType.Hero Then
+                    mapObjects.RemoveAt(i)
+                End If
+            Next
+
+            Dim heroObject As New MapObject With {
+                .ObjectType = MapObjectType.Hero,
+                .Bounds = New RectangleF(worldPoint.X, worldPoint.Y, GridSize, GridSize)
+            }
+            mapObjects.Add(heroObject)
+            selectedMapObject = heroObject
+            heroPos = New PointF(worldPoint.X + GridSize / 2.0F,
+                                 worldPoint.Y + GridSize / 2.0F)
+            heroTarget = heroPos
+            resizeStart = worldPoint
+            resizeOriginalBounds = heroObject.Bounds
+            isResizingMapObject = True
+        ElseIf existing IsNot Nothing AndAlso
            (selectedMapType = MapObjectType.Floor OrElse
             existing.ObjectType <> MapObjectType.Floor) Then
             selectedMapObject = existing
