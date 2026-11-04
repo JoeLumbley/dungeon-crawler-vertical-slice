@@ -1320,7 +1320,7 @@ Public Class Form1
             g.DrawString(label, Font, Brushes.White, button.X + 22, button.Y + 7)
         Next
 
-        g.DrawString("E: gameplay   Arrows: pan   Drag: resize   Right-click/Delete: remove",
+        g.DrawString("E: gameplay   Arrows: pan   +-: zoom   Drag: resize   Right-click/Delete: remove   CTRL+S: save   CTRL+O: open",
                      Font, Brushes.White, 8, 56)
 
     End Sub
