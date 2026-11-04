@@ -1237,7 +1237,7 @@ Public Class Form1
 
         If mapObject Is selectedMapObject Then
             Using selectionPen As New Pen(Color.Lime, 3)
-            If mapObject.ObjectType = MapObjectType.Column OrElse
+                If mapObject.ObjectType = MapObjectType.Column OrElse
                mapObject.ObjectType = MapObjectType.Hero OrElse
                mapObject.ObjectType = MapObjectType.Boss Then
                     g.DrawEllipse(selectionPen, mapObject.Bounds)
