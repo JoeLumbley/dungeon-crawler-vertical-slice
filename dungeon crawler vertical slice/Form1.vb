@@ -18,6 +18,7 @@ Public Class Form1
     Private bossMaxHealth As Integer = 500
 
     Private bossFlashTimer As Double
+    Private heroFlashTimer As Double
 
     Private ReadOnly damageTexts As New List(Of DamageText)
 
@@ -270,6 +271,10 @@ Public Class Form1
 
             bossFlashTimer -= dt
 
+        End If
+
+        If heroFlashTimer > 0 Then
+            heroFlashTimer -= dt
         End If
 
         For i As Integer =
@@ -772,6 +777,7 @@ Public Class Form1
             If HitHero(fireball) Then
 
                 heroHealth -= 10
+                heroFlashTimer = 0.15
 
                 If heroHealth < 0 Then
                     heroHealth = 0
@@ -1239,8 +1245,11 @@ Public Class Form1
             size,
             size)
 
-        Using brush As New SolidBrush(
-            Color.DeepSkyBlue)
+        Dim heroColor As Color = If(heroFlashTimer > 0,
+                                    Color.White,
+                                    Color.DeepSkyBlue)
+
+        Using brush As New SolidBrush(heroColor)
 
             g.FillEllipse(
                 brush,
