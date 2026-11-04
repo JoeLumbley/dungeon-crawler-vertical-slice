@@ -1,4 +1,6 @@
 ﻿Imports System.Drawing.Drawing2D
+Imports System.Globalization
+Imports System.IO
 Imports System.Runtime.InteropServices
 
 Public Class Form1
@@ -83,6 +85,8 @@ Public Class Form1
 
 
     Private windowManager As WindowManager
+
+    Private fullscreenKeyDown As Boolean
 
 
 
@@ -319,6 +323,16 @@ Public Class Form1
     Protected Overrides Sub OnKeyDown(e As KeyEventArgs)
         MyBase.OnKeyDown(e)
 
+
+        If e.KeyCode = Keys.F OrElse e.KeyCode = Keys.F11 Then
+            If fullscreenKeyDown Then Return
+
+            fullscreenKeyDown = True
+
+            windowManager.ToggleFullscreen()
+            Return
+        End If
+
         If e.KeyCode = Keys.E Then
             If Not mapEditorActive Then
                 editorPan = GameplayViewportOffset
@@ -329,6 +343,18 @@ Public Class Form1
             selectedMapObject = Nothing
             Invalidate()
             Return
+        End If
+
+        If e.Control AndAlso e.KeyCode = Keys.S Then
+            SaveMap()
+            Return
+
+        End If
+
+        If e.Control AndAlso e.KeyCode = Keys.O Then
+            OpenMap()
+            Return
+
         End If
 
         If Not mapEditorActive Then Return
@@ -354,13 +380,96 @@ Public Class Form1
                     selectedMapObject = Nothing
                 End If
 
-            Case Keys.F, Keys.F11
-                windowManager.ToggleFullscreen()
 
         End Select
 
 
         Invalidate()
+    End Sub
+
+    Private Sub SaveMap()
+
+        Using dialog As New SaveFileDialog With {
+            .InitialDirectory = Application.StartupPath,
+            .Filter = "Map data (*.dat)|*.dat|All files (*.*)|*.*",
+            .DefaultExt = "dat",
+            .AddExtension = True,
+            .FileName = "map.dat"
+        }
+            If dialog.ShowDialog(Me) <> DialogResult.OK Then Return
+
+            Try
+                Using writer As New StreamWriter(dialog.FileName, False)
+                    For Each mapObject In mapObjects
+                        writer.WriteLine(String.Join("|", {
+                            mapObject.ObjectType.ToString(),
+                            mapObject.Bounds.X.ToString(CultureInfo.InvariantCulture),
+                            mapObject.Bounds.Y.ToString(CultureInfo.InvariantCulture),
+                            mapObject.Bounds.Width.ToString(CultureInfo.InvariantCulture),
+                            mapObject.Bounds.Height.ToString(CultureInfo.InvariantCulture)}))
+                    Next
+                End Using
+            Catch ex As IOException
+                MessageBox.Show(Me, $"Unable to save the map: {ex.Message}",
+                                "Save Map", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+        End Using
+
+    End Sub
+
+    Private Sub OpenMap()
+
+        Using dialog As New OpenFileDialog With {
+            .InitialDirectory = Application.StartupPath,
+            .Filter = "Map data (*.dat)|*.dat|All files (*.*)|*.*",
+            .DefaultExt = "dat",
+            .CheckFileExists = True,
+            .FileName = "map.dat"
+        }
+            If dialog.ShowDialog(Me) <> DialogResult.OK Then Return
+
+            Dim loadedObjects As New List(Of MapObject)
+
+            Try
+                For Each line As String In File.ReadLines(dialog.FileName)
+                    If String.IsNullOrWhiteSpace(line) Then Continue For
+
+                    Dim fields() As String = line.Split("|"c)
+                    If fields.Length <> 5 Then Continue For
+
+                    Dim objectType As MapObjectType
+                    Dim x As Single
+                    Dim y As Single
+                    Dim width As Single
+                    Dim height As Single
+
+                    If Not [Enum].TryParse(fields(0), objectType) OrElse
+                       Not Single.TryParse(fields(1), NumberStyles.Float, CultureInfo.InvariantCulture, x) OrElse
+                       Not Single.TryParse(fields(2), NumberStyles.Float, CultureInfo.InvariantCulture, y) OrElse
+                       Not Single.TryParse(fields(3), NumberStyles.Float, CultureInfo.InvariantCulture, width) OrElse
+                       Not Single.TryParse(fields(4), NumberStyles.Float, CultureInfo.InvariantCulture, height) Then
+                        Continue For
+                    End If
+
+                    If width <= 0 OrElse height <= 0 Then Continue For
+
+                    loadedObjects.Add(New MapObject With {
+                        .ObjectType = objectType,
+                        .Bounds = New RectangleF(x, y, width, height)
+                    })
+                Next
+
+                mapObjects.Clear()
+                mapObjects.AddRange(loadedObjects)
+                selectedMapObject = Nothing
+                isResizingMapObject = False
+                Invalidate()
+            Catch ex As IOException
+                MessageBox.Show(Me, $"Unable to open the map: {ex.Message}",
+                                "Open Map", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+        End Using
+
     End Sub
 
     Private Sub SetEditorZoom(newZoom As Single)
@@ -780,10 +889,10 @@ Public Class Form1
 
 
 
-        DrawHero(g)
 
         DrawHeroLight(g)
 
+        DrawHero(g)
 
 
         DrawFireballs(g)
@@ -951,7 +1060,7 @@ Public Class Form1
         Dim fillColor As Color
         Select Case mapObject.ObjectType
             Case MapObjectType.Floor
-                fillColor = Color.FromArgb(100, 100, 100)
+                fillColor = Color.FromArgb(75, 75, 75)
             Case MapObjectType.Wall
                 fillColor = Color.FromArgb(64, 64, 64)
             Case MapObjectType.Column
@@ -1471,6 +1580,18 @@ Public Class Form1
 
 
     End Sub
+
+    Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
+        If e.KeyCode = Keys.F OrElse e.KeyCode = Keys.F11 Then
+            fullscreenKeyDown = False
+        End If
+
+
+    End Sub
+
+
+
+
 End Class
 
 
