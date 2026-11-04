@@ -33,6 +33,12 @@ Public Class Form1
     Private heroMaxHealth As Integer = 100
 
     Private Const HeroSpeed As Single = 200.0F
+    Private Const BossFireballRange As Single = 300.0F
+    Private Const BossPreferredDistance As Single = 250.0F
+    Private Const BossMoveSpeed As Single = 90.0F
+    Private Const BossAttackInterval As Double = 1.25
+    Private Const FireballSpeed As Single = 350.0F
+    Private Const FireballDamage As Integer = 15
 
     Private bossAttackTimer As Double
 
@@ -805,15 +811,85 @@ Public Class Form1
 
         If bossHealth <= 0 Then Return
 
-        bossAttackTimer += dt
+        Dim dx As Single = heroPos.X - bossPos.X
+        Dim dy As Single = heroPos.Y - bossPos.Y
+        Dim distance As Single = CSng(Math.Sqrt(dx * dx + dy * dy))
 
-        If bossAttackTimer >= 2.0 Then
+        If distance > 0 Then
+            Dim moveDirectionX As Single
+            Dim moveDirectionY As Single
+
+            If distance > BossFireballRange Then
+                moveDirectionX = dx / distance
+                moveDirectionY = dy / distance
+            ElseIf distance < BossPreferredDistance Then
+                moveDirectionX = -dx / distance
+                moveDirectionY = -dy / distance
+            Else
+                moveDirectionX = 0
+                moveDirectionY = 0
+            End If
+
+            bossPos.X += moveDirectionX * BossMoveSpeed * CSng(dt)
+            bossPos.Y += moveDirectionY * BossMoveSpeed * CSng(dt)
+
+            ResolveBossMapObjectCollisions()
+        End If
+
+        If distance <= BossFireballRange AndAlso distance > 0 Then
+            bossAttackTimer += dt
+        Else
+            bossAttackTimer = 0
+        End If
+
+        If bossAttackTimer >= BossAttackInterval Then
 
             bossAttackTimer = 0
 
             LaunchFireball()
 
         End If
+
+    End Sub
+
+    Private Sub ResolveBossMapObjectCollisions()
+
+        For Each mapObject In mapObjects
+            If mapObject.ObjectType = MapObjectType.Floor OrElse
+               mapObject.ObjectType = MapObjectType.Hero OrElse
+               mapObject.ObjectType = MapObjectType.Boss Then
+                Continue For
+            End If
+
+            If mapObject.ObjectType = MapObjectType.Column Then
+                ResolveBossColumnCollision(mapObject.Bounds)
+                Continue For
+            End If
+
+            Dim expanded As New RectangleF(
+                mapObject.Bounds.X - BossRadius,
+                mapObject.Bounds.Y - BossRadius,
+                mapObject.Bounds.Width + BossRadius * 2,
+                mapObject.Bounds.Height + BossRadius * 2)
+
+            If Not expanded.Contains(bossPos) Then Continue For
+
+            Dim pushLeft As Single = bossPos.X - expanded.Left
+            Dim pushRight As Single = expanded.Right - bossPos.X
+            Dim pushTop As Single = bossPos.Y - expanded.Top
+            Dim pushBottom As Single = expanded.Bottom - bossPos.Y
+            Dim smallestPush As Single = Math.Min(Math.Min(pushLeft, pushRight), Math.Min(pushTop, pushBottom))
+
+            If smallestPush = pushLeft Then
+                bossPos.X = expanded.Left
+            ElseIf smallestPush = pushRight Then
+                bossPos.X = expanded.Right
+            ElseIf smallestPush = pushTop Then
+                bossPos.Y = expanded.Top
+            Else
+                bossPos.Y = expanded.Bottom
+            End If
+        Next
 
     End Sub
 
@@ -831,17 +907,38 @@ Public Class Form1
 
         If distance <= 0 Then Return
 
-        Dim speed As Single = 250.0F
-
         fireballs.Add(
         New Fireball With {
             .Position = bossPos,
             .Velocity = New PointF(
-                dx / distance * speed,
-                dy / distance * speed)
+                dx / distance * FireballSpeed,
+                dy / distance * FireballSpeed)
         })
 
         ' audioPlayer.Play("fireball.wav")
+
+    End Sub
+
+    Private Sub ResolveBossColumnCollision(bounds As RectangleF)
+
+        Dim centerX As Single = bounds.X + bounds.Width / 2.0F
+        Dim centerY As Single = bounds.Y + bounds.Height / 2.0F
+        Dim radiusX As Single = Math.Max(1.0F, bounds.Width / 2.0F + BossRadius)
+        Dim radiusY As Single = Math.Max(1.0F, bounds.Height / 2.0F + BossRadius)
+        Dim normalizedX As Single = (bossPos.X - centerX) / radiusX
+        Dim normalizedY As Single = (bossPos.Y - centerY) / radiusY
+        Dim distanceSquared As Single = normalizedX * normalizedX + normalizedY * normalizedY
+
+        If distanceSquared > 1.0F Then Return
+
+        If distanceSquared < 0.0001F Then
+            bossPos.Y = centerY - radiusY
+            Return
+        End If
+
+        Dim scale As Single = CSng(1.0 / Math.Sqrt(distanceSquared))
+        bossPos.X = centerX + normalizedX * radiusX * scale
+        bossPos.Y = centerY + normalizedY * radiusY * scale
 
     End Sub
 
@@ -863,13 +960,13 @@ Public Class Form1
 
             If HitHero(fireball) Then
 
-                heroHealth -= 10
+                heroHealth -= FireballDamage
                 heroFlashTimer = 0.15
 
                 damageTexts.Add(New DamageText With {
                     .X = heroPos.X - 10,
                     .Y = heroPos.Y - 30,
-                    .Value = 10,
+                    .Value = FireballDamage,
                     .Lifetime = 1.0
                 })
 
@@ -891,15 +988,35 @@ Public Class Form1
 
             ' Expand fireball cleanup bounds
             ' Extend the bounds check to account for the boss's position and a larger area around it
-            If fireball.Position.X < bossPos.X - (BossRadius * 9) OrElse
-               fireball.Position.X > bossPos.X + (BossRadius * 9) OrElse
-               fireball.Position.Y < bossPos.Y - (BossRadius * 9) OrElse
-               fireball.Position.Y > bossPos.Y + (BossRadius * 9) Then
 
+            Dim dx As Single =
+        fireball.Position.X - bossPos.X
+
+            Dim dy As Single =
+        fireball.Position.Y - bossPos.Y
+
+            Dim distance As Single =
+        CSng(Math.Sqrt(dx * dx + dy * dy))
+
+            If distance <= 0 Then Continue For
+
+            If distance > BossFireballRange Then
 
                 fireballs.RemoveAt(i)
 
+
             End If
+
+
+            'If fireball.Position.X < bossPos.X - (BossRadius * 9) OrElse
+            '   fireball.Position.X > bossPos.X + (BossRadius * 9) OrElse
+            '   fireball.Position.Y < bossPos.Y - (BossRadius * 9) OrElse
+            '   fireball.Position.Y > bossPos.Y + (BossRadius * 9) Then
+
+
+            '    fireballs.RemoveAt(i)
+
+            'End If
 
         Next
 
