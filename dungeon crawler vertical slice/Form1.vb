@@ -890,7 +890,6 @@ Public Class Form1
 
         Else
 
-            'pendingAttack = True
             If Not pendingAttack Then
                 pendingAttack = True
             End If
@@ -1182,23 +1181,15 @@ Public Class Form1
 
             End If
 
-            ' 
-            ' If fireball.Position.X < -50 OrElse
-            'fireball.Position.X > ClientSize.Width + 50 OrElse
-            'fireball.Position.Y < -50 OrElse
-            'fireball.Position.Y > ClientSize.Height + 50 Then
-
-            ' Expand fireball cleanup bounds
-            ' Extend the bounds check to account for the boss's position and a larger area around it
-
+            ' Fireball cleanup 
             Dim dx As Single =
-        fireball.Position.X - bossPos.X
+                fireball.Position.X - bossPos.X
 
             Dim dy As Single =
-        fireball.Position.Y - bossPos.Y
+                fireball.Position.Y - bossPos.Y
 
             Dim distance As Single =
-        CSng(Math.Sqrt(dx * dx + dy * dy))
+                CSng(Math.Sqrt(dx * dx + dy * dy))
 
             If distance <= 0 Then Continue For
 
@@ -1206,19 +1197,8 @@ Public Class Form1
 
                 fireballs.RemoveAt(i)
 
-
             End If
 
-
-            'If fireball.Position.X < bossPos.X - (BossRadius * 9) OrElse
-            '   fireball.Position.X > bossPos.X + (BossRadius * 9) OrElse
-            '   fireball.Position.Y < bossPos.Y - (BossRadius * 9) OrElse
-            '   fireball.Position.Y > bossPos.Y + (BossRadius * 9) Then
-
-
-            '    fireballs.RemoveAt(i)
-
-            'End If
 
         Next
 
@@ -1477,20 +1457,6 @@ Public Class Form1
 
         g.Clear(Color.Black)
 
-        'Using backgroundBrush As New SolidBrush(
-        '    Color.Black)
-
-
-
-
-        '    g.FillRectangle(
-        '        backgroundBrush,
-        '        -10000,
-        '        -10000,
-        '        20000,
-        '        20000)
-
-        'End Using
 
     End Sub
 
@@ -1555,12 +1521,6 @@ Public Class Form1
             End If
         End Using
 
-        'If mapObject.ObjectType = MapObjectType.Column Then
-        '    g.DrawEllipse(Pens.Black, mapObject.Bounds)
-        'Else
-        '    g.DrawRectangle(Pens.Black, mapObject.Bounds.X, mapObject.Bounds.Y,
-        '                    mapObject.Bounds.Width, mapObject.Bounds.Height)
-        'End If
 
         If mapObject Is selectedMapObject Then
             Using selectionPen As New Pen(Color.Lime, 3)
@@ -1605,16 +1565,16 @@ Public Class Form1
                 Dim blend As New ColorBlend()
 
                 blend.Positions = New Single() {
-                0.0F,   ' center
-                0.4F,   ' middle
-                1.0F    ' edge
-            }
+                    0.0F,   ' center
+                    0.4F,   ' middle
+                    1.0F    ' edge
+                }
 
                 blend.Colors = New Color() {
-                Color.FromArgb(255, Color.Black),      ' fully visible
-                Color.FromArgb(255, Color.Black),    ' partially dark
-                Color.FromArgb(0, Color.Black)     ' full darkness
-            }
+                    Color.FromArgb(255, Color.Black),      ' fully visible
+                    Color.FromArgb(255, Color.Black),    ' partially dark
+                    Color.FromArgb(0, Color.Black)     ' full darkness
+                }
 
                 lightBrush.InterpolationColors = blend
 
@@ -1625,7 +1585,6 @@ Public Class Form1
         End Using
 
     End Sub
-
 
 
     Private Sub DrawEditorOverlay(g As Graphics)
@@ -1696,10 +1655,6 @@ Public Class Form1
     End Sub
 
 
-
-
-
-
     Private Sub DrawBoss(
         g As Graphics)
 
@@ -1762,20 +1717,6 @@ Public Class Form1
         End Using
 
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     Private Sub DrawBossHealthBar(
         g As Graphics)
@@ -1910,21 +1851,6 @@ Public Class Form1
 
 
         If heroHealth <= 0 Then
-
-            'Using f As New Font(
-            '    "Segoe UI",
-            '    24,
-            '    FontStyle.Bold)
-
-            '    g.DrawString(
-            '        "YOU DIED",
-            '        f,
-            '        Brushes.Red,
-            '       ClientSize.Width \ 2,
-            '        ClientSize.Height \ 2, New StringFormat(StringAlignment.Center,)
-
-
-            'End Using
 
 
             Using f As New Font("Segoe UI", 24, FontStyle.Bold)
@@ -2087,17 +2013,8 @@ Public Class Form1
 
             DrawBossRangeHandle(g, bossSightRange, BossSightRangePen.Color)
 
-            'g.DrawString(
-            '    "Boss Sight Range",
-            '    New Font("Segoe UI", 10),
-            '    Brushes.White,
-            '    bossPos.X - BossSightRange,
-            '    bossPos.Y - BossSightRange)
 
             DrawCenteredBossRangeLabel(g, "Sight Range", bossSightRange)
-
-
-
 
         End If
 
@@ -2216,12 +2133,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub Form1_Shown(sender As Object, e As EventArgs) Handles Me.Shown
-    '    windowManager = New WindowManager(Me)
-    '    windowManager.Initialize()
-
-
-    'End Sub
 
     Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
         If e.KeyCode = Keys.F OrElse e.KeyCode = Keys.F11 Then
