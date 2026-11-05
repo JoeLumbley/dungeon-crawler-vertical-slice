@@ -1644,13 +1644,6 @@ Public Class Form1
         HeroLightRadius * 2)
 
 
-        'Dim lightBounds As New RectangleF(
-        'heroPos.X - HeroLightRadius,
-        'heroPos.Y - HeroLightRadius,
-        'HeroLightRadius * 2,
-        'HeroLightRadius * 2)
-
-
         Using path As New GraphicsPath()
 
             path.AddEllipse(lightBounds)
