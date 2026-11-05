@@ -363,8 +363,76 @@ Public Class Form1
 
     End Sub
 
-    Protected Overrides Sub OnMouseDown(
-    e As MouseEventArgs)
+    'Protected Overrides Sub OnMouseDown(
+    'e As MouseEventArgs)
+
+    '    MyBase.OnMouseDown(e)
+
+    '    If mapEditorActive Then
+    '        HandleEditorMouseDown(e)
+    '        Return
+    '    End If
+
+    '    If e.Button = MouseButtons.Left AndAlso
+    '       (heroHealth <= 0 OrElse bossHealth <= 0) AndAlso
+    '       ResetButtonBounds.Contains(e.Location) Then
+    '        ResetGame()
+    '        Return
+    '    End If
+
+    '    If e.Button <> MouseButtons.Left Then Return
+
+    '    Dim worldPoint As PointF = ScreenToWorld(e.Location)
+    '    'Dim rangeHandle As BossRangeHandle
+    '    'If TryGetBossRangeHandle(worldPoint, rangeHandle) Then
+    '    '    activeBossRangeHandle = rangeHandle
+    '    '    Return
+    '    'End If
+
+
+    '    'If showBossRanges Then
+
+    '    '    Dim rangeHandle As BossRangeHandle
+
+    '    '    If TryGetBossRangeHandle(worldPoint, rangeHandle) Then
+    '    '        activeBossRangeHandle = rangeHandle
+    '    '        Return
+    '    '    End If
+
+    '    'End If
+
+    '    If showBossRanges AndAlso mapEditorActive Then
+
+    '        Dim rangeHandle As BossRangeHandle
+
+    '        If TryGetBossRangeHandle(worldPoint, rangeHandle) Then
+    '            activeBossRangeHandle = rangeHandle
+    '            Return
+    '        End If
+
+    '    End If
+
+
+
+
+    '    If heroHealth <= 0 Then Return
+
+    '    If bossHealth > 0 AndAlso
+    '   BossBounds.Contains(worldPoint) Then
+
+    '        HandleBossClick()
+
+    '    Else
+
+    '        pendingAttack = False
+    '        heroTarget = worldPoint
+
+    '    End If
+
+    'End Sub
+
+
+    Protected Overrides Sub OnMouseDown(e As MouseEventArgs)
 
         MyBase.OnMouseDown(e)
 
@@ -374,37 +442,17 @@ Public Class Form1
         End If
 
         If e.Button = MouseButtons.Left AndAlso
-           (heroHealth <= 0 OrElse bossHealth <= 0) AndAlso
-           ResetButtonBounds.Contains(e.Location) Then
+       (heroHealth <= 0 OrElse bossHealth <= 0) AndAlso
+       ResetButtonBounds.Contains(e.Location) Then
+
             ResetGame()
             Return
+
         End If
 
         If e.Button <> MouseButtons.Left Then Return
 
         Dim worldPoint As PointF = ScreenToWorld(e.Location)
-        'Dim rangeHandle As BossRangeHandle
-        'If TryGetBossRangeHandle(worldPoint, rangeHandle) Then
-        '    activeBossRangeHandle = rangeHandle
-        '    Return
-        'End If
-
-
-        If showBossRanges Then
-
-            Dim rangeHandle As BossRangeHandle
-
-            If TryGetBossRangeHandle(worldPoint, rangeHandle) Then
-                activeBossRangeHandle = rangeHandle
-                Return
-            End If
-
-        End If
-
-
-
-
-
 
         If heroHealth <= 0 Then Return
 
@@ -422,49 +470,125 @@ Public Class Form1
 
     End Sub
 
+
+
+
+
+    'Protected Overrides Sub OnMouseMove(e As MouseEventArgs)
+    '    MyBase.OnMouseMove(e)
+
+    '    If Not mapEditorActive AndAlso activeBossRangeHandle <> BossRangeHandle.None Then
+    '        UpdateBossRangeHandle(ScreenToWorld(e.Location))
+    '        Invalidate()
+    '        Return
+    '    End If
+
+    '    If mapEditorActive AndAlso
+    '       isResizingMapObject AndAlso
+    '       selectedMapObject IsNot Nothing Then
+
+    '        Dim current As PointF = SnapPoint(ScreenToWorld(e.Location))
+    '        Dim left As Single = Math.Min(resizeStart.X, current.X)
+    '        Dim top As Single = Math.Min(resizeStart.Y, current.Y)
+    '        Dim right As Single = Math.Max(resizeStart.X + GridSize, current.X + GridSize)
+    '        Dim bottom As Single = Math.Max(resizeStart.Y + GridSize, current.Y + GridSize)
+
+    '        selectedMapObject.Bounds = New RectangleF(
+    '            left,
+    '            top,
+    '            Math.Max(GridSize, right - left),
+    '            Math.Max(GridSize, bottom - top))
+
+    '        If selectedMapObject.ObjectType = MapObjectType.Hero OrElse
+    '           selectedMapObject.ObjectType = MapObjectType.Boss Then
+    '            Dim placementCenter As New PointF(
+    '                selectedMapObject.Bounds.X + selectedMapObject.Bounds.Width / 2.0F,
+    '                selectedMapObject.Bounds.Y + selectedMapObject.Bounds.Height / 2.0F)
+
+    '            If selectedMapObject.ObjectType = MapObjectType.Hero Then
+    '                heroPos = placementCenter
+    '                heroTarget = heroPos
+    '            Else
+    '                bossPos = placementCenter
+    '            End If
+    '        End If
+
+    '        Invalidate()
+    '    End If
+
+    'End Sub
+
+
     Protected Overrides Sub OnMouseMove(e As MouseEventArgs)
+
         MyBase.OnMouseMove(e)
 
-        If Not mapEditorActive AndAlso activeBossRangeHandle <> BossRangeHandle.None Then
+        If activeBossRangeHandle <> BossRangeHandle.None Then
+
             UpdateBossRangeHandle(ScreenToWorld(e.Location))
             Invalidate()
             Return
+
         End If
 
         If mapEditorActive AndAlso
-           isResizingMapObject AndAlso
-           selectedMapObject IsNot Nothing Then
+       isResizingMapObject AndAlso
+       selectedMapObject IsNot Nothing Then
 
-            Dim current As PointF = SnapPoint(ScreenToWorld(e.Location))
-            Dim left As Single = Math.Min(resizeStart.X, current.X)
-            Dim top As Single = Math.Min(resizeStart.Y, current.Y)
-            Dim right As Single = Math.Max(resizeStart.X + GridSize, current.X + GridSize)
-            Dim bottom As Single = Math.Max(resizeStart.Y + GridSize, current.Y + GridSize)
+            Dim current As PointF =
+            SnapPoint(ScreenToWorld(e.Location))
+
+            Dim left As Single =
+            Math.Min(resizeStart.X, current.X)
+
+            Dim top As Single =
+            Math.Min(resizeStart.Y, current.Y)
+
+            Dim right As Single =
+            Math.Max(resizeStart.X + GridSize,
+                     current.X + GridSize)
+
+            Dim bottom As Single =
+            Math.Max(resizeStart.Y + GridSize,
+                     current.Y + GridSize)
 
             selectedMapObject.Bounds = New RectangleF(
-                left,
-                top,
-                Math.Max(GridSize, right - left),
-                Math.Max(GridSize, bottom - top))
+            left,
+            top,
+            Math.Max(GridSize, right - left),
+            Math.Max(GridSize, bottom - top))
 
             If selectedMapObject.ObjectType = MapObjectType.Hero OrElse
-               selectedMapObject.ObjectType = MapObjectType.Boss Then
+           selectedMapObject.ObjectType = MapObjectType.Boss Then
+
                 Dim placementCenter As New PointF(
-                    selectedMapObject.Bounds.X + selectedMapObject.Bounds.Width / 2.0F,
-                    selectedMapObject.Bounds.Y + selectedMapObject.Bounds.Height / 2.0F)
+                selectedMapObject.Bounds.X + selectedMapObject.Bounds.Width / 2.0F,
+                selectedMapObject.Bounds.Y + selectedMapObject.Bounds.Height / 2.0F)
 
                 If selectedMapObject.ObjectType = MapObjectType.Hero Then
+
                     heroPos = placementCenter
                     heroTarget = heroPos
+
                 Else
+
                     bossPos = placementCenter
+
                 End If
+
             End If
 
             Invalidate()
+
         End If
 
     End Sub
+
+
+
+
+
+
 
     Protected Overrides Sub OnMouseUp(e As MouseEventArgs)
         MyBase.OnMouseUp(e)
@@ -828,78 +952,227 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub HandleEditorMouseDown(e As MouseEventArgs)
+
+    '    If e.Button = MouseButtons.Right Then
+    '        Dim objectToRemove = MapObjectAt(ScreenToWorld(e.Location))
+    '        If objectToRemove IsNot Nothing Then mapObjects.Remove(objectToRemove)
+    '        If selectedMapObject Is objectToRemove Then selectedMapObject = Nothing
+    '        Invalidate()
+    '        Return
+    '    End If
+
+    '    If e.Button <> MouseButtons.Left Then Return
+
+    '    Dim toolbarType As MapObjectType
+    '    If TryGetToolbarType(e.Location, toolbarType) Then
+    '        selectedMapType = toolbarType
+    '        selectedMapObject = Nothing
+    '        Invalidate()
+    '        Return
+    '    End If
+
+    '    Dim worldPoint As PointF = SnapPoint(ScreenToWorld(e.Location))
+    '    Dim existing As MapObject = MapObjectAt(ScreenToWorld(e.Location))
+
+    '    If selectedMapType = MapObjectType.Hero OrElse
+    '       selectedMapType = MapObjectType.Boss Then
+    '        For i As Integer = mapObjects.Count - 1 To 0 Step -1
+    '            If mapObjects(i).ObjectType = selectedMapType Then
+    '                mapObjects.RemoveAt(i)
+    '            End If
+    '        Next
+
+    '        Dim placementObject As New MapObject With {
+    '            .ObjectType = selectedMapType,
+    '            .Bounds = New RectangleF(worldPoint.X, worldPoint.Y, GridSize, GridSize)
+    '        }
+    '        mapObjects.Add(placementObject)
+    '        selectedMapObject = placementObject
+
+    '        Dim placementCenter As New PointF(
+    '            worldPoint.X + GridSize / 2.0F,
+    '            worldPoint.Y + GridSize / 2.0F)
+    '        If selectedMapType = MapObjectType.Hero Then
+    '            heroPos = placementCenter
+    '            heroTarget = heroPos
+    '        Else
+    '            bossPos = placementCenter
+    '        End If
+
+    '        resizeStart = worldPoint
+    '        resizeOriginalBounds = placementObject.Bounds
+    '        isResizingMapObject = True
+    '    ElseIf existing IsNot Nothing AndAlso
+    '       (selectedMapType = MapObjectType.Floor OrElse
+    '        existing.ObjectType <> MapObjectType.Floor) Then
+    '        selectedMapObject = existing
+    '        resizeStart = worldPoint
+    '        resizeOriginalBounds = existing.Bounds
+    '        isResizingMapObject = True
+    '    Else
+    '        Dim newObject As New MapObject With {
+    '            .ObjectType = selectedMapType,
+    '            .Bounds = New RectangleF(worldPoint.X, worldPoint.Y, GridSize, GridSize)
+    '        }
+    '        mapObjects.Add(newObject)
+    '        selectedMapObject = newObject
+    '        resizeStart = worldPoint
+    '        resizeOriginalBounds = newObject.Bounds
+    '        isResizingMapObject = True
+    '    End If
+
+    '    Invalidate()
+    'End Sub
+
+
+
     Private Sub HandleEditorMouseDown(e As MouseEventArgs)
 
         If e.Button = MouseButtons.Right Then
+
             Dim objectToRemove = MapObjectAt(ScreenToWorld(e.Location))
-            If objectToRemove IsNot Nothing Then mapObjects.Remove(objectToRemove)
-            If selectedMapObject Is objectToRemove Then selectedMapObject = Nothing
+
+            If objectToRemove IsNot Nothing Then
+                mapObjects.Remove(objectToRemove)
+            End If
+
+            If selectedMapObject Is objectToRemove Then
+                selectedMapObject = Nothing
+            End If
+
             Invalidate()
             Return
+
         End If
 
         If e.Button <> MouseButtons.Left Then Return
 
-        Dim toolbarType As MapObjectType
-        If TryGetToolbarType(e.Location, toolbarType) Then
-            selectedMapType = toolbarType
-            selectedMapObject = Nothing
-            Invalidate()
-            Return
+        Dim worldPoint As PointF = ScreenToWorld(e.Location)
+
+        ' =====================================================
+        ' Boss range handles get first chance at the click
+        ' =====================================================
+
+        If showBossRanges Then
+
+            Dim rangeHandle As BossRangeHandle
+
+            If TryGetBossRangeHandle(worldPoint, rangeHandle) Then
+
+                activeBossRangeHandle = rangeHandle
+                isResizingMapObject = False
+
+                Invalidate()
+                Return
+
+            End If
+
         End If
 
-        Dim worldPoint As PointF = SnapPoint(ScreenToWorld(e.Location))
-        Dim existing As MapObject = MapObjectAt(ScreenToWorld(e.Location))
+        ' =====================================================
+        ' Toolbar buttons
+        ' =====================================================
+
+        Dim toolbarType As MapObjectType
+
+        If TryGetToolbarType(e.Location, toolbarType) Then
+
+            selectedMapType = toolbarType
+            selectedMapObject = Nothing
+
+            Invalidate()
+            Return
+
+        End If
+
+        ' =====================================================
+        ' Normal editor behavior
+        ' =====================================================
+
+        Dim snappedPoint As PointF = SnapPoint(worldPoint)
+
+        Dim existing As MapObject =
+        MapObjectAt(worldPoint)
 
         If selectedMapType = MapObjectType.Hero OrElse
-           selectedMapType = MapObjectType.Boss Then
+       selectedMapType = MapObjectType.Boss Then
+
             For i As Integer = mapObjects.Count - 1 To 0 Step -1
+
                 If mapObjects(i).ObjectType = selectedMapType Then
                     mapObjects.RemoveAt(i)
                 End If
+
             Next
 
             Dim placementObject As New MapObject With {
-                .ObjectType = selectedMapType,
-                .Bounds = New RectangleF(worldPoint.X, worldPoint.Y, GridSize, GridSize)
-            }
+            .ObjectType = selectedMapType,
+            .Bounds = New RectangleF(
+                snappedPoint.X,
+                snappedPoint.Y,
+                GridSize,
+                GridSize)
+        }
+
             mapObjects.Add(placementObject)
+
             selectedMapObject = placementObject
 
             Dim placementCenter As New PointF(
-                worldPoint.X + GridSize / 2.0F,
-                worldPoint.Y + GridSize / 2.0F)
+            snappedPoint.X + GridSize / 2.0F,
+            snappedPoint.Y + GridSize / 2.0F)
+
             If selectedMapType = MapObjectType.Hero Then
+
                 heroPos = placementCenter
                 heroTarget = heroPos
+
             Else
+
                 bossPos = placementCenter
+
             End If
 
-            resizeStart = worldPoint
+            resizeStart = snappedPoint
             resizeOriginalBounds = placementObject.Bounds
             isResizingMapObject = True
+
         ElseIf existing IsNot Nothing AndAlso
-           (selectedMapType = MapObjectType.Floor OrElse
-            existing.ObjectType <> MapObjectType.Floor) Then
+          (selectedMapType = MapObjectType.Floor OrElse
+           existing.ObjectType <> MapObjectType.Floor) Then
+
             selectedMapObject = existing
-            resizeStart = worldPoint
+
+            resizeStart = snappedPoint
             resizeOriginalBounds = existing.Bounds
             isResizingMapObject = True
+
         Else
+
             Dim newObject As New MapObject With {
-                .ObjectType = selectedMapType,
-                .Bounds = New RectangleF(worldPoint.X, worldPoint.Y, GridSize, GridSize)
-            }
+            .ObjectType = selectedMapType,
+            .Bounds = New RectangleF(
+                snappedPoint.X,
+                snappedPoint.Y,
+                GridSize,
+                GridSize)
+        }
+
             mapObjects.Add(newObject)
+
             selectedMapObject = newObject
-            resizeStart = worldPoint
+
+            resizeStart = snappedPoint
             resizeOriginalBounds = newObject.Bounds
             isResizingMapObject = True
+
         End If
 
         Invalidate()
+
     End Sub
+
 
     Private Function TryGetToolbarType(point As Point, ByRef objectType As MapObjectType) As Boolean
         For i As Integer = 0 To 5
@@ -1409,8 +1682,16 @@ Public Class Form1
         If mapEditorActive Then
             DrawEditorGrid(g, view)
             DrawMapObjects(g)
+
+            DrawBoss(g)
+
+            DrawBossRange(g)
+
+            DrawHero(g)
+
             g.ResetTransform()
             DrawEditorOverlay(g)
+
             Return
         End If
 
@@ -2084,33 +2365,46 @@ Public Class Form1
 
 
 
+        'If Not showBossRanges Then Return
+
+        If Not mapEditorActive Then Return
         If Not showBossRanges Then Return
 
 
+        'If Not bossActive Then
 
-
-        If Not bossActive Then
-
-            g.FillEllipse(
+        g.FillEllipse(
                 BossSightRangeBrush,
                 bossPos.X - bossSightRange,
                 bossPos.Y - bossSightRange,
                 bossSightRange * 2,
                 bossSightRange * 2)
 
-            g.DrawEllipse(
+        g.DrawEllipse(
                 BossSightRangePen,
                 bossPos.X - bossSightRange,
                 bossPos.Y - bossSightRange,
                 bossSightRange * 2,
                 bossSightRange * 2)
 
-            DrawBossRangeHandle(g, bossSightRange, BossSightRangePen.Color)
+        DrawBossRangeHandle(g, bossSightRange, BossSightRangePen.Color)
 
 
-            DrawCenteredBossRangeLabel(g, "Sight Range", bossSightRange)
+        DrawCenteredBossRangeLabel(g, "Sight Range", bossSightRange)
 
-        End If
+
+
+
+        'End If
+
+
+
+
+
+
+
+
+
 
 
         Dim BossFireballRangeBrush = New SolidBrush(Color.FromArgb(16, Color.DarkOrange))
@@ -2131,10 +2425,15 @@ Public Class Form1
 
         DrawBossRangeHandle(g, bossFireballRange, BossRangePen.Color)
 
-
-
         DrawCenteredBossRangeLabel(g, "Fireball Range", bossFireballRange)
 
+
+
+
+
+
+
+        ' 
         Using bossPreferredDistanceBrush As New SolidBrush(Color.FromArgb(16, Color.Yellow))
             g.FillEllipse(
                 bossPreferredDistanceBrush,
@@ -2155,6 +2454,14 @@ Public Class Form1
 
         DrawCenteredBossRangeLabel(g, "Preferred Distance", bossPreferredDistance)
 
+
+
+
+
+
+
+
+        ' Melee
         Using bossMeleeRangeBrush As New SolidBrush(Color.FromArgb(16, Color.Red))
             g.FillEllipse(
                 bossMeleeRangeBrush,
@@ -2174,7 +2481,9 @@ Public Class Form1
         DrawBossRangeHandle(g, bossMeleeRange, BossMeleeRangePen.Color)
         DrawCenteredBossRangeLabel(g, "Melee Range", bossMeleeRange)
 
+
     End Sub
+
 
 
 
