@@ -34,6 +34,7 @@ Wall|-520|680|640|40
 Wall|-560|0|40|680
 Wall|-560|-800|40|760
 Boss|400|-40|40|40
-Setting|BossFireballRange|293.7015
-Setting|BossPreferredDistance|250.25275
+Setting|BossFireballRange|428.30762
+Setting|BossPreferredDistance|361.76294
 Setting|BossSightRange|779.6103
+Setting|BossMeleeRange|157.49655
