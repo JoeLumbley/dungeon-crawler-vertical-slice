@@ -885,7 +885,8 @@ Public Class Form1
         Dim distance As Single =
         CSng(Math.Sqrt(dx * dx + dy * dy))
 
-        If distance > CombatDistance Then
+        ' If the hero is too far from the boss, move them closer to the boss to attack
+        If distance > CombatDistance + 2 Then
 
             Dim nx As Single = dx / distance
             Dim ny As Single = dy / distance
