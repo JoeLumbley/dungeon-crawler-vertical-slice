@@ -65,26 +65,28 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Floor|160|-2840|520|2040
-        '''Floor|120|-840|40|40
-        '''Floor|680|-840|40|40
+        '''  Looks up a localized string similar to Floor|120|-2880|600|2080
         '''Column|120|-840|40|40
         '''Column|680|-840|40|40
-        '''Wall|720|-840|720|40
-        '''Wall|-520|-840|640|40
+        '''Column|120|-2880|40|40
+        '''Column|680|-2880|40|40
+        '''Column|680|-1520|40|40
+        '''Column|680|-2200|40|40
+        '''Column|120|-2200|40|40
+        '''Column|120|-1520|40|40
         '''Wall|160|-2880|520|40
-        '''Wall|120|-2880|40|2040
-        '''Wall|680|-2880|40|2040
-        '''Floor|-520|-800|1960|1480
-        '''Wall|-520|680|1960|40
-        '''Wall|1440|-840|40|1560
-        '''Wall|-560|-840|40|1560
+        '''Wall|680|-2840|40|640
+        '''Wall|120|-2840|40|640
+        '''Wall|680|-2160|40|640
+        '''Wall|120|-2160|40|640
+        '''Wall|680|-1480|40|640
+        '''Wall|120|-1480|40|640
         '''Hero|400|-2640|40|40
-        '''Boss|400|0|40|40
-        '''Setting|BossFireballRange|202.52982
-        '''Setting|BossPreferredDistance|135.30194
-        '''Setting|BossSightRange|259.5247
-        '''.
+        '''Floor|-560|-840|2080|1560
+        '''Column|-560|-840|40|40
+        '''Column|-560|680|40|40
+        '''Column|1480|-840|40|40
+        '''Column|1480|680 [rest of string was truncated]&quot;;.
         '''</summary>
         Friend Shared ReadOnly Property map() As String
             Get

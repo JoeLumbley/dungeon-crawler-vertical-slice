@@ -136,47 +136,16 @@ Public Class Form1
     Private fullscreenKeyDown As Boolean
 
 
-
-
-    'Public Sub New()
-
-    '    InitializeComponent()
-
-    '    DoubleBuffered = True
-    '    KeyPreview = True
-    '    'FormBorderStyle = FormBorderStyle.Sizable
-    '    'MinimumSize = New Size(500, 400)
-
-    '    ' we draw background
-
-
-    '    'ClientSize = New Size(900, 700)
-
-    '    'Text = "Dungeon Combat Prototype"
-
-    '    heroPos = New PointF(
-    '        ClientSize.Width \ 2,
-    '        ClientSize.Height - 120)
-
-    '    heroTarget = heroPos
-
-    '    bossPos = New PointF(
-    '        ClientSize.Width \ 2,
-    '        120)
-
-    '    gameTimer.Interval = 16
-
-    '    AddHandler gameTimer.Tick,
-    '        AddressOf GameLoop
-
-    '    gameTimer.Start()
-
-    'End Sub
-
-
     Protected Overrides Async Sub OnLoad(e As EventArgs)
 
         MyBase.OnLoad(e)
+
+
+        SetStyle(
+            ControlStyles.AllPaintingInWmPaint Or
+            ControlStyles.UserPaint Or
+            ControlStyles.OptimizedDoubleBuffer,
+            True)
 
         DoubleBuffered = True
         KeyPreview = True
@@ -185,7 +154,6 @@ Public Class Form1
         windowManager = New WindowManager(Me)
         windowManager.Initialize()
 
-        'InitializeSystems()
 
         heroPos = New PointF(
             ClientSize.Width \ 2,
@@ -1816,7 +1784,7 @@ Public Class Form1
             10)
 
             g.DrawString(
-                "Click the boss to attack",
+                "Click where you want to go and the boss to attack",
                 f,
                 Brushes.White,
                 20,
@@ -2147,26 +2115,12 @@ Public Class Form1
         Me.WindowState = FormWindowState.Maximized
 
     End Sub
+
+
+
+
+
 End Class
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

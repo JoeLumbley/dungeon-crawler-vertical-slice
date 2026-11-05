@@ -21,17 +21,7 @@ Public Class WindowManager
 
     Public Sub Initialize()
 
-        'hostForm.Text = "Bouncing Ball"
-
         hostForm.Text = "Dungeon Combat Prototype"
-
-
-
-
-
-
-
-
         hostForm.BackColor = Color.Black
 
         hostForm.StartPosition = FormStartPosition.CenterScreen
