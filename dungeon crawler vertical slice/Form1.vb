@@ -65,6 +65,12 @@ Public Class Form1
     Private bossActive As Boolean
     Private activeBossRangeHandle As BossRangeHandle
 
+
+    Private showBossRanges As Boolean = True
+
+
+
+
     Private ReadOnly Property ResetButtonBounds As Rectangle
         Get
             Return New Rectangle(
@@ -377,11 +383,28 @@ Public Class Form1
         If e.Button <> MouseButtons.Left Then Return
 
         Dim worldPoint As PointF = ScreenToWorld(e.Location)
-        Dim rangeHandle As BossRangeHandle
-        If TryGetBossRangeHandle(worldPoint, rangeHandle) Then
-            activeBossRangeHandle = rangeHandle
-            Return
+        'Dim rangeHandle As BossRangeHandle
+        'If TryGetBossRangeHandle(worldPoint, rangeHandle) Then
+        '    activeBossRangeHandle = rangeHandle
+        '    Return
+        'End If
+
+
+        If showBossRanges Then
+
+            Dim rangeHandle As BossRangeHandle
+
+            If TryGetBossRangeHandle(worldPoint, rangeHandle) Then
+                activeBossRangeHandle = rangeHandle
+                Return
+            End If
+
         End If
+
+
+
+
+
 
         If heroHealth <= 0 Then Return
 
@@ -540,6 +563,27 @@ Public Class Form1
             windowManager.ToggleFullscreen()
             Return
         End If
+
+
+        If e.Control AndAlso e.KeyCode = Keys.H Then
+
+            showBossRanges = Not showBossRanges
+
+            If Not showBossRanges Then
+                activeBossRangeHandle = BossRangeHandle.None
+            End If
+
+            Invalidate()
+            Return
+
+        End If
+
+
+
+
+
+
+
 
         If e.KeyCode = Keys.E Then
             If Not mapEditorActive Then
@@ -1857,7 +1901,7 @@ Public Class Form1
             10)
 
             g.DrawString(
-                "Click where you want to go and the boss to attack",
+                "Click where you want to go and the boss to attack CTRL+H: toggle boss ranges",
                 f,
                 Brushes.White,
                 20,
@@ -2034,6 +2078,12 @@ Public Class Form1
 
     Private Sub DrawBossRange(
     g As Graphics)
+
+
+
+        If Not showBossRanges Then Return
+
+
 
 
         If Not bossActive Then
