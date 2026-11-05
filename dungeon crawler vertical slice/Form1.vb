@@ -59,6 +59,16 @@ Public Class Form1
     Private bossActive As Boolean
     Private activeBossRangeHandle As BossRangeHandle
 
+    Private ReadOnly Property ResetButtonBounds As Rectangle
+        Get
+            Return New Rectangle(
+                (ClientSize.Width - 160) \ 2,
+                ClientSize.Height \ 2 + 70,
+                160,
+                40)
+        End Get
+    End Property
+
     Private Enum BossRangeHandle
         None
         Fireball
@@ -211,6 +221,39 @@ Public Class Form1
 
     End Sub
 
+    Private Sub ResetGame()
+
+        For Each mapObject In mapObjects
+            If mapObject.ObjectType = MapObjectType.Hero Then
+                heroPos = New PointF(
+                    mapObject.Bounds.X + mapObject.Bounds.Width / 2.0F,
+                    mapObject.Bounds.Y + mapObject.Bounds.Height / 2.0F)
+                heroTarget = heroPos
+            ElseIf mapObject.ObjectType = MapObjectType.Boss Then
+                bossPos = New PointF(
+                    mapObject.Bounds.X + mapObject.Bounds.Width / 2.0F,
+                    mapObject.Bounds.Y + mapObject.Bounds.Height / 2.0F)
+            End If
+        Next
+
+        heroHealth = heroMaxHealth
+        bossHealth = bossMaxHealth
+        bossActive = False
+        bossAttackTimer = 0
+        attackCooldown = 0
+        heroAttackAnim = 0
+        heroFlashTimer = 0
+        bossFlashTimer = 0
+        bossHealthBarTimer = 0
+        pendingAttack = False
+        activeBossRangeHandle = BossRangeHandle.None
+        fireballs.Clear()
+        damageTexts.Clear()
+
+        Invalidate()
+
+    End Sub
+
 
 
     Private ReadOnly Property ViewportOffset As PointF
@@ -342,6 +385,13 @@ Public Class Form1
 
         If mapEditorActive Then
             HandleEditorMouseDown(e)
+            Return
+        End If
+
+        If e.Button = MouseButtons.Left AndAlso
+           (heroHealth <= 0 OrElse bossHealth <= 0) AndAlso
+           ResetButtonBounds.Contains(e.Location) Then
+            ResetGame()
             Return
         End If
 
@@ -1893,6 +1943,23 @@ Public Class Form1
 
             End Using
 
+        End If
+
+        If heroHealth <= 0 OrElse bossHealth <= 0 Then
+            Using buttonBrush As New SolidBrush(Color.FromArgb(220, 45, 45, 45))
+                g.FillRectangle(buttonBrush, ResetButtonBounds)
+            End Using
+
+            g.DrawRectangle(Pens.White, ResetButtonBounds)
+
+            Using buttonFont As New Font("Segoe UI", 12, FontStyle.Bold)
+                Using sf As New StringFormat()
+                    sf.Alignment = StringAlignment.Center
+                    sf.LineAlignment = StringAlignment.Center
+                    g.DrawString("RESET", buttonFont, Brushes.White,
+                                 ResetButtonBounds, sf)
+                End Using
+            End Using
         End If
 
     End Sub
