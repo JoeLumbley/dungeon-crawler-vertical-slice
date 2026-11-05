@@ -1384,6 +1384,8 @@ Public Class Form1
         g.SmoothingMode = SmoothingMode.HighQuality
         g.TextRenderingHint = Drawing.Text.TextRenderingHint.AntiAlias
         g.InterpolationMode = InterpolationMode.HighQualityBicubic
+        g.CompositingQuality = CompositingQuality.AssumeLinear
+        g.PixelOffsetMode = PixelOffsetMode.HighQuality
 
 
 
@@ -1636,10 +1638,18 @@ Public Class Form1
     Private Sub DrawHeroLight(g As Graphics)
 
         Dim lightBounds As New RectangleF(
-        heroPos.X - HeroLightRadius - HeroLightRadius \ 13,
+        heroPos.X - HeroLightRadius - HeroLightRadius \ 15,
         heroPos.Y - HeroLightRadius,
         HeroLightRadius * 2,
         HeroLightRadius * 2)
+
+
+        'Dim lightBounds As New RectangleF(
+        'heroPos.X - HeroLightRadius,
+        'heroPos.Y - HeroLightRadius,
+        'HeroLightRadius * 2,
+        'HeroLightRadius * 2)
+
 
         Using path As New GraphicsPath()
 
@@ -1651,13 +1661,13 @@ Public Class Form1
 
                 blend.Positions = New Single() {
                     0.0F,   ' center
-                    0.4F,   ' middle
+                    0.8F,   ' middle
                     1.0F    ' edge
                 }
 
                 blend.Colors = New Color() {
                     Color.FromArgb(255, Color.Black),      ' fully visible
-                    Color.FromArgb(255, Color.Black),    ' partially dark
+                    Color.FromArgb(180, Color.Black),    ' partially dark
                     Color.FromArgb(0, Color.Black)     ' full darkness
                 }
 
