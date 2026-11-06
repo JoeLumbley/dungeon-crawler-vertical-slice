@@ -54,12 +54,6 @@ Public Class Form1
     Private Const BossKnockbackDistance As Single = 300.0F
     Private Const BossMeleeCooldown As Double = 1.0
 
-
-
-
-
-
-
     Private bossAttackTimer As Double
     Private bossMeleeTimer As Double
     Private bossActive As Boolean
@@ -67,9 +61,6 @@ Public Class Form1
 
 
     Private showBossRanges As Boolean = True
-
-
-
 
     Private ReadOnly Property ResetButtonBounds As Rectangle
         Get
@@ -92,11 +83,6 @@ Public Class Form1
     Private ReadOnly fireballs As New List(Of Fireball)
 
 
-
-
-
-
-
     Private Const HeroRadius As Single = 20.0F
     Private HeroLightRadius As Single = 260.0F
     Private Const BossRadius As Single = 60.0F
@@ -113,9 +99,6 @@ Public Class Form1
     Private editorZoom As Single = 1.0F
     Private ReadOnly mapObjects As New List(Of MapObject)
 
-
-
-
     Private ReadOnly Property CombatDistance As Single
         Get
             Return HeroRadius + BossRadius + bossMeleeRange
@@ -124,15 +107,9 @@ Public Class Form1
 
     Private pendingAttack As Boolean
 
-
-
-
-
     Private attackCooldown As Double
 
     Private Const AttackCooldownDuration As Double = 0.25
-
-
 
     Private HeroCollisionRingPen As New Pen(Color.Lime, 2)
     Private BossCollisionRingPen As New Pen(Color.Red, 2)
@@ -141,8 +118,6 @@ Public Class Form1
     Private BossPreferredDistancePen As New Pen(Color.Yellow, 2)
     Private BossSightRangePen As New Pen(Color.Purple, 2)
     Private BossMeleeRangePen As New Pen(Color.Red, 2)
-
-
 
     Private BossSightRangeBrush = New SolidBrush(Color.FromArgb(16, Color.Purple))
 
@@ -155,7 +130,6 @@ Public Class Form1
     Protected Overrides Async Sub OnLoad(e As EventArgs)
 
         MyBase.OnLoad(e)
-
 
         SetStyle(
             ControlStyles.AllPaintingInWmPaint Or
@@ -239,8 +213,6 @@ Public Class Form1
 
     End Sub
 
-
-
     Private ReadOnly Property ViewportOffset As PointF
         Get
             If mapEditorActive Then Return editorPan
@@ -301,7 +273,6 @@ Public Class Form1
         If mapEditorActive Then Return
 
 
-
         UpdateHeroMovement(dt)
 
         UpdateCombat()
@@ -310,8 +281,6 @@ Public Class Form1
 
         UpdateFireballs(dt)
 
-
-        'ResolveBossCollision()
 
 
         If attackCooldown > 0 Then
@@ -363,75 +332,6 @@ Public Class Form1
 
     End Sub
 
-    'Protected Overrides Sub OnMouseDown(
-    'e As MouseEventArgs)
-
-    '    MyBase.OnMouseDown(e)
-
-    '    If mapEditorActive Then
-    '        HandleEditorMouseDown(e)
-    '        Return
-    '    End If
-
-    '    If e.Button = MouseButtons.Left AndAlso
-    '       (heroHealth <= 0 OrElse bossHealth <= 0) AndAlso
-    '       ResetButtonBounds.Contains(e.Location) Then
-    '        ResetGame()
-    '        Return
-    '    End If
-
-    '    If e.Button <> MouseButtons.Left Then Return
-
-    '    Dim worldPoint As PointF = ScreenToWorld(e.Location)
-    '    'Dim rangeHandle As BossRangeHandle
-    '    'If TryGetBossRangeHandle(worldPoint, rangeHandle) Then
-    '    '    activeBossRangeHandle = rangeHandle
-    '    '    Return
-    '    'End If
-
-
-    '    'If showBossRanges Then
-
-    '    '    Dim rangeHandle As BossRangeHandle
-
-    '    '    If TryGetBossRangeHandle(worldPoint, rangeHandle) Then
-    '    '        activeBossRangeHandle = rangeHandle
-    '    '        Return
-    '    '    End If
-
-    '    'End If
-
-    '    If showBossRanges AndAlso mapEditorActive Then
-
-    '        Dim rangeHandle As BossRangeHandle
-
-    '        If TryGetBossRangeHandle(worldPoint, rangeHandle) Then
-    '            activeBossRangeHandle = rangeHandle
-    '            Return
-    '        End If
-
-    '    End If
-
-
-
-
-    '    If heroHealth <= 0 Then Return
-
-    '    If bossHealth > 0 AndAlso
-    '   BossBounds.Contains(worldPoint) Then
-
-    '        HandleBossClick()
-
-    '    Else
-
-    '        pendingAttack = False
-    '        heroTarget = worldPoint
-
-    '    End If
-
-    'End Sub
-
-
     Protected Overrides Sub OnMouseDown(e As MouseEventArgs)
 
         MyBase.OnMouseDown(e)
@@ -469,54 +369,6 @@ Public Class Form1
         End If
 
     End Sub
-
-
-
-
-
-    'Protected Overrides Sub OnMouseMove(e As MouseEventArgs)
-    '    MyBase.OnMouseMove(e)
-
-    '    If Not mapEditorActive AndAlso activeBossRangeHandle <> BossRangeHandle.None Then
-    '        UpdateBossRangeHandle(ScreenToWorld(e.Location))
-    '        Invalidate()
-    '        Return
-    '    End If
-
-    '    If mapEditorActive AndAlso
-    '       isResizingMapObject AndAlso
-    '       selectedMapObject IsNot Nothing Then
-
-    '        Dim current As PointF = SnapPoint(ScreenToWorld(e.Location))
-    '        Dim left As Single = Math.Min(resizeStart.X, current.X)
-    '        Dim top As Single = Math.Min(resizeStart.Y, current.Y)
-    '        Dim right As Single = Math.Max(resizeStart.X + GridSize, current.X + GridSize)
-    '        Dim bottom As Single = Math.Max(resizeStart.Y + GridSize, current.Y + GridSize)
-
-    '        selectedMapObject.Bounds = New RectangleF(
-    '            left,
-    '            top,
-    '            Math.Max(GridSize, right - left),
-    '            Math.Max(GridSize, bottom - top))
-
-    '        If selectedMapObject.ObjectType = MapObjectType.Hero OrElse
-    '           selectedMapObject.ObjectType = MapObjectType.Boss Then
-    '            Dim placementCenter As New PointF(
-    '                selectedMapObject.Bounds.X + selectedMapObject.Bounds.Width / 2.0F,
-    '                selectedMapObject.Bounds.Y + selectedMapObject.Bounds.Height / 2.0F)
-
-    '            If selectedMapObject.ObjectType = MapObjectType.Hero Then
-    '                heroPos = placementCenter
-    '                heroTarget = heroPos
-    '            Else
-    '                bossPos = placementCenter
-    '            End If
-    '        End If
-
-    '        Invalidate()
-    '    End If
-
-    'End Sub
 
 
     Protected Overrides Sub OnMouseMove(e As MouseEventArgs)
@@ -583,11 +435,6 @@ Public Class Form1
         End If
 
     End Sub
-
-
-
-
-
 
 
     Protected Overrides Sub OnMouseUp(e As MouseEventArgs)
@@ -701,13 +548,6 @@ Public Class Form1
             Return
 
         End If
-
-
-
-
-
-
-
 
         If e.KeyCode = Keys.E Then
             If Not mapEditorActive Then
@@ -952,80 +792,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub HandleEditorMouseDown(e As MouseEventArgs)
-
-    '    If e.Button = MouseButtons.Right Then
-    '        Dim objectToRemove = MapObjectAt(ScreenToWorld(e.Location))
-    '        If objectToRemove IsNot Nothing Then mapObjects.Remove(objectToRemove)
-    '        If selectedMapObject Is objectToRemove Then selectedMapObject = Nothing
-    '        Invalidate()
-    '        Return
-    '    End If
-
-    '    If e.Button <> MouseButtons.Left Then Return
-
-    '    Dim toolbarType As MapObjectType
-    '    If TryGetToolbarType(e.Location, toolbarType) Then
-    '        selectedMapType = toolbarType
-    '        selectedMapObject = Nothing
-    '        Invalidate()
-    '        Return
-    '    End If
-
-    '    Dim worldPoint As PointF = SnapPoint(ScreenToWorld(e.Location))
-    '    Dim existing As MapObject = MapObjectAt(ScreenToWorld(e.Location))
-
-    '    If selectedMapType = MapObjectType.Hero OrElse
-    '       selectedMapType = MapObjectType.Boss Then
-    '        For i As Integer = mapObjects.Count - 1 To 0 Step -1
-    '            If mapObjects(i).ObjectType = selectedMapType Then
-    '                mapObjects.RemoveAt(i)
-    '            End If
-    '        Next
-
-    '        Dim placementObject As New MapObject With {
-    '            .ObjectType = selectedMapType,
-    '            .Bounds = New RectangleF(worldPoint.X, worldPoint.Y, GridSize, GridSize)
-    '        }
-    '        mapObjects.Add(placementObject)
-    '        selectedMapObject = placementObject
-
-    '        Dim placementCenter As New PointF(
-    '            worldPoint.X + GridSize / 2.0F,
-    '            worldPoint.Y + GridSize / 2.0F)
-    '        If selectedMapType = MapObjectType.Hero Then
-    '            heroPos = placementCenter
-    '            heroTarget = heroPos
-    '        Else
-    '            bossPos = placementCenter
-    '        End If
-
-    '        resizeStart = worldPoint
-    '        resizeOriginalBounds = placementObject.Bounds
-    '        isResizingMapObject = True
-    '    ElseIf existing IsNot Nothing AndAlso
-    '       (selectedMapType = MapObjectType.Floor OrElse
-    '        existing.ObjectType <> MapObjectType.Floor) Then
-    '        selectedMapObject = existing
-    '        resizeStart = worldPoint
-    '        resizeOriginalBounds = existing.Bounds
-    '        isResizingMapObject = True
-    '    Else
-    '        Dim newObject As New MapObject With {
-    '            .ObjectType = selectedMapType,
-    '            .Bounds = New RectangleF(worldPoint.X, worldPoint.Y, GridSize, GridSize)
-    '        }
-    '        mapObjects.Add(newObject)
-    '        selectedMapObject = newObject
-    '        resizeStart = worldPoint
-    '        resizeOriginalBounds = newObject.Bounds
-    '        isResizingMapObject = True
-    '    End If
-
-    '    Invalidate()
-    'End Sub
-
-
 
     Private Sub HandleEditorMouseDown(e As MouseEventArgs)
 
@@ -1107,13 +873,13 @@ Public Class Form1
             Next
 
             Dim placementObject As New MapObject With {
-            .ObjectType = selectedMapType,
-            .Bounds = New RectangleF(
-                snappedPoint.X,
-                snappedPoint.Y,
-                GridSize,
-                GridSize)
-        }
+                .ObjectType = selectedMapType,
+                .Bounds = New RectangleF(
+                    snappedPoint.X,
+                    snappedPoint.Y,
+                    GridSize,
+                    GridSize)
+            }
 
             mapObjects.Add(placementObject)
 
@@ -1151,13 +917,13 @@ Public Class Form1
         Else
 
             Dim newObject As New MapObject With {
-            .ObjectType = selectedMapType,
-            .Bounds = New RectangleF(
-                snappedPoint.X,
-                snappedPoint.Y,
-                GridSize,
-                GridSize)
-        }
+                .ObjectType = selectedMapType,
+                .Bounds = New RectangleF(
+                    snappedPoint.X,
+                    snappedPoint.Y,
+                    GridSize,
+                    GridSize)
+            }
 
             mapObjects.Add(newObject)
 
@@ -1250,9 +1016,6 @@ Public Class Form1
         pendingAttack = False
 
     End Sub
-
-
-
 
     Private Sub UpdateHeroMovement(dt As Double)
 
@@ -1697,11 +1460,7 @@ Public Class Form1
 
         DrawMapObjects(g)
 
-
         DrawCombatIndicator(g)
-
-
-
 
         DrawBoss(g)
 
@@ -1710,15 +1469,11 @@ Public Class Form1
         DrawBossHealthBar(g)
 
 
-
-
         DrawHeroLight(g)
 
         DrawHero(g)
 
-
         DrawFireballs(g)
-
 
         DrawMoveTarget(g)
 
@@ -1732,21 +1487,6 @@ Public Class Form1
             heroPos.Y - HeroRadius,
             HeroRadius * 2,
             HeroRadius * 2)
-
-        '' Draw Boss Collision Ring
-        'g.DrawEllipse(
-        '    BossCollisionRingPen,
-        '    bossPos.X - BossRadius,
-        '    bossPos.Y - BossRadius,
-        '    BossRadius * 2,
-        '    BossRadius * 2)
-
-        'DrawBossRange(g)
-
-
-
-
-
 
         g.ResetTransform()
 
@@ -2365,13 +2105,9 @@ Public Class Form1
 
 
 
-        'If Not showBossRanges Then Return
-
         If Not mapEditorActive Then Return
         If Not showBossRanges Then Return
 
-
-        'If Not bossActive Then
 
         g.FillEllipse(
                 BossSightRangeBrush,
@@ -2391,16 +2127,6 @@ Public Class Form1
 
 
         DrawCenteredBossRangeLabel(g, "Sight Range", bossSightRange)
-
-
-
-
-        'End If
-
-
-
-
-
 
 
 
@@ -2483,9 +2209,6 @@ Public Class Form1
 
 
     End Sub
-
-
-
 
     Private Sub DrawBossRangeHandle(
         g As Graphics,
