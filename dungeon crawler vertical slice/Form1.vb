@@ -177,6 +177,20 @@ Public Class Form1
         Await Task.Delay(100)
         LoadMapFile(mapPath)
 
+
+        mapPath = Path.Combine(Application.StartupPath, "map2.dat")
+
+        If Not File.Exists(mapPath) Then
+            Try
+                File.WriteAllText(mapPath, My.Resources.Resource1.map2)
+            Catch ex As IOException
+                MessageBox.Show(Me, $"Unable to create map2: {ex.Message}",
+                                "Map Load", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Return
+            End Try
+        End If
+
+
     End Sub
 
     Private Sub ResetGame()

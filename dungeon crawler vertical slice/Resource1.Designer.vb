@@ -93,5 +93,35 @@ Namespace My.Resources
                 Return ResourceManager.GetString("map", resourceCulture)
             End Get
         End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Floor|120|-2880|600|2080
+        '''Column|120|-840|40|40
+        '''Column|680|-840|40|40
+        '''Column|680|-1520|40|40
+        '''Column|680|-2200|40|40
+        '''Column|120|-2200|40|40
+        '''Column|120|-1520|40|40
+        '''Wall|680|-2840|40|640
+        '''Wall|120|-2840|40|640
+        '''Wall|680|-2160|40|640
+        '''Wall|120|-2160|40|640
+        '''Wall|680|-1480|40|640
+        '''Wall|120|-1480|40|640
+        '''Floor|-560|-840|2080|1560
+        '''Column|-560|-840|40|40
+        '''Column|-560|680|40|40
+        '''Column|1480|-840|40|40
+        '''Column|1480|680|40|40
+        '''Column|680|680|40|40
+        '''Column|120|680|40|40
+        '''Column|1480|-40|40|40
+        '''Column|-560|-40|40 [rest of string was truncated]&quot;;.
+        '''</summary>
+        Friend Shared ReadOnly Property map2() As String
+            Get
+                Return ResourceManager.GetString("map2", resourceCulture)
+            End Get
+        End Property
     End Class
 End Namespace
