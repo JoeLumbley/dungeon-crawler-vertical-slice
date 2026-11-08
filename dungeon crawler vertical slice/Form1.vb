@@ -35,15 +35,26 @@ Public Class Form1
     Private Const HeroSpeed As Single = 200.0F
 
 
+
+    Private Const HeroAttackRange As Single = 50.0F
+
+
+    Private Const HeroRadius As Single = 20.0F
+    Private HeroLightRadius As Single = 260.0F
+    Private Const BossRadius As Single = 60.0F
+    Private Const HallwayHalfWidth As Single = 180.0F
+    Private Const GridSize As Single = 40.0F
+
+
     Private Const DefaultBossFireballRange As Single = 135.0F
     Private Const DefaultBossPreferredDistance As Single = 75.0F
     Private Const DefaultBossSightRange As Single = 175.0F
-    Private Const DefaultBossMeleeRange As Single = 70.0F
+    Private Const DefaultBossMeleeRange As Single = BossRadius + 10
 
     Private bossFireballRange As Single = DefaultBossFireballRange
     Private bossPreferredDistance As Single = DefaultBossPreferredDistance
     Private bossSightRange As Single = DefaultBossSightRange
-    Private bossMeleeRange As Single = DefaultBossMeleeRange
+    Private bossMeleeReach As Single = DefaultBossMeleeRange
 
 
     Private Const BossMoveSpeed As Single = 90.0F
@@ -83,11 +94,6 @@ Public Class Form1
     Private ReadOnly fireballs As New List(Of Fireball)
 
 
-    Private Const HeroRadius As Single = 20.0F
-    Private HeroLightRadius As Single = 260.0F
-    Private Const BossRadius As Single = 60.0F
-    Private Const HallwayHalfWidth As Single = 180.0F
-    Private Const GridSize As Single = 40.0F
 
     Private mapEditorActive As Boolean
     Private selectedMapType As MapObjectType = MapObjectType.Wall
@@ -99,11 +105,26 @@ Public Class Form1
     Private editorZoom As Single = 1.0F
     Private ReadOnly mapObjects As New List(Of MapObject)
 
+    'Private ReadOnly Property CombatDistance As Single
+    '    Get
+    '        Return HeroRadius + BossRadius + bossMeleeRange
+    '    End Get
+    'End Property
+
     Private ReadOnly Property CombatDistance As Single
         Get
-            Return HeroRadius + BossRadius + bossMeleeRange
+            Return HeroRadius + BossRadius + HeroAttackRange
         End Get
     End Property
+
+
+    Private ReadOnly Property BossMeleeDisplayRange As Single
+        Get
+            Return HeroRadius + BossRadius + bossMeleeReach
+        End Get
+    End Property
+
+
 
     Private pendingAttack As Boolean
 
@@ -464,49 +485,164 @@ Public Class Form1
 
     End Sub
 
+
+    Private Function GetHandlePosition(
+    radius As Single,
+    angleDegrees As Single) As PointF
+
+        Dim radians As Double =
+        angleDegrees * Math.PI / 180.0
+
+        Return New PointF(
+        bossPos.X + radius * CSng(Math.Cos(radians)),
+        bossPos.Y + radius * CSng(Math.Sin(radians)))
+
+    End Function
+
+
+
+
+
+
+
+
+
+    'Private Function TryGetBossRangeHandle(
+    '    worldPoint As PointF,
+    '    ByRef rangeHandle As BossRangeHandle) As Boolean
+
+    '    Const handleRadius As Single = 12.0F
+    '    Dim handleDistanceSquared As Single = handleRadius * handleRadius
+
+    '    Dim fireballHandle As New PointF(
+    '        bossPos.X + bossFireballRange,
+    '        bossPos.Y)
+    '    If DistanceSquared(worldPoint, fireballHandle) <= handleDistanceSquared Then
+    '        rangeHandle = BossRangeHandle.Fireball
+    '        Return True
+    '    End If
+
+    '    'Dim meleeHandle As New PointF(
+    '    '    bossPos.X + bossMeleeReach,
+    '    '    bossPos.Y)
+
+    '    Dim meleeHandle As New PointF(
+    '    bossPos.X + BossMeleeDisplayRange,
+    '    bossPos.Y)
+
+    '    If DistanceSquared(worldPoint, meleeHandle) <= handleDistanceSquared Then
+    '        rangeHandle = BossRangeHandle.Melee
+    '        Return True
+    '    End If
+
+    '    Dim preferredHandle As New PointF(
+    '        bossPos.X + bossPreferredDistance,
+    '        bossPos.Y)
+    '    If DistanceSquared(worldPoint, preferredHandle) <= handleDistanceSquared Then
+    '        rangeHandle = BossRangeHandle.PreferredDistance
+    '        Return True
+    '    End If
+
+    '    Dim sightHandle As New PointF(
+    '        bossPos.X + bossSightRange,
+    '        bossPos.Y)
+    '    If DistanceSquared(worldPoint, sightHandle) <= handleDistanceSquared Then
+    '        rangeHandle = BossRangeHandle.Sight
+    '        Return True
+    '    End If
+
+    '    rangeHandle = BossRangeHandle.None
+    '    Return False
+
+    'End Function
+
     Private Function TryGetBossRangeHandle(
-        worldPoint As PointF,
-        ByRef rangeHandle As BossRangeHandle) As Boolean
+    worldPoint As PointF,
+    ByRef rangeHandle As BossRangeHandle) As Boolean
 
         Const handleRadius As Single = 12.0F
-        Dim handleDistanceSquared As Single = handleRadius * handleRadius
 
-        Dim fireballHandle As New PointF(
-            bossPos.X + bossFireballRange,
-            bossPos.Y)
-        If DistanceSquared(worldPoint, fireballHandle) <= handleDistanceSquared Then
-            rangeHandle = BossRangeHandle.Fireball
-            Return True
-        End If
+        Dim handleDistanceSquared As Single =
+        handleRadius * handleRadius
 
-        Dim meleeHandle As New PointF(
-            bossPos.X + bossMeleeRange,
-            bossPos.Y)
-        If DistanceSquared(worldPoint, meleeHandle) <= handleDistanceSquared Then
-            rangeHandle = BossRangeHandle.Melee
-            Return True
-        End If
+        Dim sightHandle As PointF =
+        GetHandlePosition(
+            bossSightRange,
+            270.0F)
 
-        Dim preferredHandle As New PointF(
-            bossPos.X + bossPreferredDistance,
-            bossPos.Y)
-        If DistanceSquared(worldPoint, preferredHandle) <= handleDistanceSquared Then
-            rangeHandle = BossRangeHandle.PreferredDistance
-            Return True
-        End If
-
-        Dim sightHandle As New PointF(
-            bossPos.X + bossSightRange,
-            bossPos.Y)
         If DistanceSquared(worldPoint, sightHandle) <= handleDistanceSquared Then
+
             rangeHandle = BossRangeHandle.Sight
             Return True
+
+        End If
+
+        Dim fireballHandle As PointF =
+        GetHandlePosition(
+            bossFireballRange,
+            0.0F)
+
+        If DistanceSquared(worldPoint, fireballHandle) <= handleDistanceSquared Then
+
+            rangeHandle = BossRangeHandle.Fireball
+            Return True
+
+        End If
+
+        Dim preferredHandle As PointF =
+        GetHandlePosition(
+            bossPreferredDistance,
+            180.0F)
+
+        If DistanceSquared(worldPoint, preferredHandle) <= handleDistanceSquared Then
+
+            rangeHandle = BossRangeHandle.PreferredDistance
+            Return True
+
+        End If
+
+        Dim meleeHandle As PointF =
+        GetHandlePosition(
+            BossMeleeDisplayRange,
+            90.0F)
+
+        If DistanceSquared(worldPoint, meleeHandle) <= handleDistanceSquared Then
+
+            rangeHandle = BossRangeHandle.Melee
+            Return True
+
         End If
 
         rangeHandle = BossRangeHandle.None
+
         Return False
 
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub UpdateBossRangeHandle(worldPoint As PointF)
 
@@ -522,8 +658,21 @@ Public Class Form1
                 bossPreferredDistance = radius
             Case BossRangeHandle.Sight
                 bossSightRange = radius
+                'Case BossRangeHandle.Melee
+                '    bossMeleeReach = radius
+                'Case BossRangeHandle.Melee
+
+                '    bossMeleeReach =
+                '        Math.Max(
+                '            0.0F,
+                '            radius - (HeroRadius + BossRadius))
+
             Case BossRangeHandle.Melee
-                bossMeleeRange = radius
+
+                bossMeleeReach =
+                    Math.Max(
+                        5.0F,
+                        radius - (HeroRadius + BossRadius))
         End Select
 
     End Sub
@@ -655,8 +804,12 @@ Public Class Form1
                         bossSightRange.ToString(CultureInfo.InvariantCulture)}))
                     writer.WriteLine(String.Join("|", {
                         "Setting",
-                        "BossMeleeRange",
-                        bossMeleeRange.ToString(CultureInfo.InvariantCulture)}))
+                        "BossMeleeReach",
+                        bossMeleeReach.ToString(CultureInfo.InvariantCulture)}))
+
+                    '"BossMeleeRange",
+                    'bossMeleeReach.ToString(CultureInfo.InvariantCulture)}))
+
                 End Using
             Catch ex As IOException
                 MessageBox.Show(Me, $"Unable to save the map: {ex.Message}",
@@ -690,7 +843,7 @@ Public Class Form1
             bossFireballRange = DefaultBossFireballRange
             bossPreferredDistance = DefaultBossPreferredDistance
             bossSightRange = DefaultBossSightRange
-            bossMeleeRange = DefaultBossMeleeRange
+            bossMeleeReach = DefaultBossMeleeRange
 
             For Each line As String In File.ReadLines(filePath)
                 If String.IsNullOrWhiteSpace(line) Then Continue For
@@ -708,8 +861,17 @@ Public Class Form1
                                 bossPreferredDistance = Math.Max(25.0F, Math.Min(2000.0F, settingValue))
                             Case "BossSightRange"
                                 bossSightRange = Math.Max(25.0F, Math.Min(2000.0F, settingValue))
-                            Case "BossMeleeRange"
-                                bossMeleeRange = Math.Max(25.0F, Math.Min(2000.0F, settingValue))
+                                'Case "BossMeleeRange"
+                                '    bossMeleeReach = Math.Max(25.0F, Math.Min(2000.0F, settingValue))
+
+                            Case "BossMeleeRange",
+                                 "BossMeleeReach"
+
+                                bossMeleeReach =
+                                    Math.Max(
+                                        5.0F,
+                                        Math.Min(2000.0F, settingValue))
+
                         End Select
                     End If
 
@@ -1058,6 +1220,38 @@ Public Class Form1
     End Sub
 
 
+    'Private Sub ResolveBossCollision()
+
+    '    Dim dx As Single =
+    '    heroPos.X - bossPos.X
+
+    '    Dim dy As Single =
+    '    heroPos.Y - bossPos.Y
+
+    '    Dim distance As Single =
+    '    CSng(Math.Sqrt(dx * dx + dy * dy))
+
+    '    Dim minimumDistance As Single =
+    '    HeroRadius + BossRadius
+
+    '    If distance <= 0 Then Return
+
+    '    If distance < minimumDistance Then
+
+    '        Dim pushOut As Single =
+    '        minimumDistance - distance
+
+    '        Dim nx As Single = dx / distance
+    '        Dim ny As Single = dy / distance
+
+    '        heroPos.X += nx * pushOut
+    '        heroPos.Y += ny * pushOut
+
+    '    End If
+
+    'End Sub
+
+
     Private Sub ResolveBossCollision()
 
         Dim dx As Single =
@@ -1072,7 +1266,13 @@ Public Class Form1
         Dim minimumDistance As Single =
         HeroRadius + BossRadius
 
-        If distance <= 0 Then Return
+        If distance <= 0 Then
+
+            heroPos.Y += minimumDistance
+
+            Return
+
+        End If
 
         If distance < minimumDistance Then
 
@@ -1088,6 +1288,40 @@ Public Class Form1
         End If
 
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub UpdateBossAI(dt As Double)
 
@@ -1150,6 +1384,57 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub TryBossMeleeAttack()
+
+    '    If bossMeleeTimer > 0 OrElse heroHealth <= 0 Then Return
+
+    '    Dim dx As Single = heroPos.X - bossPos.X
+    '    Dim dy As Single = heroPos.Y - bossPos.Y
+    '    Dim distance As Single = CSng(Math.Sqrt(dx * dx + dy * dy))
+
+
+
+
+    '    'If distance > bossMeleeRange Then Return
+
+    '    Dim effectiveMeleeRange As Single =
+    '        HeroRadius + BossRadius + bossMeleeRange
+
+    '    If distance > effectiveMeleeRange Then Return
+
+
+
+
+    '    bossMeleeTimer = BossMeleeCooldown
+    '    heroHealth -= BossMeleeDamage
+    '    heroFlashTimer = 0.15
+
+    '    damageTexts.Add(New DamageText With {
+    '        .X = heroPos.X - 10,
+    '        .Y = heroPos.Y - 30,
+    '        .Value = BossMeleeDamage,
+    '        .Lifetime = 1.0
+    '    })
+
+    '    If distance > 0 Then
+    '        heroPos.X += dx / distance * BossKnockbackDistance
+    '        heroPos.Y += dy / distance * BossKnockbackDistance
+    '    Else
+    '        heroPos.Y += BossKnockbackDistance
+    '    End If
+
+    '    heroTarget = heroPos
+    '    ResolveBossCollision()
+    '    ResolveMapObjectCollisions()
+
+    '    If heroHealth < 0 Then
+    '        heroHealth = 0
+    '    End If
+
+    'End Sub
+
+
+
     Private Sub TryBossMeleeAttack()
 
         If bossMeleeTimer > 0 OrElse heroHealth <= 0 Then Return
@@ -1158,9 +1443,19 @@ Public Class Form1
         Dim dy As Single = heroPos.Y - bossPos.Y
         Dim distance As Single = CSng(Math.Sqrt(dx * dx + dy * dy))
 
-        If distance > bossMeleeRange Then Return
+        'Dim effectiveMeleeRange As Single =
+        'HeroRadius + BossRadius + bossMeleeReach
+
+        'If distance > effectiveMeleeRange Then Return
+
+
+
+        If distance > BossMeleeDisplayRange Then Return
+
+
 
         bossMeleeTimer = BossMeleeCooldown
+
         heroHealth -= BossMeleeDamage
         heroFlashTimer = 0.15
 
@@ -1179,6 +1474,7 @@ Public Class Form1
         End If
 
         heroTarget = heroPos
+
         ResolveBossCollision()
         ResolveMapObjectCollisions()
 
@@ -1187,6 +1483,27 @@ Public Class Form1
         End If
 
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub ResolveBossMapObjectCollisions()
 
@@ -1410,19 +1727,35 @@ Public Class Form1
 
     End Sub
 
-    Private ReadOnly Property BossBounds As RectangleF
+    'Private ReadOnly Property BossBounds As RectangleF
 
+    '    Get
+
+    '        Return New RectangleF(
+    '            bossPos.X - 60,
+    '            bossPos.Y - 60,
+    '            120,
+    '            120)
+
+    '    End Get
+
+    'End Property
+
+
+    Private ReadOnly Property BossBounds As RectangleF
         Get
 
             Return New RectangleF(
-                bossPos.X - 60,
-                bossPos.Y - 60,
-                120,
-                120)
+            bossPos.X - BossRadius,
+            bossPos.Y - BossRadius,
+            BossRadius * 2,
+            BossRadius * 2)
 
         End Get
-
     End Property
+
+
+
 
     Protected Overrides Sub OnPaint(
         e As PaintEventArgs)
@@ -1476,7 +1809,9 @@ Public Class Form1
 
         DrawCombatIndicator(g)
 
-        DrawBoss(g)
+        'DrawBoss(g)
+
+        DrawBossRadius(g)
 
         DrawBossRange(g)
 
@@ -2114,12 +2449,29 @@ Public Class Form1
     End Sub
 
 
+
+
+    Private Sub DrawBossRadius(
+    g As Graphics)
+
+        g.DrawEllipse(
+                BossMeleeRangePen,
+                bossPos.X - BossRadius,
+                bossPos.Y - BossRadius,
+                BossRadius * 2,
+                BossRadius * 2)
+
+
+
+    End Sub
+
+
     Private Sub DrawBossRange(
     g As Graphics)
 
 
 
-        If Not mapEditorActive Then Return
+        'If Not mapEditorActive Then Return
         If Not showBossRanges Then Return
 
 
@@ -2137,10 +2489,22 @@ Public Class Form1
                 bossSightRange * 2,
                 bossSightRange * 2)
 
-        DrawBossRangeHandle(g, bossSightRange, BossSightRangePen.Color)
+
+        If mapEditorActive Then
+
+            'DrawBossRangeHandle(g, bossSightRange, BossSightRangePen.Color)
+            DrawBossRangeHandle(
+                g,
+                bossSightRange,
+                270.0F,
+                BossSightRangePen.Color)
+
+            DrawCenteredBossRangeLabel(g, "Sight Range", bossSightRange)
 
 
-        DrawCenteredBossRangeLabel(g, "Sight Range", bossSightRange)
+        End If
+
+
 
 
 
@@ -2163,9 +2527,23 @@ Public Class Form1
         bossFireballRange * 2,
         bossFireballRange * 2)
 
-        DrawBossRangeHandle(g, bossFireballRange, BossRangePen.Color)
 
-        DrawCenteredBossRangeLabel(g, "Fireball Range", bossFireballRange)
+
+        If mapEditorActive Then
+            'DrawBossRangeHandle(g, bossFireballRange, BossRangePen.Color)
+            DrawBossRangeHandle(
+                g,
+                bossFireballRange,
+                0.0F,
+                BossRangePen.Color)
+
+
+            DrawCenteredBossRangeLabel(g, "Fireball Range", bossFireballRange)
+
+
+
+        End If
+
 
 
 
@@ -2190,9 +2568,22 @@ Public Class Form1
         bossPreferredDistance * 2,
         bossPreferredDistance * 2)
 
-        DrawBossRangeHandle(g, bossPreferredDistance, BossPreferredDistancePen.Color)
 
-        DrawCenteredBossRangeLabel(g, "Preferred Distance", bossPreferredDistance)
+
+        If mapEditorActive Then
+            'DrawBossRangeHandle(g, bossPreferredDistance, BossPreferredDistancePen.Color)
+            DrawBossRangeHandle(
+                g,
+                bossPreferredDistance,
+                180.0F,
+                BossPreferredDistancePen.Color)
+
+            DrawCenteredBossRangeLabel(g, "Preferred Distance", bossPreferredDistance)
+
+
+
+
+        End If
 
 
 
@@ -2202,39 +2593,134 @@ Public Class Form1
 
 
         ' Melee
-        Using bossMeleeRangeBrush As New SolidBrush(Color.FromArgb(16, Color.Red))
+        'Using bossMeleeRangeBrush As New SolidBrush(Color.FromArgb(16, Color.Red))
+        '    g.FillEllipse(
+        '        bossMeleeRangeBrush,
+        '        bossPos.X - bossMeleeRange,
+        '        bossPos.Y - bossMeleeRange,
+        '        bossMeleeRange * 2,
+        '        bossMeleeRange * 2)
+        'End Using
+
+        'g.DrawEllipse(
+        '    BossMeleeRangePen,
+        '    bossPos.X - bossMeleeRange,
+        '    bossPos.Y - bossMeleeRange,
+        '    bossMeleeRange * 2,
+        '    bossMeleeRange * 2)
+
+        Dim displayedMeleeRange As Single =
+        HeroRadius + BossRadius + bossMeleeReach
+
+        'Using bossMeleeRangeBrush As New SolidBrush(Color.FromArgb(16, Color.Red))
+
+        '    g.FillEllipse(
+        '        bossMeleeRangeBrush,
+        '        bossPos.X - displayedMeleeRange,
+        '        bossPos.Y - displayedMeleeRange,
+        '        displayedMeleeRange * 2,
+        '        displayedMeleeRange * 2)
+
+        'End Using
+
+        'g.DrawEllipse(
+        '    BossMeleeRangePen,
+        '    bossPos.X - displayedMeleeRange,
+        '    bossPos.Y - displayedMeleeRange,
+        '    displayedMeleeRange * 2,
+        '    displayedMeleeRange * 2)
+
+
+        ' Melee
+        Using bossMeleeRangeBrush As New SolidBrush(
+            Color.FromArgb(16, Color.Red))
+
             g.FillEllipse(
                 bossMeleeRangeBrush,
-                bossPos.X - bossMeleeRange,
-                bossPos.Y - bossMeleeRange,
-                bossMeleeRange * 2,
-                bossMeleeRange * 2)
+                bossPos.X - BossMeleeDisplayRange,
+                bossPos.Y - BossMeleeDisplayRange,
+                BossMeleeDisplayRange * 2,
+                BossMeleeDisplayRange * 2)
+
         End Using
 
         g.DrawEllipse(
             BossMeleeRangePen,
-            bossPos.X - bossMeleeRange,
-            bossPos.Y - bossMeleeRange,
-            bossMeleeRange * 2,
-            bossMeleeRange * 2)
+            bossPos.X - BossMeleeDisplayRange,
+            bossPos.Y - BossMeleeDisplayRange,
+            BossMeleeDisplayRange * 2,
+            BossMeleeDisplayRange * 2)
 
-        DrawBossRangeHandle(g, bossMeleeRange, BossMeleeRangePen.Color)
-        DrawCenteredBossRangeLabel(g, "Melee Range", bossMeleeRange)
+
+
+        If mapEditorActive Then
+
+            'DrawBossRangeHandle(
+            'g,
+            'BossMeleeDisplayRange,
+            'BossMeleeRangePen.Color)
+
+            DrawBossRangeHandle(
+                g,
+                BossMeleeDisplayRange,
+                90.0F,
+                BossMeleeRangePen.Color)
+
+            DrawCenteredBossRangeLabel(
+                g,
+                $"Melee Reach ({CInt(bossMeleeReach)})",
+                BossMeleeDisplayRange)
+
+
+
+        End If
+
+
+
+        'DrawBossRangeHandle(g, bossMeleeReach, BossMeleeRangePen.Color)
+        'DrawCenteredBossRangeLabel(g, "Melee Range", bossMeleeReach)
 
 
     End Sub
 
+    'Private Sub DrawBossRangeHandle(
+    '    g As Graphics,
+    '    radius As Single,
+    '    color As Color)
+
+    '    Const handleSize As Single = 14.0F
+    '    Dim handleBounds As New RectangleF(
+    '        bossPos.X + radius - handleSize / 2.0F,
+    '        bossPos.Y - handleSize / 2.0F,
+    '        handleSize,
+    '        handleSize)
+
+    '    Using brush As New SolidBrush(color)
+    '        g.FillEllipse(brush, handleBounds)
+    '    End Using
+
+    '    g.DrawEllipse(Pens.White, handleBounds)
+
+    'End Sub
+
     Private Sub DrawBossRangeHandle(
-        g As Graphics,
-        radius As Single,
-        color As Color)
+    g As Graphics,
+    radius As Single,
+    angleDegrees As Single,
+    color As Color)
 
         Const handleSize As Single = 14.0F
+
+        Dim position As PointF =
+        GetHandlePosition(
+            radius,
+            angleDegrees)
+
         Dim handleBounds As New RectangleF(
-            bossPos.X + radius - handleSize / 2.0F,
-            bossPos.Y - handleSize / 2.0F,
-            handleSize,
-            handleSize)
+        position.X - handleSize / 2.0F,
+        position.Y - handleSize / 2.0F,
+        handleSize,
+        handleSize)
 
         Using brush As New SolidBrush(color)
             g.FillEllipse(brush, handleBounds)
@@ -2243,6 +2729,16 @@ Public Class Form1
         g.DrawEllipse(Pens.White, handleBounds)
 
     End Sub
+
+
+
+
+
+
+
+
+
+
 
     Private Sub DrawCenteredBossRangeLabel(
         g As Graphics,
