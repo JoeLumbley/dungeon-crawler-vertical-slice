@@ -1791,13 +1791,19 @@ Public Class Form1
 
         If mapEditorActive Then
             DrawEditorGrid(g, view)
+
+
             DrawMapObjects(g)
 
             DrawBoss(g)
 
-            DrawBossRange(g)
 
             DrawHero(g)
+
+
+
+            DrawBossRange(g)
+
 
             g.ResetTransform()
             DrawEditorOverlay(g)
@@ -1809,9 +1815,9 @@ Public Class Form1
 
         DrawCombatIndicator(g)
 
-        'DrawBoss(g)
+        DrawBoss(g)
 
-        DrawBossRadius(g)
+        'DrawBossRadius(g)
 
         DrawBossRange(g)
 
@@ -1967,7 +1973,10 @@ Public Class Form1
             Case MapObjectType.Column
                 fillColor = Color.FromArgb(64, 64, 64)
             Case Else
-                fillColor = Color.Goldenrod
+                If mapEditorActive Then
+                    fillColor = Color.Goldenrod
+
+                End If
         End Select
 
         Using brush As New SolidBrush(fillColor)
