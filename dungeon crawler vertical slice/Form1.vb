@@ -2283,7 +2283,7 @@ Public Class Form1
             10)
 
             g.DrawString(
-                "Click where you want to go and the boss to attack CTRL+H: toggle boss ranges",
+                "Click To - Move to or Attack   CTRL+H - Hide/Show boss ranges   E - Editor",
                 f,
                 Brushes.White,
                 20,
