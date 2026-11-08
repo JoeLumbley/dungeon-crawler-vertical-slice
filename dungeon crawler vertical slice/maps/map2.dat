@@ -90,4 +90,4 @@ Hero|-1840|-3160|40|40
 Setting|BossFireballRange|269.07852
 Setting|BossPreferredDistance|222.65775
 Setting|BossSightRange|777.3605
-Setting|BossMeleeRange|72.290955
+Setting|BossMeleeReach|31.86264
