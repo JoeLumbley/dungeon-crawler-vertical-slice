@@ -89,24 +89,72 @@ Public Class WindowManager
 
     End Sub
 
+    'Public Sub ToggleFullscreen()
+
+    '    ' Is the window in fullscreen mode?
+    '    If hostForm.FormBorderStyle = FormBorderStyle.None Then
+    '        ' Yes, the window is in fullscreen mode.
+
+    '        ' Switch to windowed mode.
+    '        hostForm.FormBorderStyle = FormBorderStyle.Sizable
+    '        hostForm.WindowState = FormWindowState.Normal
+    '        hostForm.Size = hdSize
+
+    '        CenterWindow()
+
+    '    Else
+    '        ' No, the window is NOT in fullscreen mode.
+
+    '        hostForm.FormBorderStyle = FormBorderStyle.Sizable
+    '        hostForm.WindowState = FormWindowState.Normal
+    '        hostForm.Size = hdSize
+
+    '        CenterWindow()
+
+    '        ' Switch to fullscreen mode.
+    '        hostForm.FormBorderStyle = FormBorderStyle.None
+    '        hostForm.WindowState = FormWindowState.Maximized
+
+    '    End If
+
+    'End Sub
+
+
+
+    Private previousBounds As Rectangle
+
     Public Sub ToggleFullscreen()
 
         If hostForm.FormBorderStyle = FormBorderStyle.None Then
 
-            hostForm.FormBorderStyle = FormBorderStyle.Sizable
+            ' Restore windowed mode.
             hostForm.WindowState = FormWindowState.Normal
-            hostForm.Size = hdSize
-
-            CenterWindow()
+            hostForm.FormBorderStyle = FormBorderStyle.Sizable
+            hostForm.Bounds = previousBounds
 
         Else
 
+            ' Save current windowed size and position.
+            previousBounds = hostForm.Bounds
+
+            ' Enter fullscreen.
+            hostForm.WindowState = FormWindowState.Normal
             hostForm.FormBorderStyle = FormBorderStyle.None
-            hostForm.WindowState = FormWindowState.Maximized
+            hostForm.Bounds = Screen.FromControl(hostForm).Bounds
 
         End If
 
     End Sub
+
+
+
+
+
+
+
+
+
+
 
     Private Sub CenterWindow()
 

@@ -1116,17 +1116,85 @@ Public Class Form1
     End Sub
 
 
-    Private Function TryGetToolbarType(point As Point, ByRef objectType As MapObjectType) As Boolean
-        For i As Integer = 0 To 5
-            Dim button As New Rectangle(8 + i * 104, 8, 96, 32)
+    'Private Function TryGetToolbarType(point As Point, ByRef objectType As MapObjectType) As Boolean
+    '    For i As Integer = 0 To 5
+    '        Dim button As New Rectangle(8 + i * 104, 8, 96, 32)
+    '        If button.Contains(point) Then
+    '            objectType = CType(i, MapObjectType)
+    '            Return True
+    '        End If
+    '    Next
+
+    '    Return False
+    'End Function
+
+    Private Function TryGetToolbarType(
+    point As Point,
+    ByRef objectType As MapObjectType) As Boolean
+
+        For i As Integer = 0 To 6
+
+            Dim button As New Rectangle(
+            8 + i * 104,
+            8,
+            96,
+            32)
+
             If button.Contains(point) Then
+
                 objectType = CType(i, MapObjectType)
+
                 Return True
+
             End If
+
         Next
 
         Return False
+
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub HandleBossClick()
 
@@ -1510,7 +1578,10 @@ Public Class Form1
         For Each mapObject In mapObjects
             If mapObject.ObjectType = MapObjectType.Floor OrElse
                mapObject.ObjectType = MapObjectType.Hero OrElse
-               mapObject.ObjectType = MapObjectType.Boss Then
+               mapObject.ObjectType = MapObjectType.Boss OrElse
+               mapObject.ObjectType = MapObjectType.Light Then
+
+
                 Continue For
             End If
 
@@ -1681,13 +1752,13 @@ Public Class Form1
 
         ' lunge toward the boss
         Dim dx As Single =
-    bossPos.X - heroPos.X
+            bossPos.X - heroPos.X
 
         Dim dy As Single =
-    bossPos.Y - heroPos.Y
+            bossPos.Y - heroPos.Y
 
         Dim dist As Single =
-    CSng(Math.Sqrt(dx * dx + dy * dy))
+            CSng(Math.Sqrt(dx * dx + dy * dy))
 
         If dist > 0 Then
 
@@ -1746,10 +1817,10 @@ Public Class Form1
         Get
 
             Return New RectangleF(
-            bossPos.X - BossRadius,
-            bossPos.Y - BossRadius,
-            BossRadius * 2,
-            BossRadius * 2)
+                bossPos.X - BossRadius,
+                bossPos.Y - BossRadius,
+                BossRadius * 2,
+                BossRadius * 2)
 
         End Get
     End Property
@@ -1795,6 +1866,16 @@ Public Class Form1
 
             DrawMapObjects(g)
 
+
+            'DrawMapLights(g)
+
+
+
+
+
+
+
+
             DrawBoss(g)
 
 
@@ -1812,6 +1893,9 @@ Public Class Form1
         End If
 
         DrawMapObjects(g)
+
+        'DrawMapLights(g)
+
 
         DrawCombatIndicator(g)
 
@@ -1856,8 +1940,11 @@ Public Class Form1
         For Each mapObject In mapObjects
             If mapObject.ObjectType = MapObjectType.Floor OrElse
                mapObject.ObjectType = MapObjectType.Hero OrElse
-               mapObject.ObjectType = MapObjectType.Boss Then
+               mapObject.ObjectType = MapObjectType.Boss OrElse
+               mapObject.ObjectType = MapObjectType.Light Then
+
                 Continue For
+
             End If
 
             If mapObject.ObjectType = MapObjectType.Column Then
@@ -1942,66 +2029,419 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub DrawMapObjects(g As Graphics)
+
+    '    'For Each mapObject In mapObjects
+    '    '    If mapObject.ObjectType = MapObjectType.Floor OrElse
+    '    '       mapObject.ObjectType = MapObjectType.Hero OrElse
+    '    '       mapObject.ObjectType = MapObjectType.Boss Then
+    '    '        DrawMapObject(g, mapObject)
+    '    '    End If
+    '    'Next
+
+    '    'For Each mapObject In mapObjects
+    '    '    If mapObject.ObjectType <> MapObjectType.Floor AndAlso
+    '    '       mapObject.ObjectType <> MapObjectType.Hero AndAlso
+    '    '       mapObject.ObjectType <> MapObjectType.Boss Then
+    '    '        DrawMapObject(g, mapObject)
+    '    '    End If
+    '    'Next
+    '    For Each mapObject In mapObjects
+
+    '        If mapObject.ObjectType = MapObjectType.Floor Then
+    '            DrawMapObject(g, mapObject)
+    '        End If
+
+    '    Next
+
+    '    For Each mapObject In mapObjects
+
+    '        Select Case mapObject.ObjectType
+
+    '            Case MapObjectType.Wall,
+    '                 MapObjectType.Door,
+    '                 MapObjectType.Column
+
+    '                DrawMapObject(g, mapObject)
+
+    '        End Select
+
+    '    Next
+    'End Sub
+
+
+
     Private Sub DrawMapObjects(g As Graphics)
 
+        ' Floor first.
         For Each mapObject In mapObjects
-            If mapObject.ObjectType = MapObjectType.Floor OrElse
-               mapObject.ObjectType = MapObjectType.Hero OrElse
-               mapObject.ObjectType = MapObjectType.Boss Then
+
+            If mapObject.ObjectType = MapObjectType.Floor Then
                 DrawMapObject(g, mapObject)
             End If
+
         Next
 
+        ' Lights above floor.
+        DrawMapLights(g)
+
+        ' Walls, doors, columns.
         For Each mapObject In mapObjects
-            If mapObject.ObjectType <> MapObjectType.Floor AndAlso
-               mapObject.ObjectType <> MapObjectType.Hero AndAlso
-               mapObject.ObjectType <> MapObjectType.Boss Then
-                DrawMapObject(g, mapObject)
-            End If
+
+            Select Case mapObject.ObjectType
+
+                Case MapObjectType.Wall,
+                 MapObjectType.Door,
+                 MapObjectType.Column
+
+                    DrawMapObject(g, mapObject)
+
+            End Select
+
         Next
 
     End Sub
 
-    Private Sub DrawMapObject(g As Graphics, mapObject As MapObject)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    'Private Sub DrawMapObject(g As Graphics, mapObject As MapObject)
+
+    '    Dim fillColor As Color
+    '    Select Case mapObject.ObjectType
+    '        Case MapObjectType.Floor
+    '            fillColor = Color.FromArgb(75, 75, 75)
+    '        Case MapObjectType.Wall
+    '            fillColor = Color.FromArgb(64, 64, 64)
+    '        Case MapObjectType.Column
+    '            fillColor = Color.FromArgb(64, 64, 64)
+
+    '        Case MapObjectType.Light
+
+    '            fillColor = Color.Gold
+
+    '        Case Else
+    '            If mapEditorActive Then
+    '                fillColor = Color.Goldenrod
+
+    '            End If
+    '    End Select
+
+    '    If mapObject.ObjectType = MapObjectType.Light Then
+
+    '        Using p As New Pen(Color.Yellow, 2)
+
+    '            g.DrawEllipse(
+    '        p,
+    '        mapObject.Bounds)
+
+    '        End Using
+
+    '        Return
+
+    '    End If
+
+
+
+
+
+    '    Using brush As New SolidBrush(fillColor)
+    '        If mapObject.ObjectType = MapObjectType.Column Then
+    '            g.FillEllipse(brush, mapObject.Bounds)
+    '        Else
+    '            g.FillRectangle(brush, mapObject.Bounds)
+    '        End If
+    '    End Using
+
+
+    '    If mapObject Is selectedMapObject Then
+    '        Using selectionPen As New Pen(Color.Lime, 3)
+    '            If mapObject.ObjectType = MapObjectType.Column OrElse
+    '           mapObject.ObjectType = MapObjectType.Hero OrElse
+    '           mapObject.ObjectType = MapObjectType.Boss Then
+    '                g.DrawEllipse(selectionPen, mapObject.Bounds)
+    '            Else
+    '                g.DrawRectangle(selectionPen, mapObject.Bounds.X, mapObject.Bounds.Y,
+    '                                mapObject.Bounds.Width, mapObject.Bounds.Height)
+    '            End If
+    '        End Using
+    '    End If
+
+    'End Sub
+
+
+
+
+    Private Sub DrawMapObject(
+    g As Graphics,
+    mapObject As MapObject)
 
         Dim fillColor As Color
+
         Select Case mapObject.ObjectType
+
             Case MapObjectType.Floor
                 fillColor = Color.FromArgb(75, 75, 75)
+
             Case MapObjectType.Wall
                 fillColor = Color.FromArgb(64, 64, 64)
+
             Case MapObjectType.Column
-                fillColor = Color.FromArgb(64, 64, 64)
+                fillColor = Color.FromArgb(55, 55, 55)
+
+            Case MapObjectType.Light
+                fillColor = Color.Gold
+
             Case Else
+
                 If mapEditorActive Then
                     fillColor = Color.Goldenrod
-
+                Else
+                    fillColor = Color.Transparent
                 End If
+
         End Select
 
-        Using brush As New SolidBrush(fillColor)
-            If mapObject.ObjectType = MapObjectType.Column Then
-                g.FillEllipse(brush, mapObject.Bounds)
-            Else
-                g.FillRectangle(brush, mapObject.Bounds)
-            End If
-        End Using
+        If mapObject.ObjectType = MapObjectType.Column Then
 
+            Using brush As New SolidBrush(fillColor)
+                g.FillEllipse(brush, mapObject.Bounds)
+            End Using
+
+        ElseIf mapObject.ObjectType = MapObjectType.Light Then
+
+            If mapEditorActive Then
+
+                Using brush As New SolidBrush(Color.Gold)
+
+                    g.FillEllipse(
+                    brush,
+                    mapObject.Bounds)
+
+                End Using
+
+                Using p As New Pen(Color.Yellow, 2)
+
+                    g.DrawEllipse(
+                    p,
+                    mapObject.Bounds)
+
+                End Using
+
+            End If
+
+        Else
+
+            Using brush As New SolidBrush(fillColor)
+
+                g.FillRectangle(
+                brush,
+                mapObject.Bounds)
+
+            End Using
+
+        End If
 
         If mapObject Is selectedMapObject Then
+
             Using selectionPen As New Pen(Color.Lime, 3)
+
                 If mapObject.ObjectType = MapObjectType.Column OrElse
                mapObject.ObjectType = MapObjectType.Hero OrElse
-               mapObject.ObjectType = MapObjectType.Boss Then
-                    g.DrawEllipse(selectionPen, mapObject.Bounds)
+               mapObject.ObjectType = MapObjectType.Boss OrElse
+               mapObject.ObjectType = MapObjectType.Light Then
+
+                    g.DrawEllipse(
+                    selectionPen,
+                    mapObject.Bounds)
+
                 Else
-                    g.DrawRectangle(selectionPen, mapObject.Bounds.X, mapObject.Bounds.Y,
-                                    mapObject.Bounds.Width, mapObject.Bounds.Height)
+
+                    g.DrawRectangle(
+                    selectionPen,
+                    mapObject.Bounds.X,
+                    mapObject.Bounds.Y,
+                    mapObject.Bounds.Width,
+                    mapObject.Bounds.Height)
+
                 End If
+
             End Using
+
         End If
 
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    'Private Sub DrawMapLights(g As Graphics)
+
+    '    For Each mapObject In mapObjects
+
+    '        If mapObject.ObjectType <> MapObjectType.Light Then
+    '            Continue For
+    '        End If
+
+    '        Dim center As New PointF(
+    '        mapObject.Bounds.X + mapObject.Bounds.Width / 2.0F,
+    '        mapObject.Bounds.Y + mapObject.Bounds.Height / 2.0F)
+
+    '        Dim radius As Single = mapObject.LightRadius
+
+    '        Dim lightBounds As New RectangleF(
+    '        center.X - radius,
+    '        center.Y - radius,
+    '        radius * 2,
+    '        radius * 2)
+
+    '        Using path As New GraphicsPath()
+
+    '            path.AddEllipse(lightBounds)
+
+    '            Using brush As New PathGradientBrush(path)
+
+    '                brush.CenterColor =
+    '                Color.FromArgb(180,
+    '                               mapObject.LightColor)
+
+    '                brush.SurroundColors =
+    '                {Color.FromArgb(0,
+    '                                 mapObject.LightColor)}
+
+    '                g.FillPath(brush, path)
+
+    '            End Using
+
+    '        End Using
+
+    '    Next
+
+    'End Sub
+
+
+    Private Sub DrawMapLights(g As Graphics)
+
+        For Each mapObject In mapObjects
+
+            If mapObject.ObjectType <> MapObjectType.Light Then
+                Continue For
+            End If
+
+            Dim center As New PointF(
+            mapObject.Bounds.X + mapObject.Bounds.Width / 2.0F,
+            mapObject.Bounds.Y + mapObject.Bounds.Height / 2.0F)
+
+            Dim radius As Single = 180.0F
+
+            Dim lightBounds As New RectangleF(
+            center.X - radius,
+            center.Y - radius,
+            radius * 2,
+            radius * 2)
+
+            Using path As New GraphicsPath()
+
+                path.AddEllipse(lightBounds)
+
+                Using brush As New PathGradientBrush(path)
+
+                    brush.CenterColor =
+                    Color.FromArgb(
+                        128,
+                        Color.White)
+
+                    brush.SurroundColors =
+                    {
+                        Color.FromArgb(
+                            0,
+                            Color.White)
+                    }
+
+                    g.FillPath(
+                    brush,
+                    path)
+
+                End Using
+
+            End Using
+
+        Next
+
+    End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     Private Sub DrawDarkness(g As Graphics)
@@ -2054,29 +2494,136 @@ Public Class Form1
     End Sub
 
 
+    'Private Sub DrawEditorOverlay(g As Graphics)
+
+    '    Using toolbarBrush As New SolidBrush(Color.FromArgb(220, 20, 20, 20))
+    '        g.FillRectangle(toolbarBrush, 0, 0, 536, 48)
+    '    End Using
+
+    '    For i As Integer = 0 To 5
+    '        Dim button As New Rectangle(8 + i * 104, 8, 96, 32)
+    '        Dim buttonColor As Color = If(selectedMapType = CType(i, MapObjectType), Color.DarkGreen, Color.DimGray)
+
+    '        Using brush As New SolidBrush(buttonColor)
+    '            g.FillRectangle(brush, button)
+    '        End Using
+
+    '        g.DrawRectangle(Pens.White, button)
+    '        Dim label As String = [Enum].GetName(GetType(MapObjectType), CType(i, MapObjectType))
+    '        g.DrawString(label, Font, Brushes.White, button.X + 22, button.Y + 7)
+    '    Next
+
+    '    g.DrawString("E: gameplay   Arrows: pan   +-: zoom   Drag: resize   Right-click/Delete: remove   CTRL+S: save   CTRL+O: open",
+    '                 Font, Brushes.White, 8, 56)
+
+    'End Sub
+
+
+
     Private Sub DrawEditorOverlay(g As Graphics)
 
-        Using toolbarBrush As New SolidBrush(Color.FromArgb(220, 20, 20, 20))
-            g.FillRectangle(toolbarBrush, 0, 0, 536, 48)
+        Using toolbarBrush As New SolidBrush(
+        Color.FromArgb(220, 20, 20, 20))
+
+            g.FillRectangle(
+            toolbarBrush,
+            0,
+            0,
+            744,
+            48)
+
         End Using
 
-        For i As Integer = 0 To 5
-            Dim button As New Rectangle(8 + i * 104, 8, 96, 32)
-            Dim buttonColor As Color = If(selectedMapType = CType(i, MapObjectType), Color.DarkGreen, Color.DimGray)
+        For i As Integer = 0 To 6
+
+            Dim button As New Rectangle(
+            8 + i * 104,
+            8,
+            96,
+            32)
+
+            Dim buttonColor As Color =
+            If(
+                selectedMapType = CType(i, MapObjectType),
+                Color.DarkGreen,
+                Color.DimGray)
 
             Using brush As New SolidBrush(buttonColor)
-                g.FillRectangle(brush, button)
+
+                g.FillRectangle(
+                brush,
+                button)
+
             End Using
 
-            g.DrawRectangle(Pens.White, button)
-            Dim label As String = [Enum].GetName(GetType(MapObjectType), CType(i, MapObjectType))
-            g.DrawString(label, Font, Brushes.White, button.X + 22, button.Y + 7)
+            g.DrawRectangle(
+            Pens.White,
+            button)
+
+            Dim label As String =
+            [Enum].GetName(
+                GetType(MapObjectType),
+                CType(i, MapObjectType))
+
+            g.DrawString(
+            label,
+            Font,
+            Brushes.White,
+            button.X + 12,
+            button.Y + 7)
+
         Next
 
-        g.DrawString("E: gameplay   Arrows: pan   +-: zoom   Drag: resize   Right-click/Delete: remove   CTRL+S: save   CTRL+O: open",
-                     Font, Brushes.White, 8, 56)
-
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub DrawHero(
         g As Graphics)
@@ -2821,6 +3368,15 @@ End Class
 
 
 
+'Public Enum MapObjectType
+'    Floor
+'    Wall
+'    Door
+'    Column
+'    Hero
+'    Boss
+'End Enum
+
 Public Enum MapObjectType
     Floor
     Wall
@@ -2828,7 +3384,16 @@ Public Enum MapObjectType
     Column
     Hero
     Boss
+    Light
 End Enum
+
+'Public Class MapObject
+
+'    Public Property ObjectType As MapObjectType
+
+'    Public Property Bounds As RectangleF
+
+'End Class
 
 Public Class MapObject
 
@@ -2836,7 +3401,20 @@ Public Class MapObject
 
     Public Property Bounds As RectangleF
 
+    Public Property LightRadius As Single = 200.0F
+
+    Public Property LightColor As Color = Color.Gold
+
 End Class
+
+
+
+
+
+
+
+
+
 
 Public Class DamageText
 
