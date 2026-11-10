@@ -148,6 +148,51 @@ Public Class Form1
     Private fullscreenKeyDown As Boolean
 
 
+
+
+
+
+    Private ReadOnly editorButtonFont As New Font(
+    "Segoe UI Semibold",
+    9.5F,
+    FontStyle.Regular)
+
+    Private ReadOnly editorInstructionFont As New Font(
+    "Consolas Bold",
+    12.0F,
+    FontStyle.Regular)
+
+    Private ReadOnly editorHeaderFont As New Font(
+    "Segoe UI",
+    12.0F,
+    FontStyle.Bold)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     Protected Overrides Async Sub OnLoad(e As EventArgs)
 
         MyBase.OnLoad(e)
@@ -1887,7 +1932,14 @@ Public Class Form1
 
 
             g.ResetTransform()
+
+
+
+
             DrawEditorOverlay(g)
+
+
+
 
             Return
         End If
@@ -2520,67 +2572,160 @@ Public Class Form1
 
 
 
+    'Private Sub DrawEditorOverlay(g As Graphics)
+
+    '    Using toolbarBrush As New SolidBrush(
+    '    Color.FromArgb(220, 20, 20, 20))
+
+    '        g.FillRectangle(
+    '        toolbarBrush,
+    '        0,
+    '        0,
+    '        744,
+    '        48)
+
+    '    End Using
+
+    '    For i As Integer = 0 To 6
+
+    '        Dim button As New Rectangle(
+    '        8 + i * 104,
+    '        8,
+    '        96,
+    '        32)
+
+    '        Dim buttonColor As Color =
+    '        If(
+    '            selectedMapType = CType(i, MapObjectType),
+    '            Color.DarkGreen,
+    '            Color.DimGray)
+
+    '        Using brush As New SolidBrush(buttonColor)
+
+    '            g.FillRectangle(
+    '            brush,
+    '            button)
+
+    '        End Using
+
+    '        g.DrawRectangle(
+    '        Pens.White,
+    '        button)
+
+    '        Dim label As String =
+    '        [Enum].GetName(
+    '            GetType(MapObjectType),
+    '            CType(i, MapObjectType))
+
+    '        g.DrawString(
+    '        label,
+    '        Font,
+    '        Brushes.White,
+    '        button.X + 12,
+    '        button.Y + 7)
+
+    '    Next
+
+
+
+
+    '    g.DrawString("E: gameplay   Arrows: pan   +-: zoom   Drag: resize   Right-click/Delete: remove   CTRL+S: save   CTRL+O: open",
+    '                 Font, Brushes.White, 8, 56)
+
+
+
+    'End Sub
+
+
+
+
+
     Private Sub DrawEditorOverlay(g As Graphics)
 
+
+        ' Draw editor header
+        g.DrawString(
+            "EDITOR MODE",
+            editorHeaderFont,
+            Brushes.Gold,
+            10,
+            10)
+
+
+        ' Draw instructions
+        g.DrawString(
+            "Click: Create   Click and Drag: Resize   Arrows: Pan   +/-: Zoom    0: Reset Zoom   Right-Click/Delete: Remove   Ctrl+S: Save   Ctrl+O: Open   E: Gameplay",
+            editorInstructionFont,
+            Brushes.WhiteSmoke,
+            8,
+            42)
+
+
+        ' Draw toolbar background
         Using toolbarBrush As New SolidBrush(
         Color.FromArgb(220, 20, 20, 20))
 
             g.FillRectangle(
-            toolbarBrush,
-            0,
-            0,
-            744,
-            48)
+                toolbarBrush,
+                10,
+                73,
+                744,
+                48)
 
         End Using
 
+
+        ' Draw toolbar buttons
         For i As Integer = 0 To 6
 
             Dim button As New Rectangle(
-            8 + i * 104,
-            8,
-            96,
-            32)
+                18 + i * 104,
+                80,
+                96,
+                32)
 
             Dim buttonColor As Color =
-            If(
-                selectedMapType = CType(i, MapObjectType),
-                Color.DarkGreen,
-                Color.DimGray)
+            If(selectedMapType = CType(i, MapObjectType),
+               Color.DarkGreen,
+               Color.DimGray)
 
             Using brush As New SolidBrush(buttonColor)
 
+
+                ' Draw button background
                 g.FillRectangle(
                 brush,
                 button)
 
             End Using
 
+
+            ' Draw button border
             g.DrawRectangle(
-            Pens.White,
-            button)
+                Pens.White,
+                button)
 
             Dim label As String =
             [Enum].GetName(
                 GetType(MapObjectType),
                 CType(i, MapObjectType))
 
+            Dim sf As New StringFormat With {
+            .Alignment = StringAlignment.Center,
+            .LineAlignment = StringAlignment.Center
+        }
+
+            ' Draw button label text centered within the button
             g.DrawString(
             label,
-            Font,
+            editorButtonFont,
             Brushes.White,
-            button.X + 12,
-            button.Y + 7)
+            button,
+            sf)
 
         Next
 
     End Sub
-
-
-
-
-
-
 
 
 
@@ -2822,6 +2967,16 @@ Public Class Form1
 
     End Sub
 
+
+
+
+
+
+
+
+
+
+
     Private Sub DrawInstructions(
         g As Graphics)
 
@@ -2903,6 +3058,19 @@ Public Class Form1
         End If
 
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub DrawFireballs(
     g As Graphics)
