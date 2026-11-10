@@ -81,12 +81,12 @@ Namespace My.Resources
         '''Wall|120|-2160|40|640
         '''Wall|680|-1480|40|640
         '''Wall|120|-1480|40|640
-        '''Hero|400|-2640|40|40
         '''Floor|-560|-840|2080|1560
         '''Column|-560|-840|40|40
         '''Column|-560|680|40|40
         '''Column|1480|-840|40|40
-        '''Column|1480|680 [rest of string was truncated]&quot;;.
+        '''Column|1480|680|40|40
+        '''Column|680|680 [rest of string was truncated]&quot;;.
         '''</summary>
         Friend Shared ReadOnly Property map() As String
             Get

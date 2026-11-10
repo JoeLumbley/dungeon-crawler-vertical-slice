@@ -2827,7 +2827,7 @@ Public Class Form1
 
         Using f As New Font(
             "Segoe UI",
-            10)
+            15)
 
             g.DrawString(
                 "Click To - Move to or Attack   CTRL+H - Hide/Show boss ranges   E - Editor",
