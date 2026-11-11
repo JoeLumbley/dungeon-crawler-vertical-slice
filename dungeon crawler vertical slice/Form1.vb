@@ -1180,10 +1180,10 @@ Public Class Form1
         For i As Integer = 0 To 6
 
             Dim button As New Rectangle(
-            8 + i * 104,
-            8,
-            96,
-            32)
+                18 + i * 104,
+                80,
+                96,
+                32)
 
             If button.Contains(point) Then
 
