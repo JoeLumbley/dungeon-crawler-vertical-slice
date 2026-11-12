@@ -1934,9 +1934,7 @@ Public Class Form1
 
         g.ResetTransform()
 
-        If heroHealth <= 0 Then
-            DrawBloodBath(g)
-        End If
+        DrawBloodBath(g)
 
         DrawPlayerHealthBar(g)
 
@@ -1946,6 +1944,9 @@ Public Class Form1
 
 
     Private Sub DrawBloodBath(g As Graphics)
+
+        If heroHealth > 0 Then Return
+
         Using bloodBathBrush As New SolidBrush(Color.FromArgb(16, Color.Red))
             g.FillRectangle(bloodBathBrush, g.ClipBounds)
         End Using
