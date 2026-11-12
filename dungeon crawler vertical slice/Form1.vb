@@ -1981,10 +1981,40 @@ Public Class Form1
 
         g.ResetTransform()
 
+
+        ' Draw Blood Bath
+        If heroHealth <= 0 Then
+
+            DrawBloodBath(g)
+
+            'Dim bloodBathBrush As New SolidBrush(Color.FromArgb(16, Color.Red))
+
+            'g.FillRectangle(bloodBathBrush, g.ClipBounds)
+
+        End If
+
+
+
         DrawPlayerHealthBar(g)
 
         DrawInstructions(g)
 
+        'If heroHealth <= 0 Then
+
+        '    Dim bloodBathBrush As New SolidBrush(Color.FromArgb(32, Color.Red))
+
+        '    g.FillRectangle(bloodBathBrush, g.ClipBounds)
+
+        'End If
+
+
+    End Sub
+
+
+    Private Sub DrawBloodBath(g As Graphics)
+        Using bloodBathBrush As New SolidBrush(Color.FromArgb(16, Color.Red))
+            g.FillRectangle(bloodBathBrush, g.ClipBounds)
+        End Using
     End Sub
 
     Private Sub ResolveMapObjectCollisions()
@@ -2534,6 +2564,11 @@ Public Class Form1
                     Color.FromArgb(180, Color.Black),    ' partially dark
                     Color.FromArgb(0, Color.Black)     ' full darkness
                 }
+                'blend.Colors = New Color() {
+                '    Color.FromArgb(200, Color.Black),      ' fully visible
+                '    Color.FromArgb(128, Color.Black),    ' partially dark
+                '    Color.FromArgb(0, Color.Black)     ' full darkness
+                '}
 
                 lightBrush.InterpolationColors = blend
 
@@ -2755,8 +2790,11 @@ Public Class Form1
 
         End Using
 
+
+        Dim ringRedPen As New Pen(Color.DarkRed)
+
         g.DrawEllipse(
-            Pens.Red,
+            ringRedPen,
             BossBounds.X,
             BossBounds.Y,
             BossBounds.Width,
@@ -2937,7 +2975,7 @@ Public Class Form1
                     g.DrawString(
                         "YOU DIED",
                         f,
-                        Brushes.Red,
+                        Brushes.OrangeRed,
                         New RectangleF(0, 0, ClientSize.Width, ClientSize.Height),
                         sf)
                 End Using
