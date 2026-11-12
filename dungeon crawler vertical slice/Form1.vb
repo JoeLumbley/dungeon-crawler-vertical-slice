@@ -3033,6 +3033,7 @@ Public Class Form1
                 Brushes.DarkRed)
 
             ' Draw the health bar
+
             'g.FillRectangle(
             'Brushes.Red,
             'x,
@@ -3102,10 +3103,6 @@ Public Class Form1
         End If
 
     End Sub
-
-
-
-
 
     Private Sub DrawRoundedRectangle(g As Graphics, rect As Rectangle, radius As Integer, pen As Pen)
         Using path As New GraphicsPath()
