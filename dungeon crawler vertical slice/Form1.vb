@@ -1843,21 +1843,6 @@ Public Class Form1
 
     End Sub
 
-    'Private ReadOnly Property BossBounds As RectangleF
-
-    '    Get
-
-    '        Return New RectangleF(
-    '            bossPos.X - 60,
-    '            bossPos.Y - 60,
-    '            120,
-    '            120)
-
-    '    End Get
-
-    'End Property
-
-
     Private ReadOnly Property BossBounds As RectangleF
         Get
 
@@ -1869,9 +1854,6 @@ Public Class Form1
 
         End Get
     End Property
-
-
-
 
     Protected Overrides Sub OnPaint(
         e As PaintEventArgs)
@@ -1886,10 +1868,7 @@ Public Class Form1
         g.CompositingQuality = CompositingQuality.AssumeLinear
         g.PixelOffsetMode = PixelOffsetMode.HighQuality
 
-
-
         Dim view = ViewportOffset
-
 
         If mapEditorActive Then
             g.Transform = New Matrix(
@@ -1906,59 +1885,34 @@ Public Class Form1
         DrawBackground(g)
 
         If mapEditorActive Then
-            DrawEditorGrid(g, view)
 
+            DrawEditorGrid(g, view)
 
             DrawMapObjects(g)
 
-
-            'DrawMapLights(g)
-
-
-
-
-
-
-
-
             DrawBoss(g)
-
 
             DrawHero(g)
 
-
-
             DrawBossRange(g)
-
 
             g.ResetTransform()
 
-
-
-
             DrawEditorOverlay(g)
 
-
-
-
             Return
+
         End If
 
         DrawMapObjects(g)
-
-        'DrawMapLights(g)
-
 
         DrawCombatIndicator(g)
 
         DrawBoss(g)
 
-        'DrawBossRadius(g)
-
         DrawBossRange(g)
 
         DrawBossHealthBar(g)
-
 
         DrawHeroLight(g)
 
@@ -1967,7 +1921,6 @@ Public Class Form1
         DrawFireballs(g)
 
         DrawMoveTarget(g)
-
 
         DrawDamageNumbers(g)
 
@@ -1981,32 +1934,13 @@ Public Class Form1
 
         g.ResetTransform()
 
-
-        ' Draw Blood Bath
         If heroHealth <= 0 Then
-
             DrawBloodBath(g)
-
-            'Dim bloodBathBrush As New SolidBrush(Color.FromArgb(16, Color.Red))
-
-            'g.FillRectangle(bloodBathBrush, g.ClipBounds)
-
         End If
-
-
 
         DrawPlayerHealthBar(g)
 
         DrawInstructions(g)
-
-        'If heroHealth <= 0 Then
-
-        '    Dim bloodBathBrush As New SolidBrush(Color.FromArgb(32, Color.Red))
-
-        '    g.FillRectangle(bloodBathBrush, g.ClipBounds)
-
-        'End If
-
 
     End Sub
 
