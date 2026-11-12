@@ -3012,53 +3012,91 @@ Public Class Form1
         Dim grayOutlinePen As New Pen(Color.Gray, 2)
         Dim grayBrush As New SolidBrush(Color.FromArgb(32, 32, 32))
 
+        ' Is the hero alive?
         If heroHealth > 0 Then
+            ' Yes, the hero is alive. Draw the health bar in red.
 
-            g.FillRectangle(
-            Brushes.DarkRed,
-            x,
-            y,
-            width,
-            height)
+            ' Draw the background of the health bar
 
-            g.FillRectangle(
-            Brushes.Red,
-            x,
-            y,
-            width * pct,
-            height)
+            'g.FillRectangle(
+            'Brushes.DarkRed,
+            'x,
+            'y,
+            'width,
+            'height)
 
-            g.DrawRectangle(
-            whiteOutlinePen,
-            x,
-            y,
-            width,
-            height)
 
+            FillRoundedRectangle(
+                g,
+                New Rectangle(x, y, width, height),
+                15,
+                Brushes.DarkRed)
+
+            ' Draw the health bar
+            'g.FillRectangle(
+            'Brushes.Red,
+            'x,
+            'y,
+            'width * pct,
+            'height)
+
+            FillRoundedRectangle(
+                g,
+                New Rectangle(x, y, width * pct, height),
+                15,
+                Brushes.Red)
+
+            ' Draw the outline of the health bar
+
+            'g.DrawRectangle(
+            'whiteOutlinePen,
+            'x,
+            'y,
+            'width,
+            'height)
+
+            DrawRoundedRectangle(
+                g,
+                New Rectangle(x, y, width, height),
+                15,
+                whiteOutlinePen)
 
         Else
-            ' Draw a gray health bar when the hero is dead
+            ' No, the hero is not alive. Draw a gray health bar
 
-            g.FillRectangle(
-            grayBrush,
-            x,
-            y,
-            width,
-            height)
+            ' Draw the background of the health bar
 
-            g.FillRectangle(
-            Brushes.Red,
-            x,
-            y,
-            width * pct,
-            height)
+            'g.FillRectangle(
+            'grayBrush,
+            'x,
+            'y,
+            'width,
+            'height)
 
-            g.DrawRectangle(
-            grayOutlinePen,
-            x,
-            y,
-            width,
-            height)
+            FillRoundedRectangle(
+                g,
+                New Rectangle(x, y, width, height),
+                15,
+                grayBrush)
+
+
+            ' Draw the outline of the health bar
+
+            'g.DrawRectangle(
+            'grayOutlinePen,
+            'x,
+            'y,
+            'width,
+            'height)
+
+
+            DrawRoundedRectangle(
+                g,
+                New Rectangle(x, y, width, height),
+                15,
+                grayOutlinePen)
+
+
 
 
         End If
@@ -3069,7 +3107,27 @@ Public Class Form1
 
 
 
+    Private Sub DrawRoundedRectangle(g As Graphics, rect As Rectangle, radius As Integer, pen As Pen)
+        Using path As New GraphicsPath()
+            path.AddArc(rect.X, rect.Y, radius, radius, 180, 90)
+            path.AddArc(rect.X + rect.Width - radius, rect.Y, radius, radius, 270, 90)
+            path.AddArc(rect.X + rect.Width - radius, rect.Y + rect.Height - radius, radius, radius, 0, 90)
+            path.AddArc(rect.X, rect.Y + rect.Height - radius, radius, radius, 90, 90)
+            path.CloseFigure()
+            g.DrawPath(pen, path)
+        End Using
+    End Sub
 
+    Private Sub FillRoundedRectangle(g As Graphics, rect As Rectangle, radius As Integer, brush As Brush)
+        Using path As New GraphicsPath()
+            path.AddArc(rect.X, rect.Y, radius, radius, 180, 90)
+            path.AddArc(rect.X + rect.Width - radius, rect.Y, radius, radius, 270, 90)
+            path.AddArc(rect.X + rect.Width - radius, rect.Y + rect.Height - radius, radius, radius, 0, 90)
+            path.AddArc(rect.X, rect.Y + rect.Height - radius, radius, radius, 90, 90)
+            path.CloseFigure()
+            g.FillPath(brush, path)
+        End Using
+    End Sub
 
 
 
