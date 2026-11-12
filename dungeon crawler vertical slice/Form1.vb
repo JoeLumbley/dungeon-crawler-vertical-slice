@@ -2998,8 +2998,8 @@ Public Class Form1
     Private Sub DrawPlayerHealthBar(
     g As Graphics)
 
-        Const width As Integer = 220
-        Const height As Integer = 22
+        Const width As Integer = 512
+        Const height As Integer = 32
 
         Dim x As Integer = 20
         Dim y As Integer = 20
@@ -3008,28 +3008,72 @@ Public Class Form1
             CSng(heroHealth) /
             heroMaxHealth
 
-        g.FillRectangle(
+        Dim whiteOutlinePen As New Pen(Color.White, 2)
+        Dim grayOutlinePen As New Pen(Color.Gray, 2)
+        Dim grayBrush As New SolidBrush(Color.FromArgb(32, 32, 32))
+
+        If heroHealth > 0 Then
+
+            g.FillRectangle(
             Brushes.DarkRed,
             x,
             y,
             width,
             height)
 
-        g.FillRectangle(
-            Brushes.LimeGreen,
+            g.FillRectangle(
+            Brushes.Red,
             x,
             y,
             width * pct,
             height)
 
-        g.DrawRectangle(
-            Pens.White,
+            g.DrawRectangle(
+            whiteOutlinePen,
             x,
             y,
             width,
             height)
 
+
+        Else
+            ' Draw a gray health bar when the hero is dead
+
+            g.FillRectangle(
+            grayBrush,
+            x,
+            y,
+            width,
+            height)
+
+            g.FillRectangle(
+            Brushes.Red,
+            x,
+            y,
+            width * pct,
+            height)
+
+            g.DrawRectangle(
+            grayOutlinePen,
+            x,
+            y,
+            width,
+            height)
+
+
+        End If
+
     End Sub
+
+
+
+
+
+
+
+
+
+
 
 
     Private Sub DrawMoveTarget(
