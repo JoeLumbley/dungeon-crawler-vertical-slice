@@ -132,7 +132,7 @@ Public Class Form1
 
     Private Const AttackCooldownDuration As Double = 0.25
 
-    Private HeroCollisionRingPen As New Pen(Color.Lime, 2)
+    Private HeroCollisionRingPen As New Pen(Color.SkyBlue, 2)
     Private BossCollisionRingPen As New Pen(Color.Red, 2)
     Private MoveTargetPen As New Pen(Color.Yellow, 2)
     Private BossRangePen As New Pen(Color.DarkOrange, 2)
@@ -1924,13 +1924,15 @@ Public Class Form1
 
         DrawDamageNumbers(g)
 
-        ' Draw Hero Collision Ring
-        g.DrawEllipse(
-            HeroCollisionRingPen,
-            heroPos.X - HeroRadius,
-            heroPos.Y - HeroRadius,
-            HeroRadius * 2,
-            HeroRadius * 2)
+        '' Draw Hero Collision Ring
+        'g.DrawEllipse(
+        '    HeroCollisionRingPen,
+        '    heroPos.X - HeroRadius,
+        '    heroPos.Y - HeroRadius,
+        '    HeroRadius * 2,
+        '    HeroRadius * 2)
+
+        DrawHeroCollisionRing(g)
 
         g.ResetTransform()
 
@@ -1943,6 +1945,17 @@ Public Class Form1
     End Sub
 
 
+    Private Sub DrawHeroCollisionRing(g As Graphics)
+
+        g.DrawEllipse(
+            HeroCollisionRingPen,
+            heroPos.X - HeroRadius,
+            heroPos.Y - HeroRadius,
+            HeroRadius * 2,
+            HeroRadius * 2)
+
+    End Sub
+
     Private Sub DrawBloodBath(g As Graphics)
 
         If heroHealth > 0 Then Return
@@ -1951,6 +1964,7 @@ Public Class Form1
             g.FillRectangle(bloodBathBrush, g.ClipBounds)
         End Using
     End Sub
+
 
     Private Sub ResolveMapObjectCollisions()
 
@@ -2726,7 +2740,7 @@ Public Class Form1
         End Using
 
 
-        Dim ringRedPen As New Pen(Color.DarkRed)
+        Dim ringRedPen As New Pen(Color.Firebrick, 2)
 
         g.DrawEllipse(
             ringRedPen,
