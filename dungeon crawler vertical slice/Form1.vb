@@ -3008,97 +3008,53 @@ Public Class Form1
             CSng(heroHealth) /
             heroMaxHealth
 
-        Dim whiteOutlinePen As New Pen(Color.White, 2)
-        Dim grayOutlinePen As New Pen(Color.Gray, 2)
+        Dim lightGreyPen As New Pen(Color.FromArgb(200, 200, 200), 2)
+        Dim grayOutlinePen As New Pen(Color.FromArgb(128, 128, 128), 2)
         Dim grayBrush As New SolidBrush(Color.FromArgb(32, 32, 32))
+        Dim radius As Integer = 10
 
         ' Is the hero alive?
         If heroHealth > 0 Then
             ' Yes, the hero is alive. Draw the health bar in red.
 
             ' Draw the background of the health bar
-
-            'g.FillRectangle(
-            'Brushes.DarkRed,
-            'x,
-            'y,
-            'width,
-            'height)
-
-
             FillRoundedRectangle(
                 g,
                 New Rectangle(x, y, width, height),
-                15,
+                radius,
                 Brushes.DarkRed)
 
             ' Draw the health bar
-
-            'g.FillRectangle(
-            'Brushes.Red,
-            'x,
-            'y,
-            'width * pct,
-            'height)
-
             FillRoundedRectangle(
                 g,
                 New Rectangle(x, y, width * pct, height),
-                15,
+                radius,
                 Brushes.Red)
 
             ' Draw the outline of the health bar
-
-            'g.DrawRectangle(
-            'whiteOutlinePen,
-            'x,
-            'y,
-            'width,
-            'height)
-
             DrawRoundedRectangle(
                 g,
                 New Rectangle(x, y, width, height),
-                15,
-                whiteOutlinePen)
+                radius,
+                lightGreyPen)
 
         Else
             ' No, the hero is not alive. Draw a gray health bar
 
             ' Draw the background of the health bar
-
-            'g.FillRectangle(
-            'grayBrush,
-            'x,
-            'y,
-            'width,
-            'height)
-
             FillRoundedRectangle(
                 g,
                 New Rectangle(x, y, width, height),
-                15,
+                radius,
                 grayBrush)
 
 
             ' Draw the outline of the health bar
-
-            'g.DrawRectangle(
-            'grayOutlinePen,
-            'x,
-            'y,
-            'width,
-            'height)
-
-
             DrawRoundedRectangle(
                 g,
                 New Rectangle(x, y, width, height),
-                15,
+                radius,
                 grayOutlinePen)
-
-
-
 
         End If
 
