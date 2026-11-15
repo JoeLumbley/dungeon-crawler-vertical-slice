@@ -89,35 +89,6 @@ Public Class WindowManager
 
     End Sub
 
-    'Public Sub ToggleFullscreen()
-
-    '    ' Is the window in fullscreen mode?
-    '    If hostForm.FormBorderStyle = FormBorderStyle.None Then
-    '        ' Yes, the window is in fullscreen mode.
-
-    '        ' Switch to windowed mode.
-    '        hostForm.FormBorderStyle = FormBorderStyle.Sizable
-    '        hostForm.WindowState = FormWindowState.Normal
-    '        hostForm.Size = hdSize
-
-    '        CenterWindow()
-
-    '    Else
-    '        ' No, the window is NOT in fullscreen mode.
-
-    '        hostForm.FormBorderStyle = FormBorderStyle.Sizable
-    '        hostForm.WindowState = FormWindowState.Normal
-    '        hostForm.Size = hdSize
-
-    '        CenterWindow()
-
-    '        ' Switch to fullscreen mode.
-    '        hostForm.FormBorderStyle = FormBorderStyle.None
-    '        hostForm.WindowState = FormWindowState.Maximized
-
-    '    End If
-
-    'End Sub
 
 
 
