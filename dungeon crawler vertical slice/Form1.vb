@@ -591,14 +591,6 @@ Public Class Form1
                 bossPreferredDistance = radius
             Case BossRangeHandle.Sight
                 bossSightRange = radius
-                'Case BossRangeHandle.Melee
-                '    bossMeleeReach = radius
-                'Case BossRangeHandle.Melee
-
-                '    bossMeleeReach =
-                '        Math.Max(
-                '            0.0F,
-                '            radius - (HeroRadius + BossRadius))
 
             Case BossRangeHandle.Melee
 
@@ -740,8 +732,6 @@ Public Class Form1
                         "BossMeleeReach",
                         bossMeleeReach.ToString(CultureInfo.InvariantCulture)}))
 
-                    '"BossMeleeRange",
-                    'bossMeleeReach.ToString(CultureInfo.InvariantCulture)}))
 
                 End Using
             Catch ex As IOException
@@ -794,8 +784,6 @@ Public Class Form1
                                 bossPreferredDistance = Math.Max(25.0F, Math.Min(2000.0F, settingValue))
                             Case "BossSightRange"
                                 bossSightRange = Math.Max(25.0F, Math.Min(2000.0F, settingValue))
-                                'Case "BossMeleeRange"
-                                '    bossMeleeReach = Math.Max(25.0F, Math.Min(2000.0F, settingValue))
 
                             Case "BossMeleeRange",
                                  "BossMeleeReach"
@@ -971,7 +959,7 @@ Public Class Form1
         MapObjectAt(worldPoint)
 
         If selectedMapType = MapObjectType.Hero OrElse
-       selectedMapType = MapObjectType.Boss Then
+            selectedMapType = MapObjectType.Boss Then
 
             For i As Integer = mapObjects.Count - 1 To 0 Step -1
 
@@ -1014,8 +1002,8 @@ Public Class Form1
             isResizingMapObject = True
 
         ElseIf existing IsNot Nothing AndAlso
-          (selectedMapType = MapObjectType.Floor OrElse
-           existing.ObjectType <> MapObjectType.Floor) Then
+            (selectedMapType = MapObjectType.Floor OrElse
+            existing.ObjectType <> MapObjectType.Floor) Then
 
             selectedMapObject = existing
 
@@ -1049,17 +1037,6 @@ Public Class Form1
     End Sub
 
 
-    'Private Function TryGetToolbarType(point As Point, ByRef objectType As MapObjectType) As Boolean
-    '    For i As Integer = 0 To 5
-    '        Dim button As New Rectangle(8 + i * 104, 8, 96, 32)
-    '        If button.Contains(point) Then
-    '            objectType = CType(i, MapObjectType)
-    '            Return True
-    '        End If
-    '    Next
-
-    '    Return False
-    'End Function
 
     Private Function TryGetToolbarType(
     point As Point,
@@ -1086,47 +1063,6 @@ Public Class Form1
         Return False
 
     End Function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     Private Sub HandleBossClick()
@@ -1221,36 +1157,6 @@ Public Class Form1
     End Sub
 
 
-    'Private Sub ResolveBossCollision()
-
-    '    Dim dx As Single =
-    '    heroPos.X - bossPos.X
-
-    '    Dim dy As Single =
-    '    heroPos.Y - bossPos.Y
-
-    '    Dim distance As Single =
-    '    CSng(Math.Sqrt(dx * dx + dy * dy))
-
-    '    Dim minimumDistance As Single =
-    '    HeroRadius + BossRadius
-
-    '    If distance <= 0 Then Return
-
-    '    If distance < minimumDistance Then
-
-    '        Dim pushOut As Single =
-    '        minimumDistance - distance
-
-    '        Dim nx As Single = dx / distance
-    '        Dim ny As Single = dy / distance
-
-    '        heroPos.X += nx * pushOut
-    '        heroPos.Y += ny * pushOut
-
-    '    End If
-
-    'End Sub
 
 
     Private Sub ResolveBossCollision()
@@ -1289,39 +1195,6 @@ Public Class Form1
         End If
 
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     Private Sub UpdateBossAI(dt As Double)
@@ -1385,57 +1258,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub TryBossMeleeAttack()
-
-    '    If bossMeleeTimer > 0 OrElse heroHealth <= 0 Then Return
-
-    '    Dim dx As Single = heroPos.X - bossPos.X
-    '    Dim dy As Single = heroPos.Y - bossPos.Y
-    '    Dim distance As Single = CSng(Math.Sqrt(dx * dx + dy * dy))
-
-
-
-
-    '    'If distance > bossMeleeRange Then Return
-
-    '    Dim effectiveMeleeRange As Single =
-    '        HeroRadius + BossRadius + bossMeleeRange
-
-    '    If distance > effectiveMeleeRange Then Return
-
-
-
-
-    '    bossMeleeTimer = BossMeleeCooldown
-    '    heroHealth -= BossMeleeDamage
-    '    heroFlashTimer = 0.15
-
-    '    damageTexts.Add(New DamageText With {
-    '        .X = heroPos.X - 10,
-    '        .Y = heroPos.Y - 30,
-    '        .Value = BossMeleeDamage,
-    '        .Lifetime = 1.0
-    '    })
-
-    '    If distance > 0 Then
-    '        heroPos.X += dx / distance * BossKnockbackDistance
-    '        heroPos.Y += dy / distance * BossKnockbackDistance
-    '    Else
-    '        heroPos.Y += BossKnockbackDistance
-    '    End If
-
-    '    heroTarget = heroPos
-    '    ResolveBossCollision()
-    '    ResolveMapObjectCollisions()
-
-    '    If heroHealth < 0 Then
-    '        heroHealth = 0
-    '    End If
-
-    'End Sub
-
-
-
     Private Sub TryBossMeleeAttack()
 
         If bossMeleeTimer > 0 OrElse heroHealth <= 0 Then Return
@@ -1444,15 +1266,8 @@ Public Class Form1
         Dim dy As Single = heroPos.Y - bossPos.Y
         Dim distance As Single = CSng(Math.Sqrt(dx * dx + dy * dy))
 
-        'Dim effectiveMeleeRange As Single =
-        'HeroRadius + BossRadius + bossMeleeReach
-
-        'If distance > effectiveMeleeRange Then Return
-
-
 
         If distance > BossMeleeDisplayRange Then Return
-
 
 
         bossMeleeTimer = BossMeleeCooldown
@@ -1484,25 +1299,6 @@ Public Class Form1
         End If
 
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1812,13 +1608,6 @@ Public Class Form1
 
         DrawDamageNumbers(g)
 
-        '' Draw Hero Collision Ring
-        'g.DrawEllipse(
-        '    HeroCollisionRingPen,
-        '    heroPos.X - HeroRadius,
-        '    heroPos.Y - HeroRadius,
-        '    HeroRadius * 2,
-        '    HeroRadius * 2)
 
         DrawHeroCollisionRing(g)
 
@@ -1948,45 +1737,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub DrawMapObjects(g As Graphics)
-
-    '    'For Each mapObject In mapObjects
-    '    '    If mapObject.ObjectType = MapObjectType.Floor OrElse
-    '    '       mapObject.ObjectType = MapObjectType.Hero OrElse
-    '    '       mapObject.ObjectType = MapObjectType.Boss Then
-    '    '        DrawMapObject(g, mapObject)
-    '    '    End If
-    '    'Next
-
-    '    'For Each mapObject In mapObjects
-    '    '    If mapObject.ObjectType <> MapObjectType.Floor AndAlso
-    '    '       mapObject.ObjectType <> MapObjectType.Hero AndAlso
-    '    '       mapObject.ObjectType <> MapObjectType.Boss Then
-    '    '        DrawMapObject(g, mapObject)
-    '    '    End If
-    '    'Next
-    '    For Each mapObject In mapObjects
-
-    '        If mapObject.ObjectType = MapObjectType.Floor Then
-    '            DrawMapObject(g, mapObject)
-    '        End If
-
-    '    Next
-
-    '    For Each mapObject In mapObjects
-
-    '        Select Case mapObject.ObjectType
-
-    '            Case MapObjectType.Wall,
-    '                 MapObjectType.Door,
-    '                 MapObjectType.Column
-
-    '                DrawMapObject(g, mapObject)
-
-    '        End Select
-
-    '    Next
-    'End Sub
 
 
 
@@ -2020,101 +1770,6 @@ Public Class Form1
         Next
 
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    'Private Sub DrawMapObject(g As Graphics, mapObject As MapObject)
-
-    '    Dim fillColor As Color
-    '    Select Case mapObject.ObjectType
-    '        Case MapObjectType.Floor
-    '            fillColor = Color.FromArgb(75, 75, 75)
-    '        Case MapObjectType.Wall
-    '            fillColor = Color.FromArgb(64, 64, 64)
-    '        Case MapObjectType.Column
-    '            fillColor = Color.FromArgb(64, 64, 64)
-
-    '        Case MapObjectType.Light
-
-    '            fillColor = Color.Gold
-
-    '        Case Else
-    '            If mapEditorActive Then
-    '                fillColor = Color.Goldenrod
-
-    '            End If
-    '    End Select
-
-    '    If mapObject.ObjectType = MapObjectType.Light Then
-
-    '        Using p As New Pen(Color.Yellow, 2)
-
-    '            g.DrawEllipse(
-    '        p,
-    '        mapObject.Bounds)
-
-    '        End Using
-
-    '        Return
-
-    '    End If
-
-
-
-
-
-    '    Using brush As New SolidBrush(fillColor)
-    '        If mapObject.ObjectType = MapObjectType.Column Then
-    '            g.FillEllipse(brush, mapObject.Bounds)
-    '        Else
-    '            g.FillRectangle(brush, mapObject.Bounds)
-    '        End If
-    '    End Using
-
-
-    '    If mapObject Is selectedMapObject Then
-    '        Using selectionPen As New Pen(Color.Lime, 3)
-    '            If mapObject.ObjectType = MapObjectType.Column OrElse
-    '           mapObject.ObjectType = MapObjectType.Hero OrElse
-    '           mapObject.ObjectType = MapObjectType.Boss Then
-    '                g.DrawEllipse(selectionPen, mapObject.Bounds)
-    '            Else
-    '                g.DrawRectangle(selectionPen, mapObject.Bounds.X, mapObject.Bounds.Y,
-    '                                mapObject.Bounds.Width, mapObject.Bounds.Height)
-    '            End If
-    '        End Using
-    '    End If
-
-    'End Sub
-
-
 
 
     Private Sub DrawMapObject(
@@ -2219,86 +1874,6 @@ Public Class Form1
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    'Private Sub DrawMapLights(g As Graphics)
-
-    '    For Each mapObject In mapObjects
-
-    '        If mapObject.ObjectType <> MapObjectType.Light Then
-    '            Continue For
-    '        End If
-
-    '        Dim center As New PointF(
-    '        mapObject.Bounds.X + mapObject.Bounds.Width / 2.0F,
-    '        mapObject.Bounds.Y + mapObject.Bounds.Height / 2.0F)
-
-    '        Dim radius As Single = mapObject.LightRadius
-
-    '        Dim lightBounds As New RectangleF(
-    '        center.X - radius,
-    '        center.Y - radius,
-    '        radius * 2,
-    '        radius * 2)
-
-    '        Using path As New GraphicsPath()
-
-    '            path.AddEllipse(lightBounds)
-
-    '            Using brush As New PathGradientBrush(path)
-
-    '                brush.CenterColor =
-    '                Color.FromArgb(180,
-    '                               mapObject.LightColor)
-
-    '                brush.SurroundColors =
-    '                {Color.FromArgb(0,
-    '                                 mapObject.LightColor)}
-
-    '                g.FillPath(brush, path)
-
-    '            End Using
-
-    '        End Using
-
-    '    Next
-
-    'End Sub
-
-
     Private Sub DrawMapLights(g As Graphics)
 
         For Each mapObject In mapObjects
@@ -2348,18 +1923,6 @@ Public Class Form1
         Next
 
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2504,48 +2067,6 @@ Public Class Form1
         Next
 
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     Private Sub DrawHero(
@@ -2750,14 +2271,6 @@ Public Class Form1
 
 
 
-
-
-
-
-
-
-
-
     Private Sub DrawInstructions(
         g As Graphics)
 
@@ -2839,18 +2352,6 @@ Public Class Form1
         End If
 
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     Private Sub DrawFireballs(
@@ -2974,7 +2475,6 @@ Public Class Form1
 
 
 
-
     Private Sub DrawMoveTarget(
     g As Graphics)
 
@@ -3035,6 +2535,7 @@ Public Class Form1
         If Not showBossRanges Then Return
 
 
+        ' Sight Range
         g.FillEllipse(
                 BossSightRangeBrush,
                 bossPos.X - bossSightRange,
@@ -3052,7 +2553,6 @@ Public Class Form1
 
         If mapEditorActive Then
 
-            'DrawBossRangeHandle(g, bossSightRange, BossSightRangePen.Color)
             DrawBossRangeHandle(
                 g,
                 bossSightRange,
@@ -3064,13 +2564,7 @@ Public Class Form1
 
         End If
 
-
-
-
-
-
-
-
+        ' Fireball Range
         Dim BossFireballRangeBrush = New SolidBrush(Color.FromArgb(16, Color.DarkOrange))
 
         g.FillEllipse(
@@ -3090,28 +2584,18 @@ Public Class Form1
 
 
         If mapEditorActive Then
-            'DrawBossRangeHandle(g, bossFireballRange, BossRangePen.Color)
             DrawBossRangeHandle(
                 g,
                 bossFireballRange,
                 0.0F,
                 BossRangePen.Color)
 
-
             DrawCenteredBossRangeLabel(g, "Fireball Range", bossFireballRange)
-
-
 
         End If
 
 
-
-
-
-
-
-
-        ' 
+        ' Preferred Distance
         Using bossPreferredDistanceBrush As New SolidBrush(Color.FromArgb(16, Color.Yellow))
             g.FillEllipse(
                 bossPreferredDistanceBrush,
@@ -3129,9 +2613,7 @@ Public Class Form1
         bossPreferredDistance * 2)
 
 
-
         If mapEditorActive Then
-            'DrawBossRangeHandle(g, bossPreferredDistance, BossPreferredDistancePen.Color)
             DrawBossRangeHandle(
                 g,
                 bossPreferredDistance,
@@ -3141,57 +2623,14 @@ Public Class Form1
             DrawCenteredBossRangeLabel(g, "Preferred Distance", bossPreferredDistance)
 
 
-
-
         End If
 
 
 
-
-
-
-
-
-        ' Melee
-        'Using bossMeleeRangeBrush As New SolidBrush(Color.FromArgb(16, Color.Red))
-        '    g.FillEllipse(
-        '        bossMeleeRangeBrush,
-        '        bossPos.X - bossMeleeRange,
-        '        bossPos.Y - bossMeleeRange,
-        '        bossMeleeRange * 2,
-        '        bossMeleeRange * 2)
-        'End Using
-
-        'g.DrawEllipse(
-        '    BossMeleeRangePen,
-        '    bossPos.X - bossMeleeRange,
-        '    bossPos.Y - bossMeleeRange,
-        '    bossMeleeRange * 2,
-        '    bossMeleeRange * 2)
-
+        ' Melee Range
         Dim displayedMeleeRange As Single =
         HeroRadius + BossRadius + bossMeleeReach
 
-        'Using bossMeleeRangeBrush As New SolidBrush(Color.FromArgb(16, Color.Red))
-
-        '    g.FillEllipse(
-        '        bossMeleeRangeBrush,
-        '        bossPos.X - displayedMeleeRange,
-        '        bossPos.Y - displayedMeleeRange,
-        '        displayedMeleeRange * 2,
-        '        displayedMeleeRange * 2)
-
-        'End Using
-
-        'g.DrawEllipse(
-        '    BossMeleeRangePen,
-        '    bossPos.X - displayedMeleeRange,
-        '    bossPos.Y - displayedMeleeRange,
-        '    displayedMeleeRange * 2,
-        '    displayedMeleeRange * 2)
-
-
-        ' Melee
         Using bossMeleeRangeBrush As New SolidBrush(
             Color.FromArgb(16, Color.Red))
 
@@ -3211,14 +2650,8 @@ Public Class Form1
             BossMeleeDisplayRange * 2,
             BossMeleeDisplayRange * 2)
 
-
-
         If mapEditorActive Then
 
-            'DrawBossRangeHandle(
-            'g,
-            'BossMeleeDisplayRange,
-            'BossMeleeRangePen.Color)
 
             DrawBossRangeHandle(
                 g,
@@ -3232,36 +2665,12 @@ Public Class Form1
                 BossMeleeDisplayRange)
 
 
-
         End If
 
 
 
-        'DrawBossRangeHandle(g, bossMeleeReach, BossMeleeRangePen.Color)
-        'DrawCenteredBossRangeLabel(g, "Melee Range", bossMeleeReach)
-
-
     End Sub
 
-    'Private Sub DrawBossRangeHandle(
-    '    g As Graphics,
-    '    radius As Single,
-    '    color As Color)
-
-    '    Const handleSize As Single = 14.0F
-    '    Dim handleBounds As New RectangleF(
-    '        bossPos.X + radius - handleSize / 2.0F,
-    '        bossPos.Y - handleSize / 2.0F,
-    '        handleSize,
-    '        handleSize)
-
-    '    Using brush As New SolidBrush(color)
-    '        g.FillEllipse(brush, handleBounds)
-    '    End Using
-
-    '    g.DrawEllipse(Pens.White, handleBounds)
-
-    'End Sub
 
     Private Sub DrawBossRangeHandle(
     g As Graphics,
@@ -3289,14 +2698,6 @@ Public Class Form1
         g.DrawEllipse(Pens.White, handleBounds)
 
     End Sub
-
-
-
-
-
-
-
-
 
 
 
@@ -3372,15 +2773,6 @@ End Class
 
 
 
-'Public Enum MapObjectType
-'    Floor
-'    Wall
-'    Door
-'    Column
-'    Hero
-'    Boss
-'End Enum
-
 Public Enum MapObjectType
     Floor
     Wall
@@ -3391,13 +2783,6 @@ Public Enum MapObjectType
     Light
 End Enum
 
-'Public Class MapObject
-
-'    Public Property ObjectType As MapObjectType
-
-'    Public Property Bounds As RectangleF
-
-'End Class
 
 Public Class MapObject
 
