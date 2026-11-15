@@ -105,11 +105,6 @@ Public Class Form1
     Private editorZoom As Single = 1.0F
     Private ReadOnly mapObjects As New List(Of MapObject)
 
-    'Private ReadOnly Property CombatDistance As Single
-    '    Get
-    '        Return HeroRadius + BossRadius + bossMeleeRange
-    '    End Get
-    'End Property
 
     Private ReadOnly Property CombatDistance As Single
         Get
@@ -148,10 +143,6 @@ Public Class Form1
     Private fullscreenKeyDown As Boolean
 
 
-
-
-
-
     Private ReadOnly editorButtonFont As New Font(
     "Segoe UI Semibold",
     9.5F,
@@ -166,31 +157,6 @@ Public Class Form1
     "Segoe UI",
     12.0F,
     FontStyle.Bold)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     Protected Overrides Async Sub OnLoad(e As EventArgs)
@@ -546,61 +512,6 @@ Public Class Form1
 
 
 
-
-
-
-
-
-
-    'Private Function TryGetBossRangeHandle(
-    '    worldPoint As PointF,
-    '    ByRef rangeHandle As BossRangeHandle) As Boolean
-
-    '    Const handleRadius As Single = 12.0F
-    '    Dim handleDistanceSquared As Single = handleRadius * handleRadius
-
-    '    Dim fireballHandle As New PointF(
-    '        bossPos.X + bossFireballRange,
-    '        bossPos.Y)
-    '    If DistanceSquared(worldPoint, fireballHandle) <= handleDistanceSquared Then
-    '        rangeHandle = BossRangeHandle.Fireball
-    '        Return True
-    '    End If
-
-    '    'Dim meleeHandle As New PointF(
-    '    '    bossPos.X + bossMeleeReach,
-    '    '    bossPos.Y)
-
-    '    Dim meleeHandle As New PointF(
-    '    bossPos.X + BossMeleeDisplayRange,
-    '    bossPos.Y)
-
-    '    If DistanceSquared(worldPoint, meleeHandle) <= handleDistanceSquared Then
-    '        rangeHandle = BossRangeHandle.Melee
-    '        Return True
-    '    End If
-
-    '    Dim preferredHandle As New PointF(
-    '        bossPos.X + bossPreferredDistance,
-    '        bossPos.Y)
-    '    If DistanceSquared(worldPoint, preferredHandle) <= handleDistanceSquared Then
-    '        rangeHandle = BossRangeHandle.PreferredDistance
-    '        Return True
-    '    End If
-
-    '    Dim sightHandle As New PointF(
-    '        bossPos.X + bossSightRange,
-    '        bossPos.Y)
-    '    If DistanceSquared(worldPoint, sightHandle) <= handleDistanceSquared Then
-    '        rangeHandle = BossRangeHandle.Sight
-    '        Return True
-    '    End If
-
-    '    rangeHandle = BossRangeHandle.None
-    '    Return False
-
-    'End Function
-
     Private Function TryGetBossRangeHandle(
     worldPoint As PointF,
     ByRef rangeHandle As BossRangeHandle) As Boolean
@@ -663,29 +574,6 @@ Public Class Form1
         Return False
 
     End Function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
