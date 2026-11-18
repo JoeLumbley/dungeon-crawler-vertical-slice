@@ -40,6 +40,8 @@ Public Class AudioController
         Audio.AddOverlapping("fireball", Path.Combine(Application.StartupPath, "fireball.mp3"))
         Audio.SetVolumeOverlapping("fireball", 200)
 
+        Audio.AddOverlapping("herohit", Path.Combine(Application.StartupPath, "herohit.mp3"))
+        Audio.SetVolumeOverlapping("herohit", 200)
 
 
         '' ---------------------------------------------------------
@@ -158,6 +160,13 @@ Public Class AudioController
 
         'End Select
 
+    End Sub
+
+
+
+
+    Public Sub PlayHeroHitSound()
+        Audio.PlayOverlapping("herohit")
     End Sub
 
 

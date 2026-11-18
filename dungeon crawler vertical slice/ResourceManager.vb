@@ -14,6 +14,7 @@ Public Class ResourceManager
     Private Sub CreateSoundFiles()
 
         CreateFileFromResource(Path.Combine(Application.StartupPath, "fireball.mp3"), My.Resources.Resource1.fireball)
+        CreateFileFromResource(Path.Combine(Application.StartupPath, "herohit.mp3"), My.Resources.Resource1.herohit)
 
 
 

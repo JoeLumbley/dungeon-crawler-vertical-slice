@@ -1476,6 +1476,8 @@ Public Class Form1
 
             If HitHero(fireball) Then
 
+                audio.PlayHeroHitSound()
+
                 heroHealth -= FireballDamage
                 heroFlashTimer = 0.15
 
