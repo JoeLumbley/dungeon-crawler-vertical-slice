@@ -1923,11 +1923,7 @@ Public Class Form1
                     ' Draw a border around the light for visibility in editor mode
                     g.DrawEllipse(Pens.Black, mapObject.Bounds)
 
-
-
                 End If
-
-
 
             End Using
 
