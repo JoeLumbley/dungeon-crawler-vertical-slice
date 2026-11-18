@@ -159,6 +159,56 @@ Public Class Form1
     FontStyle.Bold)
 
 
+    Private resource As ResourceManager
+
+    Private audio As AudioController
+
+    Private WithEvents audioRestartTimer As Timer
+
+    Private isClosing As Boolean
+
+
+
+    Private Sub InitAudio()
+
+        resource.CreateAudioFilesAsNeeded()
+
+        audio.InitAudio()
+
+        InitAudioRestartTimer()
+
+    End Sub
+
+    Private Sub InitAudioRestartTimer()
+
+        audioRestartTimer = New Timer With {
+            .Interval = 180000,
+            .Enabled = True
+        }
+
+    End Sub
+
+    Private Sub AudioRestartTimer_Tick(
+        sender As Object,
+        e As EventArgs) Handles audioRestartTimer.Tick
+
+        If isClosing Then Return
+
+        audio.RestartAudioEngine()
+
+    End Sub
+
+
+
+
+
+
+
+
+
+
+
+
     Protected Overrides Async Sub OnLoad(e As EventArgs)
 
         MyBase.OnLoad(e)
@@ -221,6 +271,17 @@ Public Class Form1
                 Return
             End Try
         End If
+
+
+        resource = New ResourceManager()
+
+        audio = New AudioController()
+
+
+
+
+        InitAudio()
+
 
 
     End Sub
@@ -1369,6 +1430,8 @@ Public Class Form1
         })
 
         ' audioPlayer.Play("fireball.wav")
+        audio.PlayFireballSound()
+
 
     End Sub
 

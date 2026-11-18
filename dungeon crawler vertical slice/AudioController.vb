@@ -28,55 +28,62 @@ Public Class AudioController
 
         LoadAndRegisterSounds()
 
-        PlayStartLoop(600)
+        'PlayStartLoop(600)
 
     End Sub
 
 
     Private Sub LoadAndRegisterSounds()
 
-        ' ---------------------------------------------------------
-        ' Overlapping SFX
-        ' ---------------------------------------------------------
-        Audio.AddOverlapping("bounce", Path.Combine(Application.StartupPath, "bounce.mp3"))
-        Audio.SetVolumeOverlapping("bounce", 200)
-
-        Audio.AddOverlapping("arrow_up", Path.Combine(Application.StartupPath, "arrow_up.mp3"))
-        Audio.SetVolumeOverlapping("arrow_up", 50)
-
-        Audio.AddOverlapping("arrow_down", Path.Combine(Application.StartupPath, "arrow_down.mp3"))
-        Audio.SetVolumeOverlapping("arrow_down", 25)
-
-        Audio.AddOverlapping("paddlereturn", Path.Combine(Application.StartupPath, "paddlereturn.mp3"))
-        Audio.SetVolumeOverlapping("paddlereturn", 200)
 
 
-        ' ---------------------------------------------------------
-        ' Single‑instance SFX
-        ' ---------------------------------------------------------
-        Audio.AddSound("fullscreen", Path.Combine(Application.StartupPath, "fullscreen.mp3"))
-        Audio.SetVolume("fullscreen", 25)
+        Audio.AddOverlapping("fireball", Path.Combine(Application.StartupPath, "fireball.mp3"))
+        Audio.SetVolumeOverlapping("fireball", 200)
 
-        Audio.AddSound("select", Path.Combine(Application.StartupPath, "select.mp3"))
-        Audio.SetVolume("select", 50)
 
-        Audio.AddSound("point", Path.Combine(Application.StartupPath, "point.mp3"))
-        Audio.SetVolume("point", 50)
 
-        Audio.AddSound("exit", Path.Combine(Application.StartupPath, "exit.mp3"))
-        Audio.SetVolume("exit", 200)
+        '' ---------------------------------------------------------
+        '' Overlapping SFX
+        '' ---------------------------------------------------------
+        'Audio.AddOverlapping("bounce", Path.Combine(Application.StartupPath, "bounce.mp3"))
+        'Audio.SetVolumeOverlapping("bounce", 200)
 
-        ' ---------------------------------------------------------
-        ' Loops (Start, Gameplay, Pause)
-        ' ---------------------------------------------------------
-        Audio.AddSound("startloop", Path.Combine(Application.StartupPath, "startloop.mp3"))
-        Audio.SetVolume("startloop", startLoopVolume)
+        'Audio.AddOverlapping("arrow_up", Path.Combine(Application.StartupPath, "arrow_up.mp3"))
+        'Audio.SetVolumeOverlapping("arrow_up", 50)
 
-        Audio.AddSound("gameplayloop", Path.Combine(Application.StartupPath, "gameplayloop.mp3"))
-        Audio.SetVolume("gameplayloop", gameplayLoopVolume)
+        'Audio.AddOverlapping("arrow_down", Path.Combine(Application.StartupPath, "arrow_down.mp3"))
+        'Audio.SetVolumeOverlapping("arrow_down", 25)
 
-        Audio.AddSound("pause", Path.Combine(Application.StartupPath, "pause.mp3"))
-        Audio.SetVolume("pause", pauseLoopVolume)
+        'Audio.AddOverlapping("paddlereturn", Path.Combine(Application.StartupPath, "paddlereturn.mp3"))
+        'Audio.SetVolumeOverlapping("paddlereturn", 200)
+
+
+        '' ---------------------------------------------------------
+        '' Single‑instance SFX
+        '' ---------------------------------------------------------
+        'Audio.AddSound("fullscreen", Path.Combine(Application.StartupPath, "fullscreen.mp3"))
+        'Audio.SetVolume("fullscreen", 25)
+
+        'Audio.AddSound("select", Path.Combine(Application.StartupPath, "select.mp3"))
+        'Audio.SetVolume("select", 50)
+
+        'Audio.AddSound("point", Path.Combine(Application.StartupPath, "point.mp3"))
+        'Audio.SetVolume("point", 50)
+
+        'Audio.AddSound("exit", Path.Combine(Application.StartupPath, "exit.mp3"))
+        'Audio.SetVolume("exit", 200)
+
+        '' ---------------------------------------------------------
+        '' Loops (Start, Gameplay, Pause)
+        '' ---------------------------------------------------------
+        'Audio.AddSound("startloop", Path.Combine(Application.StartupPath, "startloop.mp3"))
+        'Audio.SetVolume("startloop", startLoopVolume)
+
+        'Audio.AddSound("gameplayloop", Path.Combine(Application.StartupPath, "gameplayloop.mp3"))
+        'Audio.SetVolume("gameplayloop", gameplayLoopVolume)
+
+        'Audio.AddSound("pause", Path.Combine(Application.StartupPath, "pause.mp3"))
+        'Audio.SetVolume("pause", pauseLoopVolume)
 
 
     End Sub
@@ -220,6 +227,25 @@ Public Class AudioController
     Public Sub PlayMenuDownSound()
         Audio.PlayOverlapping("arrow_down")
     End Sub
+
+
+
+
+
+    Public Sub PlayFireballSound()
+        Audio.PlayOverlapping("fireball")
+    End Sub
+
+
+
+
+
+
+
+
+
+
+
 
 
     Public Sub FadeOutAndStopGamePlayLoop(durationMs As Integer)
