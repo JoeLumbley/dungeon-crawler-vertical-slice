@@ -1718,24 +1718,126 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub DrawEditorGrid(g As Graphics, view As PointF)
+
+    '    Using gridPen As New Pen(Color.FromArgb(70, Color.White))
+    '        Dim startX As Single = SnapToGrid(view.X) - GridSize
+    '        Dim endX As Single = view.X + ClientSize.Width / editorZoom + GridSize
+    '        Dim startY As Single = SnapToGrid(view.Y) - GridSize
+    '        Dim endY As Single = view.Y + ClientSize.Height / editorZoom + GridSize
+
+    '        For x As Single = startX To endX Step GridSize
+    '            g.DrawLine(gridPen, x, startY, x, endY)
+    '        Next
+
+    '        For y As Single = startY To endY Step GridSize
+    '            g.DrawLine(gridPen, startX, y, endX, y)
+    '        Next
+    '    End Using
+
+    'End Sub
+
+
+    'Private Sub DrawEditorGrid(g As Graphics, view As PointF)
+
+    '    Using gridPen As New Pen(Color.FromArgb(70, Color.White)),
+    '      majorGridPen As New Pen(Color.FromArgb(120, Color.LightGray))
+
+    '        Dim startX As Single = SnapToGrid(view.X) - GridSize
+    '        Dim endX As Single = view.X + ClientSize.Width / editorZoom + GridSize
+    '        Dim startY As Single = SnapToGrid(view.Y) - GridSize
+    '        Dim endY As Single = view.Y + ClientSize.Height / editorZoom + GridSize
+
+    '        Dim gridIndexX As Integer = CInt(Math.Floor(startX / GridSize))
+
+    '        For x As Single = startX To endX Step GridSize
+    '            Dim isMajor As Boolean = (gridIndexX Mod 15 = 0)
+    '            g.DrawLine(If(isMajor, majorGridPen, gridPen), x, startY, x, endY)
+    '            gridIndexX += 1
+    '        Next
+
+    '        Dim gridIndexY As Integer = CInt(Math.Floor(startY / GridSize))
+
+    '        For y As Single = startY To endY Step GridSize
+    '            Dim isMajor As Boolean = (gridIndexY Mod 15 = 0)
+    '            g.DrawLine(If(isMajor, majorGridPen, gridPen), startX, y, endX, y)
+    '            gridIndexY += 1
+    '        Next
+
+    '    End Using
+
+    'End Sub
+
+
     Private Sub DrawEditorGrid(g As Graphics, view As PointF)
 
-        Using gridPen As New Pen(Color.FromArgb(70, Color.White))
+        Using gridPen As New Pen(Color.FromArgb(70, Color.White), 1.0F),
+          majorGridPen As New Pen(Color.FromArgb(120, Color.LightBlue), 4.0F)
+
             Dim startX As Single = SnapToGrid(view.X) - GridSize
             Dim endX As Single = view.X + ClientSize.Width / editorZoom + GridSize
             Dim startY As Single = SnapToGrid(view.Y) - GridSize
             Dim endY As Single = view.Y + ClientSize.Height / editorZoom + GridSize
 
+            Dim gridIndexX As Integer = CInt(Math.Floor(startX / GridSize))
+
             For x As Single = startX To endX Step GridSize
-                g.DrawLine(gridPen, x, startY, x, endY)
+                Dim isMajor As Boolean = (gridIndexX Mod 15 = 0)
+                g.DrawLine(If(isMajor, majorGridPen, gridPen), x, startY, x, endY)
+                gridIndexX += 1
             Next
 
+            Dim gridIndexY As Integer = CInt(Math.Floor(startY / GridSize))
+
             For y As Single = startY To endY Step GridSize
-                g.DrawLine(gridPen, startX, y, endX, y)
+                Dim isMajor As Boolean = (gridIndexY Mod 15 = 0)
+                g.DrawLine(If(isMajor, majorGridPen, gridPen), startX, y, endX, y)
+                gridIndexY += 1
             Next
+
         End Using
 
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

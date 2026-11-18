@@ -65,28 +65,29 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Floor|120|-2880|600|2080
-        '''Column|120|-840|40|40
-        '''Column|680|-840|40|40
-        '''Column|120|-2880|40|40
-        '''Column|680|-2880|40|40
-        '''Column|680|-1520|40|40
-        '''Column|680|-2200|40|40
-        '''Column|120|-2200|40|40
-        '''Column|120|-1520|40|40
-        '''Wall|160|-2880|520|40
-        '''Wall|680|-2840|40|640
-        '''Wall|120|-2840|40|640
-        '''Wall|680|-2160|40|640
-        '''Wall|120|-2160|40|640
-        '''Wall|680|-1480|40|640
-        '''Wall|120|-1480|40|640
-        '''Floor|-560|-840|2080|1560
-        '''Column|-560|-840|40|40
-        '''Column|-560|680|40|40
-        '''Column|1480|-840|40|40
-        '''Column|1480|680|40|40
-        '''Column|680|680 [rest of string was truncated]&quot;;.
+        '''  Looks up a localized string similar to Column|-600|-600|40|40
+        '''Column|-600|1160|40|40
+        '''Column|-40|1160|40|40
+        '''Column|560|1160|40|40
+        '''Column|1160|1160|40|40
+        '''Column|1760|1160|40|40
+        '''Column|-600|-40|40|40
+        '''Column|0|-1200|40|40
+        '''Column|560|-1200|40|40
+        '''Column|0|-600|40|40
+        '''Column|560|-600|40|40
+        '''Wall|0|-1160|40|560
+        '''Wall|-560|-600|560|40
+        '''Wall|560|-1160|40|560
+        '''Column|1160|-600|40|40
+        '''Wall|600|-600|560|40
+        '''Wall|-600|-560|40|520
+        '''Column|1160|-40|40|40
+        '''Column|560|-40|40|40
+        '''Column|0|-40|40|40
+        '''Column|0|560|40|40
+        '''Column|560|560|40|40
+        '''Column|1160|56 [rest of string was truncated]&quot;;.
         '''</summary>
         Friend Shared ReadOnly Property map() As String
             Get
@@ -95,28 +96,27 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Floor|120|-2880|600|2080
-        '''Column|120|-840|40|40
-        '''Column|680|-840|40|40
-        '''Column|680|-1520|40|40
-        '''Column|680|-2200|40|40
-        '''Column|120|-2200|40|40
-        '''Column|120|-1520|40|40
-        '''Wall|680|-2840|40|640
-        '''Wall|120|-2840|40|640
-        '''Wall|680|-2160|40|640
-        '''Wall|120|-2160|40|640
-        '''Wall|680|-1480|40|640
-        '''Wall|120|-1480|40|640
-        '''Floor|-560|-840|2080|1560
-        '''Column|-560|-840|40|40
-        '''Column|-560|680|40|40
-        '''Column|1480|-840|40|40
-        '''Column|1480|680|40|40
-        '''Column|680|680|40|40
-        '''Column|120|680|40|40
-        '''Column|1480|-40|40|40
-        '''Column|-560|-40|40 [rest of string was truncated]&quot;;.
+        '''  Looks up a localized string similar to Column|1160|-40|40|40
+        '''Column|560|-40|40|40
+        '''Column|560|560|40|40
+        '''Column|1160|560|40|40
+        '''Column|1160|-3000|40|40
+        '''Column|1160|-2440|40|40
+        '''Column|1760|-2440|40|40
+        '''Column|1760|-3000|40|40
+        '''Column|2360|-3000|40|40
+        '''Column|2360|-2440|40|40
+        '''Column|2960|-2440|40|40
+        '''Column|2960|-3000|40|40
+        '''Column|3560|-3000|40|40
+        '''Column|3560|-2440|40|40
+        '''Column|560|-3000|40|40
+        '''Column|560|-2440|40|40
+        '''Column|-2440|-3000|40|40
+        '''Column|-1840|-3000|40|40
+        '''Column|-1240|-3000|40|40
+        '''Column|-640|-3000|40|40
+        '''Column|-2440|-2440|40 [rest of string was truncated]&quot;;.
         '''</summary>
         Friend Shared ReadOnly Property map2() As String
             Get
