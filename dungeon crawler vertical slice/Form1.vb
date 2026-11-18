@@ -1918,10 +1918,24 @@ Public Class Form1
 
                 End Using
 
+                If mapEditorActive Then
+
+                    ' Draw a border around the light for visibility in editor mode
+                    g.DrawEllipse(Pens.Black, mapObject.Bounds)
+
+
+
+                End If
+
+
+
             End Using
 
         Next
 
+
+
+        'GridSize
     End Sub
 
 
