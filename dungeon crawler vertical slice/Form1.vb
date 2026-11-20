@@ -29,8 +29,8 @@ Public Class Form1
 
     Private heroTarget As PointF
 
-    Private heroHealth As Integer = 100
-    Private heroMaxHealth As Integer = 100
+    Private heroHealth As Integer = 1000
+    Private heroMaxHealth As Integer = 1000
 
     Private Const HeroSpeed As Single = 200.0F
 
@@ -41,6 +41,34 @@ Public Class Form1
 
     Private Const HeroRadius As Single = 20.0F
     Private HeroLightRadius As Single = 260.0F
+
+
+    Private heroKnockbackVelocity As PointF
+
+    Private Const HeroKnockbackFriction As Single = 10.0F
+    Private Const HeroKnockbackSpeed As Single = 700.0F
+
+    Private Const MinimumWallImpactSpeed As Single = 180.0F
+    Private Const WallImpactDamageMultiplier As Single = 0.02F
+
+    Private wallImpactCooldown As Double
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     Private Const BossRadius As Single = 60.0F
     Private Const HallwayHalfWidth As Single = 180.0F
     Private Const GridSize As Single = 40.0F
@@ -436,6 +464,17 @@ Public Class Form1
             End If
 
         Next
+
+
+        If wallImpactCooldown > 0 Then
+
+            wallImpactCooldown -= dt
+
+            If wallImpactCooldown < 0 Then
+                wallImpactCooldown = 0
+            End If
+
+        End If
 
     End Sub
 
@@ -1191,6 +1230,71 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub UpdateHeroMovement(dt As Double)
+
+    '    Dim dx As Single =
+    '    heroTarget.X - heroPos.X
+
+    '    Dim dy As Single =
+    '    heroTarget.Y - heroPos.Y
+
+    '    Dim distance As Single =
+    '    CSng(Math.Sqrt(dx * dx + dy * dy))
+
+    '    Dim moveDistance As Single =
+    '    HeroSpeed * CSng(dt)
+
+    '    If moveDistance > distance Then
+    '        heroPos = heroTarget
+    '    Else
+    '        heroPos.X += dx / distance * moveDistance
+    '        heroPos.Y += dy / distance * moveDistance
+    '    End If
+
+    '    ResolveBossCollision()
+    '    ResolveMapObjectCollisions()
+
+    'End Sub
+
+
+    'Private Sub UpdateHeroMovement(dt As Double)
+
+    '    Dim dx As Single =
+    '    heroTarget.X - heroPos.X
+
+    '    Dim dy As Single =
+    '    heroTarget.Y - heroPos.Y
+
+    '    Dim distance As Single =
+    '    CSng(Math.Sqrt(dx * dx + dy * dy))
+
+    '    Dim moveDistance As Single =
+    '    HeroSpeed * CSng(dt)
+
+    '    If distance > 0 Then
+
+    '        If moveDistance >= distance Then
+
+    '            heroPos = heroTarget
+
+    '        Else
+
+    '            heroPos.X += dx / distance * moveDistance
+    '            heroPos.Y += dy / distance * moveDistance
+
+    '        End If
+
+    '    End If
+
+    '    MoveHeroKnockback(dt)
+
+    '    ResolveBossCollision()
+
+    'End Sub
+
+
+
+
     Private Sub UpdateHeroMovement(dt As Double)
 
         Dim dx As Single =
@@ -1205,17 +1309,357 @@ Public Class Form1
         Dim moveDistance As Single =
         HeroSpeed * CSng(dt)
 
-        If moveDistance > distance Then
-            heroPos = heroTarget
-        Else
-            heroPos.X += dx / distance * moveDistance
-            heroPos.Y += dy / distance * moveDistance
+        If distance > 0 Then
+
+            If moveDistance >= distance Then
+
+                heroPos = heroTarget
+
+            Else
+
+                heroPos.X += dx / distance * moveDistance
+                heroPos.Y += dy / distance * moveDistance
+
+            End If
+
         End If
 
+        MoveHeroKnockback(dt)
+
         ResolveBossCollision()
-        ResolveMapObjectCollisions()
+
+        ResolveMapObjectCollisions()   ' <-- PUT THIS BACK
 
     End Sub
+
+
+
+
+
+
+    'Private Sub MoveHeroKnockback(dt As Double)
+
+    '    If heroKnockbackVelocity.X = 0 AndAlso
+    '   heroKnockbackVelocity.Y = 0 Then
+
+    '        ResolveMapObjectCollisions()
+    '        Return
+
+    '    End If
+
+    '    Dim moveX As Single =
+    '    heroKnockbackVelocity.X * CSng(dt)
+
+    '    Dim moveY As Single =
+    '    heroKnockbackVelocity.Y * CSng(dt)
+
+    '    heroPos.X += moveX
+
+    '    Dim hitX As Boolean =
+    '    ResolveHeroCollisionX()
+
+    '    heroPos.Y += moveY
+
+    '    Dim hitY As Boolean =
+    '    ResolveHeroCollisionY()
+
+    '    HandleWallImpact(hitX, hitY)
+
+    '    Dim damping As Single =
+    '    Math.Max(
+    '        0.0F,
+    '        1.0F - HeroKnockbackFriction * CSng(dt))
+
+    '    heroKnockbackVelocity.X *= damping
+    '    heroKnockbackVelocity.Y *= damping
+
+    '    If Math.Abs(heroKnockbackVelocity.X) < 5 Then
+    '        heroKnockbackVelocity.X = 0
+    '    End If
+
+    '    If Math.Abs(heroKnockbackVelocity.Y) < 5 Then
+    '        heroKnockbackVelocity.Y = 0
+    '    End If
+
+    'End Sub
+
+    Private Sub MoveHeroKnockback(dt As Double)
+
+        If heroKnockbackVelocity.X = 0 AndAlso
+       heroKnockbackVelocity.Y = 0 Then
+
+            ResolveMapObjectCollisions()
+            Return
+
+        End If
+
+        Dim moveX As Single =
+        heroKnockbackVelocity.X * CSng(dt)
+
+        Dim moveY As Single =
+        heroKnockbackVelocity.Y * CSng(dt)
+
+        Dim distance As Single =
+        CSng(Math.Sqrt(moveX * moveX + moveY * moveY))
+
+        Dim steps As Integer =
+        Math.Max(1, CInt(Math.Ceiling(distance / 4.0F)))
+
+        Dim stepX As Single = moveX / steps
+        Dim stepY As Single = moveY / steps
+
+        For i As Integer = 1 To steps
+
+            heroPos.X += stepX
+
+            Dim hitX As Boolean =
+            ResolveHeroCollisionX()
+
+            heroPos.Y += stepY
+
+            Dim hitY As Boolean =
+            ResolveHeroCollisionY()
+
+            If hitX OrElse hitY Then
+
+                HandleWallImpact(hitX, hitY)
+
+                Exit For
+
+            End If
+
+        Next
+
+        Dim damping As Single =
+        Math.Max(
+            0.0F,
+            1.0F - HeroKnockbackFriction * CSng(dt))
+
+        heroKnockbackVelocity.X *= damping
+        heroKnockbackVelocity.Y *= damping
+
+        If Math.Abs(heroKnockbackVelocity.X) < 5 Then
+            heroKnockbackVelocity.X = 0
+        End If
+
+        If Math.Abs(heroKnockbackVelocity.Y) < 5 Then
+            heroKnockbackVelocity.Y = 0
+        End If
+
+    End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    Private Sub HandleWallImpact(
+    hitX As Boolean,
+    hitY As Boolean)
+
+        If Not hitX AndAlso Not hitY Then Return
+
+        Dim impactSpeed As Single =
+        CSng(Math.Sqrt(
+            heroKnockbackVelocity.X * heroKnockbackVelocity.X +
+            heroKnockbackVelocity.Y * heroKnockbackVelocity.Y))
+
+        If hitX AndAlso hitY Then
+
+            If impactSpeed >= MinimumWallImpactSpeed Then
+                ApplyWallImpactDamage(impactSpeed)
+            End If
+
+            heroKnockbackVelocity = PointF.Empty
+
+            Return
+
+        End If
+
+        If hitX Then
+
+            If Math.Abs(heroKnockbackVelocity.X) >= MinimumWallImpactSpeed Then
+                ApplyWallImpactDamage(Math.Abs(heroKnockbackVelocity.X))
+            End If
+
+            heroKnockbackVelocity.X = 0
+
+        End If
+
+        If hitY Then
+
+            If Math.Abs(heroKnockbackVelocity.Y) >= MinimumWallImpactSpeed Then
+                ApplyWallImpactDamage(Math.Abs(heroKnockbackVelocity.Y))
+            End If
+
+            heroKnockbackVelocity.Y = 0
+
+        End If
+
+    End Sub
+
+    Private Sub ApplyWallImpactDamage(
+    impactSpeed As Single)
+
+        If wallImpactCooldown > 0 Then Return
+
+        wallImpactCooldown = 0.25
+
+        Dim damage As Integer =
+        Math.Max(
+            1,
+            CInt(impactSpeed * WallImpactDamageMultiplier))
+
+        heroHealth -= damage
+
+        heroFlashTimer = 0.15
+
+        damageTexts.Add(New DamageText With {
+        .X = heroPos.X,
+        .Y = heroPos.Y - 40,
+        .Value = damage,
+        .Lifetime = 1.0
+    })
+
+        audio.PlayHeroHitSound()
+
+        If heroHealth < 0 Then
+            heroHealth = 0
+        End If
+
+    End Sub
+
+
+
+
+    Private Function ResolveHeroCollisionX() As Boolean
+
+        Dim collided As Boolean = False
+
+        For Each mapObject In mapObjects
+
+            If mapObject.ObjectType = MapObjectType.Floor OrElse
+           mapObject.ObjectType = MapObjectType.Hero OrElse
+           mapObject.ObjectType = MapObjectType.Boss OrElse
+           mapObject.ObjectType = MapObjectType.Light Then
+
+                Continue For
+
+            End If
+
+            Dim expanded As New RectangleF(
+            mapObject.Bounds.X - HeroRadius,
+            mapObject.Bounds.Y - HeroRadius,
+            mapObject.Bounds.Width + HeroRadius * 2,
+            mapObject.Bounds.Height + HeroRadius * 2)
+
+            If Not expanded.Contains(heroPos) Then Continue For
+
+            collided = True
+
+            If heroKnockbackVelocity.X > 0 Then
+                heroPos.X = expanded.Left
+            Else
+                heroPos.X = expanded.Right
+            End If
+
+        Next
+
+        Return collided
+
+    End Function
+
+
+
+    Private Function ResolveHeroCollisionY() As Boolean
+
+        Dim collided As Boolean = False
+
+        For Each mapObject In mapObjects
+
+            If mapObject.ObjectType = MapObjectType.Floor OrElse
+           mapObject.ObjectType = MapObjectType.Hero OrElse
+           mapObject.ObjectType = MapObjectType.Boss OrElse
+           mapObject.ObjectType = MapObjectType.Light Then
+
+                Continue For
+
+            End If
+
+            Dim expanded As New RectangleF(
+            mapObject.Bounds.X - HeroRadius,
+            mapObject.Bounds.Y - HeroRadius,
+            mapObject.Bounds.Width + HeroRadius * 2,
+            mapObject.Bounds.Height + HeroRadius * 2)
+
+            If Not expanded.Contains(heroPos) Then Continue For
+
+            collided = True
+
+            If heroKnockbackVelocity.Y > 0 Then
+                heroPos.Y = expanded.Top
+            Else
+                heroPos.Y = expanded.Bottom
+            End If
+
+        Next
+
+        Return collided
+
+    End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1343,17 +1787,46 @@ Public Class Form1
             .Lifetime = 1.0
         })
 
+        'If distance > 0 Then
+        '    heroPos.X += dx / distance * BossKnockbackDistance
+        '    heroPos.Y += dy / distance * BossKnockbackDistance
+        'Else
+        '    heroPos.Y += BossKnockbackDistance
+        'End If
+
+        'heroTarget = heroPos
+
+        'ResolveBossCollision()
+        'ResolveMapObjectCollisions()
+
         If distance > 0 Then
-            heroPos.X += dx / distance * BossKnockbackDistance
-            heroPos.Y += dy / distance * BossKnockbackDistance
+
+            heroKnockbackVelocity = New PointF(
+        dx / distance * HeroKnockbackSpeed,
+        dy / distance * HeroKnockbackSpeed)
+
         Else
-            heroPos.Y += BossKnockbackDistance
+
+            heroKnockbackVelocity = New PointF(
+        0,
+        HeroKnockbackSpeed)
+
         End If
 
         heroTarget = heroPos
 
-        ResolveBossCollision()
-        ResolveMapObjectCollisions()
+
+
+
+
+
+
+
+
+
+
+
+
 
         If heroHealth < 0 Then
             heroHealth = 0
