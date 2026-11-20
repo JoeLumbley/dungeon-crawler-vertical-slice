@@ -8,7 +8,7 @@ Public Class AudioController
     Private disposed As Boolean
 
     Private gameplayLoopVolume As Integer = 10
-    Private startLoopVolume As Integer = 25
+    Private startLoopVolume As Integer = 20
     Private pauseLoopVolume As Integer = 10
 
     ' -------------------------------
@@ -28,7 +28,7 @@ Public Class AudioController
 
         LoadAndRegisterSounds()
 
-        'PlayStartLoop(600)
+        PlayStartLoop(600)
 
     End Sub
 
@@ -38,10 +38,16 @@ Public Class AudioController
 
 
         Audio.AddOverlapping("fireball", Path.Combine(Application.StartupPath, "fireball.mp3"))
-        Audio.SetVolumeOverlapping("fireball", 200)
+        Audio.SetVolumeOverlapping("fireball", 30)
 
         Audio.AddOverlapping("herohit", Path.Combine(Application.StartupPath, "herohit.mp3"))
-        Audio.SetVolumeOverlapping("herohit", 200)
+        Audio.SetVolumeOverlapping("herohit", 30)
+
+
+
+        Audio.AddSound("melancholy_descent", Path.Combine(Application.StartupPath, "melancholy_descent.mp3"))
+        Audio.SetVolume("melancholy_descent", 20)
+
 
 
         '' ---------------------------------------------------------
@@ -125,6 +131,10 @@ Public Class AudioController
 
                 ' Restore loops based on game state
                 'RestartLoops(model)
+
+
+                PlayStartLoop(600)
+
             End Sub
 
         restartTimer.Start()
@@ -194,12 +204,12 @@ Public Class AudioController
 
     Public Sub PlayStartLoop(durationMs As Integer)
 
-        If Not Audio.IsPlaying("startloop") Then
+        If Not Audio.IsPlaying("melancholy_descent") Then
 
             ' Fade‑in loop
-            Audio.SetVolume("startloop", 0)
-            Audio.LoopSound("startloop")
-            Audio.FadeVolume("startloop", 0, startLoopVolume, durationMs)
+            Audio.SetVolume("melancholy_descent", 0)
+            Audio.LoopSound("melancholy_descent")
+            Audio.FadeVolume("melancholy_descent", 0, startLoopVolume, durationMs)
 
         End If
 

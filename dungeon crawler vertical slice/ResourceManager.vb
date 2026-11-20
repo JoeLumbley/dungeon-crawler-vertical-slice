@@ -16,6 +16,7 @@ Public Class ResourceManager
         CreateFileFromResource(Path.Combine(Application.StartupPath, "fireball.mp3"), My.Resources.Resource1.fireball)
         CreateFileFromResource(Path.Combine(Application.StartupPath, "herohit.mp3"), My.Resources.Resource1.herohit)
 
+        CreateFileFromResource(Path.Combine(Application.StartupPath, "melancholy_descent.mp3"), My.Resources.Resource1.melancholy_descent)
 
 
 
