@@ -29,8 +29,8 @@ Public Class Form1
 
     Private heroTarget As PointF
 
-    Private heroHealth As Integer = 1000
-    Private heroMaxHealth As Integer = 1000
+    Private heroHealth As Integer = 150
+    Private heroMaxHealth As Integer = 150
 
     Private Const HeroSpeed As Single = 200.0F
 

@@ -85,29 +85,29 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Column|-600|-600|40|40
-        '''Column|-600|1160|40|40
-        '''Column|-40|1160|40|40
-        '''Column|560|1160|40|40
-        '''Column|1160|1160|40|40
-        '''Column|1760|1160|40|40
-        '''Column|-600|-40|40|40
-        '''Column|0|-1200|40|40
-        '''Column|560|-1200|40|40
-        '''Column|0|-600|40|40
-        '''Column|560|-600|40|40
-        '''Wall|0|-1160|40|560
-        '''Wall|-560|-600|560|40
-        '''Wall|560|-1160|40|560
-        '''Column|1160|-600|40|40
-        '''Wall|600|-600|560|40
-        '''Wall|-600|-560|40|520
-        '''Column|1160|-40|40|40
+        '''  Looks up a localized string similar to Column|1160|-40|40|40
         '''Column|560|-40|40|40
-        '''Column|0|-40|40|40
-        '''Column|0|560|40|40
         '''Column|560|560|40|40
-        '''Column|1160|56 [rest of string was truncated]&quot;;.
+        '''Wall|1160|0|40|560
+        '''Wall|600|560|560|40
+        '''Column|-640|-40|40|40
+        '''Column|-640|560|40|40
+        '''Column|-40|560|40|40
+        '''Column|-40|-40|40|40
+        '''Column|-40|-640|40|40
+        '''Column|560|-640|40|40
+        '''Column|1160|-640|40|40
+        '''Column|-40|-2440|40|40
+        '''Column|-40|-1840|40|40
+        '''Column|-40|-1240|40|40
+        '''Column|560|-1240|40|40
+        '''Column|560|-1840|40|40
+        '''Column|560|-2440|40|40
+        '''Column|560|-3040|40|40
+        '''Column|1160|560|40|40
+        '''Wall|0|-3040|560|40
+        '''Wall|560|-3000|40|560
+        '''Wall|-40| [rest of string was truncated]&quot;;.
         '''</summary>
         Friend Shared ReadOnly Property map() As String
             Get
@@ -120,23 +120,24 @@ Namespace My.Resources
         '''Column|560|-40|40|40
         '''Column|560|560|40|40
         '''Column|1160|560|40|40
-        '''Column|1160|-3000|40|40
         '''Column|1160|-2440|40|40
         '''Column|1760|-2440|40|40
-        '''Column|1760|-3000|40|40
-        '''Column|2360|-3000|40|40
         '''Column|2360|-2440|40|40
         '''Column|2960|-2440|40|40
-        '''Column|2960|-3000|40|40
-        '''Column|3560|-3000|40|40
         '''Column|3560|-2440|40|40
-        '''Column|560|-3000|40|40
         '''Column|560|-2440|40|40
-        '''Column|-2440|-3000|40|40
-        '''Column|-1840|-3000|40|40
-        '''Column|-1240|-3000|40|40
-        '''Column|-640|-3000|40|40
-        '''Column|-2440|-2440|40 [rest of string was truncated]&quot;;.
+        '''Column|-2440|-2440|40|40
+        '''Column|-1840|-2440|40|40
+        '''Column|-1240|-2440|40|40
+        '''Column|-640|-2440|40|40
+        '''Column|-40|-2440|40|40
+        '''Column|-40|-1840|40|40
+        '''Column|-40|-1240|40|40
+        '''Column|560|-1840|40|40
+        '''Column|560|-1240|40|40
+        '''Column|560|-640|40|40
+        '''Column|-40|-640|40|40
+        '''Colu [rest of string was truncated]&quot;;.
         '''</summary>
         Friend Shared ReadOnly Property map2() As String
             Get

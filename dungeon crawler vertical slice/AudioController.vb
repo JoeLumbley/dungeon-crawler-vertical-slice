@@ -8,7 +8,7 @@ Public Class AudioController
     Private disposed As Boolean
 
     Private gameplayLoopVolume As Integer = 10
-    Private startLoopVolume As Integer = 20
+    Private startLoopVolume As Integer = 30
     Private pauseLoopVolume As Integer = 10
 
     ' -------------------------------
@@ -38,15 +38,15 @@ Public Class AudioController
 
 
         Audio.AddOverlapping("fireball", Path.Combine(Application.StartupPath, "fireball.mp3"))
-        Audio.SetVolumeOverlapping("fireball", 30)
+        Audio.SetVolumeOverlapping("fireball", 100)
 
         Audio.AddOverlapping("herohit", Path.Combine(Application.StartupPath, "herohit.mp3"))
-        Audio.SetVolumeOverlapping("herohit", 30)
+        Audio.SetVolumeOverlapping("herohit", 100)
 
 
 
         Audio.AddSound("melancholy_descent", Path.Combine(Application.StartupPath, "melancholy_descent.mp3"))
-        Audio.SetVolume("melancholy_descent", 20)
+        Audio.SetVolume("melancholy_descent", 50)
 
 
 
