@@ -91,6 +91,10 @@ Light|-2920|-2720|40|40
 Light|80|-1560|40|40
 Light|-40|-520|40|40
 Light|560|-520|40|40
+HealthPotion|-2960|-2960|40|40
+HealthPotion|1080|480|40|40
+HealthPotion|40|-2080|40|40
+HealthPotion|2040|-2520|40|40
 Setting|BossFireballRange|269.07852
 Setting|BossPreferredDistance|222.65775
 Setting|BossSightRange|1109.8245

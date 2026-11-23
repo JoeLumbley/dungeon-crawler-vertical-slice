@@ -32,6 +32,15 @@ Public Class Form1
     Private heroHealth As Integer = 150
     Private heroMaxHealth As Integer = 150
 
+    Private heroPotionCount As Integer
+    Private Const PotionHealAmount As Integer = 50
+    Private Const MaxPotions As Integer = 99
+
+
+
+
+
+
     Private Const HeroSpeed As Single = 200.0F
 
 
@@ -132,6 +141,15 @@ Public Class Form1
     Private editorPan As PointF
     Private editorZoom As Single = 1.0F
     Private ReadOnly mapObjects As New List(Of MapObject)
+
+    Private ReadOnly originalMapObjects As New List(Of MapObject)
+
+
+
+
+
+
+
 
 
     Private ReadOnly Property CombatDistance As Single
@@ -314,39 +332,140 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub ResetGame()
+
+    '    For Each mapObject In mapObjects
+    '        If mapObject.ObjectType = MapObjectType.Hero Then
+    '            heroPos = New PointF(
+    '                mapObject.Bounds.X + mapObject.Bounds.Width / 2.0F,
+    '                mapObject.Bounds.Y + mapObject.Bounds.Height / 2.0F)
+    '            heroTarget = heroPos
+    '        ElseIf mapObject.ObjectType = MapObjectType.Boss Then
+    '            bossPos = New PointF(
+    '                mapObject.Bounds.X + mapObject.Bounds.Width / 2.0F,
+    '                mapObject.Bounds.Y + mapObject.Bounds.Height / 2.0F)
+    '        End If
+    '    Next
+
+    '    heroHealth = heroMaxHealth
+    '    bossHealth = bossMaxHealth
+    '    bossActive = False
+    '    bossAttackTimer = 0
+    '    attackCooldown = 0
+    '    heroAttackAnim = 0
+    '    heroFlashTimer = 0
+    '    bossFlashTimer = 0
+    '    bossHealthBarTimer = 0
+    '    bossMeleeTimer = 0
+    '    pendingAttack = False
+    '    activeBossRangeHandle = BossRangeHandle.None
+    '    fireballs.Clear()
+    '    damageTexts.Clear()
+
+    '    heroPotionCount = 0
+
+
+
+    '    Invalidate()
+
+    'End Sub
+
+
     Private Sub ResetGame()
 
+        RestoreMap()
+
         For Each mapObject In mapObjects
+
             If mapObject.ObjectType = MapObjectType.Hero Then
+
                 heroPos = New PointF(
-                    mapObject.Bounds.X + mapObject.Bounds.Width / 2.0F,
-                    mapObject.Bounds.Y + mapObject.Bounds.Height / 2.0F)
+                mapObject.Bounds.X + mapObject.Bounds.Width / 2.0F,
+                mapObject.Bounds.Y + mapObject.Bounds.Height / 2.0F)
+
                 heroTarget = heroPos
+
             ElseIf mapObject.ObjectType = MapObjectType.Boss Then
+
                 bossPos = New PointF(
-                    mapObject.Bounds.X + mapObject.Bounds.Width / 2.0F,
-                    mapObject.Bounds.Y + mapObject.Bounds.Height / 2.0F)
+                mapObject.Bounds.X + mapObject.Bounds.Width / 2.0F,
+                mapObject.Bounds.Y + mapObject.Bounds.Height / 2.0F)
+
             End If
+
         Next
 
         heroHealth = heroMaxHealth
         bossHealth = bossMaxHealth
+
+        heroPotionCount = 0
+
         bossActive = False
+
         bossAttackTimer = 0
+        bossMeleeTimer = 0
+
         attackCooldown = 0
+
         heroAttackAnim = 0
         heroFlashTimer = 0
+
         bossFlashTimer = 0
         bossHealthBarTimer = 0
-        bossMeleeTimer = 0
+
+        wallImpactCooldown = 0
+
+        heroKnockbackVelocity = PointF.Empty
+
         pendingAttack = False
+
         activeBossRangeHandle = BossRangeHandle.None
+
         fireballs.Clear()
         damageTexts.Clear()
 
         Invalidate()
 
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private ReadOnly Property ViewportOffset As PointF
         Get
@@ -409,6 +528,8 @@ Public Class Form1
 
 
         UpdateHeroMovement(dt)
+
+        UpdatePotionPickups()
 
         UpdateCombat()
 
@@ -761,6 +882,17 @@ Public Class Form1
 
         End If
 
+
+        If e.KeyCode = Keys.Q Then
+
+            UseHealthPotion()
+
+            Return
+
+        End If
+
+
+
         If Not mapEditorActive Then Return
 
         Select Case e.KeyCode
@@ -790,6 +922,100 @@ Public Class Form1
 
         Invalidate()
     End Sub
+
+    'Private Sub UseHealthPotion()
+
+    '    If heroPotionCount <= 0 Then Return
+
+    '    If heroHealth >= heroMaxHealth Then Return
+
+    '    heroPotionCount -= 1
+
+    '    heroHealth =
+    '    Math.Min(
+    '        heroMaxHealth,
+    '        heroHealth + PotionHealAmount)
+
+    '    damageTexts.Add(New DamageText With {
+    '        .X = heroPos.X,
+    '        .Y = heroPos.Y - 50,
+    '        .Value = -PotionHealAmount,
+    '        .Lifetime = 1.0
+    '    })
+
+    'End Sub
+
+    Private Sub UseHealthPotion()
+
+        If heroPotionCount <= 0 Then Return
+        If heroHealth <= 0 Then Return
+        If heroHealth >= heroMaxHealth Then Return
+
+        heroPotionCount -= 1
+
+        heroHealth =
+        Math.Min(
+            heroMaxHealth,
+            heroHealth + PotionHealAmount)
+
+        damageTexts.Add(New DamageText With {
+        .X = heroPos.X,
+        .Y = heroPos.Y - 50,
+        .Value = -PotionHealAmount,
+        .Lifetime = 1.0
+    })
+
+    End Sub
+
+
+
+
+
+
+
+    Private Sub RestoreMap()
+
+        mapObjects.Clear()
+
+        For Each source In originalMapObjects
+
+            mapObjects.Add(
+            New MapObject With {
+                .ObjectType = source.ObjectType,
+                .Bounds = source.Bounds,
+                .LightRadius = source.LightRadius,
+                .LightColor = source.LightColor
+            })
+
+        Next
+
+    End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub SaveMap()
 
@@ -923,8 +1149,29 @@ Public Class Form1
                 })
             Next
 
+            'mapObjects.Clear()
+            'mapObjects.AddRange(loadedObjects)
+
             mapObjects.Clear()
             mapObjects.AddRange(loadedObjects)
+
+            originalMapObjects.Clear()
+
+            For Each obj In loadedObjects
+
+                originalMapObjects.Add(
+                    New MapObject With {
+                        .ObjectType = obj.ObjectType,
+                        .Bounds = obj.Bounds,
+                        .LightRadius = obj.LightRadius,
+                        .LightColor = obj.LightColor
+                    })
+
+            Next
+
+
+
+
             EnsureSingleHeroPlacement()
             bossActive = False
             bossAttackTimer = 0
@@ -1058,6 +1305,11 @@ Public Class Form1
         Dim existing As MapObject =
         MapObjectAt(worldPoint)
 
+
+
+
+
+
         If selectedMapType = MapObjectType.Hero OrElse
             selectedMapType = MapObjectType.Boss Then
 
@@ -1138,17 +1390,49 @@ Public Class Form1
 
 
 
+    'Private Function TryGetToolbarType(
+    'point As Point,
+    'ByRef objectType As MapObjectType) As Boolean
+
+    '    'For i As Integer = 0 To 7
+    '    For i As Integer = 0 To [Enum].GetValues(GetType(MapObjectType)).Length - 1
+    '        Dim button As New Rectangle(
+    '            18 + i * 104,
+    '            80,
+    '            96,
+    '            32)
+
+    '        If button.Contains(point) Then
+
+    '            objectType = CType(i, MapObjectType)
+
+    '            Return True
+
+    '        End If
+
+    '    Next
+
+    '    Return False
+
+    'End Function
+
+
+
+
     Private Function TryGetToolbarType(
     point As Point,
     ByRef objectType As MapObjectType) As Boolean
 
-        For i As Integer = 0 To 6
+        Dim count As Integer =
+        [Enum].GetValues(GetType(MapObjectType)).Length
+
+        For i As Integer = 0 To count - 1
 
             Dim button As New Rectangle(
-                18 + i * 104,
-                80,
-                96,
-                32)
+            18 + i * 104,
+            80,
+            96,
+            32)
 
             If button.Contains(point) Then
 
@@ -1163,6 +1447,13 @@ Public Class Form1
         Return False
 
     End Function
+
+
+
+
+
+
+
 
 
     Private Sub HandleBossClick()
@@ -1331,6 +1622,125 @@ Public Class Form1
         ResolveMapObjectCollisions()   ' <-- PUT THIS BACK
 
     End Sub
+
+
+
+    'Private Sub UpdatePotionPickups()
+
+    '    For i As Integer = mapObjects.Count - 1 To 0 Step -1
+
+    '        Dim obj = mapObjects(i)
+
+    '        If obj.ObjectType <> MapObjectType.HealthPotion Then
+    '            Continue For
+    '        End If
+
+    '        Dim center As New PointF(
+    '        obj.Bounds.X + obj.Bounds.Width / 2.0F,
+    '        obj.Bounds.Y + obj.Bounds.Height / 2.0F)
+
+    '        Dim dx As Single = center.X - heroPos.X
+    '        Dim dy As Single = center.Y - heroPos.Y
+
+    '        Dim distance As Single =
+    '        CSng(Math.Sqrt(dx * dx + dy * dy))
+
+    '        If distance <= HeroRadius + 16 Then
+
+    '            heroPotionCount =
+    '            Math.Min(MaxPotions,
+    '                     heroPotionCount + 1)
+
+    '            mapObjects.RemoveAt(i)
+
+    '            damageTexts.Add(New DamageText With {
+    '                .X = heroPos.X,
+    '                .Y = heroPos.Y - 40,
+    '                .Value = 0,
+    '                .Lifetime = 1.0
+    '            })
+
+    '        End If
+
+    '    Next
+
+    'End Sub
+
+
+
+
+    Private Sub UpdatePotionPickups()
+
+        For i As Integer = mapObjects.Count - 1 To 0 Step -1
+
+            Dim obj = mapObjects(i)
+
+            If obj.ObjectType <> MapObjectType.HealthPotion Then
+                Continue For
+            End If
+
+            Dim center As New PointF(
+            obj.Bounds.X + obj.Bounds.Width / 2.0F,
+            obj.Bounds.Y + obj.Bounds.Height / 2.0F)
+
+            Dim dx As Single = center.X - heroPos.X
+            Dim dy As Single = center.Y - heroPos.Y
+
+            Dim distance As Single =
+            CSng(Math.Sqrt(dx * dx + dy * dy))
+
+            If distance <= HeroRadius + 16 Then
+
+                heroPotionCount =
+                Math.Min(
+                    MaxPotions,
+                    heroPotionCount + 1)
+
+                mapObjects.RemoveAt(i)
+
+                damageTexts.Add(New DamageText With {
+                .X = heroPos.X,
+                .Y = heroPos.Y - 40,
+                .Value = PotionHealAmount,
+                .Lifetime = 1.0
+            })
+
+            End If
+
+        Next
+
+    End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1555,7 +1965,8 @@ Public Class Form1
             If mapObject.ObjectType = MapObjectType.Floor OrElse
            mapObject.ObjectType = MapObjectType.Hero OrElse
            mapObject.ObjectType = MapObjectType.Boss OrElse
-           mapObject.ObjectType = MapObjectType.Light Then
+           mapObject.ObjectType = MapObjectType.Light OrElse
+           mapObject.ObjectType = MapObjectType.HealthPotion Then
 
                 Continue For
 
@@ -1594,7 +2005,8 @@ Public Class Form1
             If mapObject.ObjectType = MapObjectType.Floor OrElse
            mapObject.ObjectType = MapObjectType.Hero OrElse
            mapObject.ObjectType = MapObjectType.Boss OrElse
-           mapObject.ObjectType = MapObjectType.Light Then
+           mapObject.ObjectType = MapObjectType.Light OrElse
+           mapObject.ObjectType = MapObjectType.HealthPotion Then
 
                 Continue For
 
@@ -1842,7 +2254,8 @@ Public Class Form1
             If mapObject.ObjectType = MapObjectType.Floor OrElse
                mapObject.ObjectType = MapObjectType.Hero OrElse
                mapObject.ObjectType = MapObjectType.Boss OrElse
-               mapObject.ObjectType = MapObjectType.Light Then
+               mapObject.ObjectType = MapObjectType.Light OrElse
+               mapObject.ObjectType = MapObjectType.HealthPotion Then
 
 
                 Continue For
@@ -2187,11 +2600,13 @@ Public Class Form1
             If mapObject.ObjectType = MapObjectType.Floor OrElse
                mapObject.ObjectType = MapObjectType.Hero OrElse
                mapObject.ObjectType = MapObjectType.Boss OrElse
-               mapObject.ObjectType = MapObjectType.Light Then
+               mapObject.ObjectType = MapObjectType.Light OrElse
+               mapObject.ObjectType = MapObjectType.HealthPotion Then
 
                 Continue For
 
             End If
+
 
             If mapObject.ObjectType = MapObjectType.Column Then
                 ResolveColumnCollision(mapObject.Bounds)
@@ -2380,9 +2795,40 @@ Public Class Form1
 
 
 
+    'Private Sub DrawMapObjects(g As Graphics)
+
+    '    ' Floor first.
+    '    For Each mapObject In mapObjects
+
+    '        If mapObject.ObjectType = MapObjectType.Floor Then
+    '            DrawMapObject(g, mapObject)
+    '        End If
+
+    '    Next
+
+    '    ' Lights above floor.
+    '    DrawMapLights(g)
+
+    '    ' Walls, doors, columns.
+    '    For Each mapObject In mapObjects
+
+    '        Select Case mapObject.ObjectType
+
+    '            Case MapObjectType.Wall,
+    '             MapObjectType.Door,
+    '             MapObjectType.Column
+
+    '                DrawMapObject(g, mapObject)
+
+    '        End Select
+
+    '    Next
+
+    'End Sub
+
+
     Private Sub DrawMapObjects(g As Graphics)
 
-        ' Floor first.
         For Each mapObject In mapObjects
 
             If mapObject.ObjectType = MapObjectType.Floor Then
@@ -2391,17 +2837,16 @@ Public Class Form1
 
         Next
 
-        ' Lights above floor.
         DrawMapLights(g)
 
-        ' Walls, doors, columns.
         For Each mapObject In mapObjects
 
             Select Case mapObject.ObjectType
 
                 Case MapObjectType.Wall,
                  MapObjectType.Door,
-                 MapObjectType.Column
+                 MapObjectType.Column,
+                 MapObjectType.HealthPotion
 
                     DrawMapObject(g, mapObject)
 
@@ -2412,73 +2857,258 @@ Public Class Form1
     End Sub
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    'Private Sub DrawMapObject(
+    'g As Graphics,
+    'mapObject As MapObject)
+
+    '    Dim fillColor As Color
+
+    '    Select Case mapObject.ObjectType
+
+    '        Case MapObjectType.Floor
+    '            fillColor = Color.FromArgb(75, 75, 75)
+
+    '        Case MapObjectType.Wall
+    '            fillColor = Color.FromArgb(64, 64, 64)
+
+    '        Case MapObjectType.Column
+    '            fillColor = Color.FromArgb(55, 55, 55)
+
+    '        Case MapObjectType.Light
+    '            fillColor = Color.Gold
+
+
+
+
+
+
+
+
+    '        Case MapObjectType.HealthPotion
+
+    '            Using brush As New SolidBrush(Color.LimeGreen)
+
+    '                g.FillEllipse(
+    '                    brush,
+    '                    mapObject.Bounds)
+
+    '            End Using
+
+    '            Using pen As New Pen(Color.White, 2)
+
+    '                g.DrawEllipse(
+    '                    pen,
+    '                    mapObject.Bounds)
+
+    '            End Using
+
+
+
+
+
+
+
+
+
+
+
+
+    '        Case Else
+
+    '            If mapEditorActive Then
+    '                fillColor = Color.Goldenrod
+    '            Else
+    '                fillColor = Color.Transparent
+    '            End If
+
+    '    End Select
+
+    '    If mapObject.ObjectType = MapObjectType.Column Then
+
+    '        Using brush As New SolidBrush(fillColor)
+    '            g.FillEllipse(brush, mapObject.Bounds)
+    '        End Using
+
+    '    ElseIf mapObject.ObjectType = MapObjectType.Light Then
+
+    '        If mapEditorActive Then
+
+    '            Using brush As New SolidBrush(Color.Gold)
+
+    '                g.FillEllipse(
+    '                brush,
+    '                mapObject.Bounds)
+
+    '            End Using
+
+    '            Using p As New Pen(Color.Yellow, 2)
+
+    '                g.DrawEllipse(
+    '                p,
+    '                mapObject.Bounds)
+
+    '            End Using
+
+    '        End If
+
+    '    Else
+
+    '        Using brush As New SolidBrush(fillColor)
+
+    '            g.FillRectangle(
+    '            brush,
+    '            mapObject.Bounds)
+
+    '        End Using
+
+    '    End If
+
+    '    If mapObject Is selectedMapObject Then
+
+    '        Using selectionPen As New Pen(Color.Lime, 3)
+
+    '            If mapObject.ObjectType = MapObjectType.Column OrElse
+    '           mapObject.ObjectType = MapObjectType.Hero OrElse
+    '           mapObject.ObjectType = MapObjectType.Boss OrElse
+    '           mapObject.ObjectType = MapObjectType.Light Then
+
+    '                g.DrawEllipse(
+    '                selectionPen,
+    '                mapObject.Bounds)
+
+    '            Else
+
+    '                g.DrawRectangle(
+    '                selectionPen,
+    '                mapObject.Bounds.X,
+    '                mapObject.Bounds.Y,
+    '                mapObject.Bounds.Width,
+    '                mapObject.Bounds.Height)
+
+    '            End If
+
+    '        End Using
+
+    '    End If
+
+    'End Sub
+
     Private Sub DrawMapObject(
     g As Graphics,
     mapObject As MapObject)
 
-        Dim fillColor As Color
+        If mapObject.ObjectType = MapObjectType.HealthPotion Then
 
-        Select Case mapObject.ObjectType
+            Using potionBrush As New SolidBrush(Color.LimeGreen)
 
-            Case MapObjectType.Floor
-                fillColor = Color.FromArgb(75, 75, 75)
+                g.FillEllipse(
+                potionBrush,
+                mapObject.Bounds)
 
-            Case MapObjectType.Wall
-                fillColor = Color.FromArgb(64, 64, 64)
-
-            Case MapObjectType.Column
-                fillColor = Color.FromArgb(55, 55, 55)
-
-            Case MapObjectType.Light
-                fillColor = Color.Gold
-
-            Case Else
-
-                If mapEditorActive Then
-                    fillColor = Color.Goldenrod
-                Else
-                    fillColor = Color.Transparent
-                End If
-
-        End Select
-
-        If mapObject.ObjectType = MapObjectType.Column Then
-
-            Using brush As New SolidBrush(fillColor)
-                g.FillEllipse(brush, mapObject.Bounds)
             End Using
 
-        ElseIf mapObject.ObjectType = MapObjectType.Light Then
+            Using corkBrush As New SolidBrush(Color.SaddleBrown)
 
-            If mapEditorActive Then
+                g.FillRectangle(
+                corkBrush,
+                mapObject.Bounds.X + mapObject.Bounds.Width * 0.35F,
+                mapObject.Bounds.Y,
+                mapObject.Bounds.Width * 0.3F,
+                mapObject.Bounds.Height * 0.25F)
 
-                Using brush As New SolidBrush(Color.Gold)
+            End Using
 
-                    g.FillEllipse(
+            Using potionPen As New Pen(Color.White, 2)
+
+                g.DrawEllipse(
+                potionPen,
+                mapObject.Bounds)
+
+            End Using
+
+        Else
+
+            Dim fillColor As Color
+
+            Select Case mapObject.ObjectType
+
+                Case MapObjectType.Floor
+                    fillColor = Color.FromArgb(75, 75, 75)
+
+                Case MapObjectType.Wall
+                    fillColor = Color.FromArgb(64, 64, 64)
+
+                Case MapObjectType.Column
+                    fillColor = Color.FromArgb(55, 55, 55)
+
+                Case MapObjectType.Light
+                    fillColor = Color.Gold
+
+                Case Else
+
+                    If mapEditorActive Then
+                        fillColor = Color.Goldenrod
+                    Else
+                        fillColor = Color.Transparent
+                    End If
+
+            End Select
+
+            If mapObject.ObjectType = MapObjectType.Column Then
+
+                Using brush As New SolidBrush(fillColor)
+                    g.FillEllipse(brush, mapObject.Bounds)
+                End Using
+
+            ElseIf mapObject.ObjectType = MapObjectType.Light Then
+
+                If mapEditorActive Then
+
+                    Using brush As New SolidBrush(Color.Gold)
+
+                        g.FillEllipse(
+                        brush,
+                        mapObject.Bounds)
+
+                    End Using
+
+                    Using p As New Pen(Color.Yellow, 2)
+
+                        g.DrawEllipse(
+                        p,
+                        mapObject.Bounds)
+
+                    End Using
+
+                End If
+
+            Else
+
+                Using brush As New SolidBrush(fillColor)
+
+                    g.FillRectangle(
                     brush,
                     mapObject.Bounds)
 
                 End Using
 
-                Using p As New Pen(Color.Yellow, 2)
-
-                    g.DrawEllipse(
-                    p,
-                    mapObject.Bounds)
-
-                End Using
-
             End If
-
-        Else
-
-            Using brush As New SolidBrush(fillColor)
-
-                g.FillRectangle(
-                brush,
-                mapObject.Bounds)
-
-            End Using
 
         End If
 
@@ -2489,7 +3119,8 @@ Public Class Form1
                 If mapObject.ObjectType = MapObjectType.Column OrElse
                mapObject.ObjectType = MapObjectType.Hero OrElse
                mapObject.ObjectType = MapObjectType.Boss OrElse
-               mapObject.ObjectType = MapObjectType.Light Then
+               mapObject.ObjectType = MapObjectType.Light OrElse
+               mapObject.ObjectType = MapObjectType.HealthPotion Then
 
                     g.DrawEllipse(
                     selectionPen,
@@ -2511,6 +3142,34 @@ Public Class Form1
         End If
 
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2652,22 +3311,87 @@ Public Class Form1
             42)
 
 
+
+
+        Dim buttonCount As Integer =
+            [Enum].GetValues(GetType(MapObjectType)).Length
+
+        Dim toolbarWidth As Integer =
+            buttonCount * 104 + 16
+
+
         ' Draw toolbar background
         Using toolbarBrush As New SolidBrush(
         Color.FromArgb(220, 20, 20, 20))
+
+            'g.FillRectangle(
+            '    toolbarBrush,
+            '    10,
+            '    73,
+            '    848,
+            '    48)
 
             g.FillRectangle(
                 toolbarBrush,
                 10,
                 73,
-                744,
+                toolbarWidth,
                 48)
 
         End Using
 
 
         ' Draw toolbar buttons
-        For i As Integer = 0 To 6
+        'For i As Integer = 0 To 7
+
+        '    Dim button As New Rectangle(
+        '        18 + i * 104,
+        '        80,
+        '        96,
+        '        32)
+
+        '    Dim buttonColor As Color =
+        '    If(selectedMapType = CType(i, MapObjectType),
+        '       Color.DarkGreen,
+        '       Color.DimGray)
+
+        '    Using brush As New SolidBrush(buttonColor)
+
+
+        '        ' Draw button background
+        '        g.FillRectangle(
+        '        brush,
+        '        button)
+
+        '    End Using
+
+
+        '    ' Draw button border
+        '    g.DrawRectangle(
+        '        Pens.White,
+        '        button)
+
+        '    Dim label As String =
+        '    [Enum].GetName(
+        '        GetType(MapObjectType),
+        '        CType(i, MapObjectType))
+
+        '    Dim sf As New StringFormat With {
+        '    .Alignment = StringAlignment.Center,
+        '    .LineAlignment = StringAlignment.Center
+        '}
+
+        '    ' Draw button label text centered within the button
+        '    g.DrawString(
+        '    label,
+        '    editorButtonFont,
+        '    Brushes.White,
+        '    button,
+        '    sf)
+
+        'Next
+
+        For i As Integer = 0 To [Enum].GetValues(GetType(MapObjectType)).Length - 1
 
             Dim button As New Rectangle(
                 18 + i * 104,
@@ -2676,43 +3400,32 @@ Public Class Form1
                 32)
 
             Dim buttonColor As Color =
-            If(selectedMapType = CType(i, MapObjectType),
-               Color.DarkGreen,
-               Color.DimGray)
+                If(selectedMapType = CType(i, MapObjectType),
+                   Color.DarkGreen,
+                   Color.DimGray)
 
             Using brush As New SolidBrush(buttonColor)
-
-
-                ' Draw button background
-                g.FillRectangle(
-                brush,
-                button)
-
+                g.FillRectangle(brush, button)
             End Using
 
-
-            ' Draw button border
-            g.DrawRectangle(
-                Pens.White,
-                button)
+            g.DrawRectangle(Pens.White, button)
 
             Dim label As String =
-            [Enum].GetName(
-                GetType(MapObjectType),
-                CType(i, MapObjectType))
+                [Enum].GetName(
+                    GetType(MapObjectType),
+                    CType(i, MapObjectType))
 
             Dim sf As New StringFormat With {
-            .Alignment = StringAlignment.Center,
-            .LineAlignment = StringAlignment.Center
-        }
+                .Alignment = StringAlignment.Center,
+                .LineAlignment = StringAlignment.Center
+            }
 
-            ' Draw button label text centered within the button
             g.DrawString(
-            label,
-            editorButtonFont,
-            Brushes.White,
-            button,
-            sf)
+                label,
+                editorButtonFont,
+                Brushes.White,
+                button,
+                sf)
 
         Next
 
@@ -3097,6 +3810,18 @@ Public Class Form1
 
         End If
 
+
+        Using f As New Font("Segoe UI", 12, FontStyle.Bold)
+
+            g.DrawString(
+                $"Potions: {heroPotionCount} (Q)",
+                f,
+                Brushes.Lime,
+                20,
+                60)
+
+        End Using
+
     End Sub
 
     Private Sub DrawRoundedRectangle(g As Graphics, rect As Rectangle, radius As Integer, pen As Pen)
@@ -3431,6 +4156,7 @@ Public Enum MapObjectType
     Hero
     Boss
     Light
+    HealthPotion
 End Enum
 
 
