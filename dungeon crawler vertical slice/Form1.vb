@@ -3025,12 +3025,12 @@ Public Class Form1
 
             Using corkBrush As New SolidBrush(Color.SaddleBrown)
 
-                g.FillRectangle(
+                g.FillEllipse(
                 corkBrush,
                 mapObject.Bounds.X + mapObject.Bounds.Width * 0.35F,
-                mapObject.Bounds.Y,
-                mapObject.Bounds.Width * 0.3F,
-                mapObject.Bounds.Height * 0.25F)
+                mapObject.Bounds.Y + mapObject.Bounds.Width * 0.35F,
+                mapObject.Bounds.Width * 0.35F,
+                mapObject.Bounds.Height * 0.35F)
 
             End Using
 
