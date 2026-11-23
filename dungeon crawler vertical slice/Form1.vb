@@ -3148,31 +3148,6 @@ Public Class Form1
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     Private Sub DrawMapLights(g As Graphics)
 
         For Each mapObject In mapObjects
