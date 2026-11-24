@@ -110,6 +110,9 @@ Public Class Form1
 
     Private showBossRanges As Boolean = False
 
+
+    Private pointerOnBoss As Boolean = False
+
     Private ReadOnly Property ResetButtonBounds As Rectangle
         Get
             Return New Rectangle(
@@ -212,6 +215,36 @@ Public Class Form1
     Private WithEvents audioRestartTimer As Timer
 
     Private isClosing As Boolean
+
+
+
+
+
+    Private glowPulse As Single = 0.0F
+    Private glowDirection As Single = 0.05F
+
+
+
+    'Private WithEvents glowTimer As New Timer With {
+    '    .Interval = 16    ' ~60 FPS
+    '}
+
+
+    'Private Sub glowTimer_Tick(sender As Object, e As EventArgs) Handles glowTimer.Tick
+
+    '    glowPulse += glowDirection
+
+    '    If glowPulse >= 1.0F Then
+    '        glowPulse = 1.0F
+    '        glowDirection = -glowDirection
+    '    ElseIf glowPulse <= 0.0F Then
+    '        glowPulse = 0.0F
+    '        glowDirection = -glowDirection
+    '    End If
+
+    '    Invalidate()
+
+    'End Sub
 
 
 
@@ -526,6 +559,7 @@ Public Class Form1
 
         If mapEditorActive Then Return
 
+        UpdateBossGlow(CSng(dt))
 
         UpdateHeroMovement(dt)
 
@@ -599,6 +633,30 @@ Public Class Form1
 
     End Sub
 
+
+
+    Private Sub UpdateBossGlow(dt As Single)
+
+        Const PulseSpeed As Single = 2.0F
+
+        glowPulse += glowDirection * PulseSpeed * dt
+
+        If glowPulse >= 1.0F Then
+
+            glowPulse = 1.0F
+            glowDirection = -1.0F
+
+        ElseIf glowPulse <= 0.0F Then
+
+            glowPulse = 0.0F
+            glowDirection = 1.0F
+
+        End If
+
+    End Sub
+
+
+
     Protected Overrides Sub OnMouseDown(e As MouseEventArgs)
 
         MyBase.OnMouseDown(e)
@@ -641,6 +699,18 @@ Public Class Form1
     Protected Overrides Sub OnMouseMove(e As MouseEventArgs)
 
         MyBase.OnMouseMove(e)
+
+        If BossBounds.Contains(ScreenToWorld(e.Location)) Then
+
+            pointerOnBoss = True
+        Else
+
+            pointerOnBoss = False
+
+        End If
+
+
+
 
         If activeBossRangeHandle <> BossRangeHandle.None Then
 
@@ -2558,14 +2628,15 @@ Public Class Form1
 
         DrawHero(g)
 
+        DrawHeroCollisionRing(g)
+
         DrawFireballs(g)
 
-        DrawMoveTarget(g)
 
         DrawDamageNumbers(g)
 
 
-        DrawHeroCollisionRing(g)
+        DrawMoveTarget(g)
 
         g.ResetTransform()
 
@@ -3492,14 +3563,188 @@ Public Class Form1
         End Using
 
 
-        Dim ringRedPen As New Pen(Color.Firebrick, 2)
 
-        g.DrawEllipse(
-            ringRedPen,
-            BossBounds.X,
-            BossBounds.Y,
-            BossBounds.Width,
-            BossBounds.Height)
+
+
+
+
+
+
+
+        'If pointerOnBoss Then
+
+        '    Dim ringRedPen As New Pen(Color.OrangeRed, 3)
+
+        '    g.DrawEllipse(
+        '    ringRedPen,
+        '    BossBounds.X,
+        '    BossBounds.Y,
+        '    BossBounds.Width,
+        '    BossBounds.Height)
+
+
+
+
+        'Else
+
+
+
+        '    Dim ringRedPen As New Pen(Color.Black, 2)
+
+        '    g.DrawEllipse(
+        '    ringRedPen,
+        '    BossBounds.X,
+        '    BossBounds.Y,
+        '    BossBounds.Width,
+        '    BossBounds.Height)
+
+
+
+
+
+        'End If
+
+
+
+        'Using ringPen As New Pen(
+        '    If(pointerOnBoss, Color.OrangeRed, Color.Black),
+        '    If(pointerOnBoss, 3, 2)
+        ')
+
+        '    g.DrawEllipse(
+        '        ringPen,
+        '        BossBounds.X,
+        '        BossBounds.Y,
+        '        BossBounds.Width,
+        '        BossBounds.Height
+        '    )
+
+        'End Using
+
+        'If pointerOnBoss Then
+
+        '    ' Glow rings
+        '    Using glowPen1 As New Pen(Color.FromArgb(40, Color.OrangeRed), 10),
+        '  glowPen2 As New Pen(Color.FromArgb(80, Color.OrangeRed), 6),
+        '  ringPen As New Pen(Color.OrangeRed, 3)
+
+        '        g.DrawEllipse(
+        '    glowPen1,
+        '    BossBounds.X - 4,
+        '    BossBounds.Y - 4,
+        '    BossBounds.Width + 8,
+        '    BossBounds.Height + 8)
+
+        '        g.DrawEllipse(
+        '    glowPen2,
+        '    BossBounds.X - 2,
+        '    BossBounds.Y - 2,
+        '    BossBounds.Width + 4,
+        '    BossBounds.Height + 4)
+
+        '        g.DrawEllipse(
+        '    ringPen,
+        '    BossBounds)
+
+        '    End Using
+
+        'Else
+
+        '    Using ringPen As New Pen(Color.Black, 2)
+        '        g.DrawEllipse(ringPen, BossBounds)
+        '    End Using
+
+        'End If
+
+
+
+        'If pointerOnBoss Then
+
+        '    Dim alpha1 As Integer = CInt(20 + (glowPulse * 60))
+        '    Dim alpha2 As Integer = CInt(40 + (glowPulse * 80))
+
+        '    Using glowPen1 As New Pen(Color.FromArgb(alpha1, Color.OrangeRed), 10),
+        '  glowPen2 As New Pen(Color.FromArgb(alpha2, Color.OrangeRed), 6),
+        '  ringPen As New Pen(Color.OrangeRed, 3)
+
+        '        g.DrawEllipse(
+        '    glowPen1,
+        '    BossBounds.X - 4,
+        '    BossBounds.Y - 4,
+        '    BossBounds.Width + 8,
+        '    BossBounds.Height + 8)
+
+        '        g.DrawEllipse(
+        '    glowPen2,
+        '    BossBounds.X - 2,
+        '    BossBounds.Y - 2,
+        '    BossBounds.Width + 4,
+        '    BossBounds.Height + 4)
+
+        '        g.DrawEllipse(ringPen, BossBounds)
+
+        '    End Using
+
+        'Else
+
+        '    Using ringPen As New Pen(Color.Black, 2)
+        '        g.DrawEllipse(ringPen, BossBounds)
+        '    End Using
+
+        'End If
+
+        If pointerOnBoss Then
+
+            Dim outerAlpha As Integer =
+                CInt(20 + glowPulse * 40)
+
+            Dim innerAlpha As Integer =
+                CInt(60 + glowPulse * 80)
+
+            Using glowPen1 As New Pen(
+                    Color.FromArgb(outerAlpha, Color.OrangeRed), 12),
+                  glowPen2 As New Pen(
+                    Color.FromArgb(innerAlpha, Color.OrangeRed), 6),
+                  ringPen As New Pen(
+                    Color.OrangeRed, 3)
+
+                g.DrawEllipse(
+                    glowPen1,
+                    BossBounds.X - 6,
+                    BossBounds.Y - 6,
+                    BossBounds.Width + 12,
+                    BossBounds.Height + 12)
+
+                g.DrawEllipse(
+                    glowPen2,
+                    BossBounds.X - 3,
+                    BossBounds.Y - 3,
+                    BossBounds.Width + 6,
+                    BossBounds.Height + 6)
+
+                g.DrawEllipse(ringPen, BossBounds)
+
+            End Using
+
+        Else
+
+            Using ringPen As New Pen(Color.Black, 2)
+                g.DrawEllipse(ringPen, BossBounds)
+            End Using
+
+        End If
+
+
+
+
+
+
+
+
+
+
+
+
 
         Using f As New Font(
             "Segoe UI",
