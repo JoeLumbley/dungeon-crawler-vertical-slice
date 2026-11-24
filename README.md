@@ -1,8 +1,36 @@
-# dungeon crawler vertical slice
+# Dungeon Crawler vertical slice
+
+
+Top-Down Boss Battle Game
+
+A 2D action RPG prototype built with VB.NET and Windows Forms. Fight a powerful boss using melee combat while avoiding fireballs, managing health, and collecting potions. The project features configurable boss AI, collision physics with knockback and wall-impact damage, a built-in map editor, custom level persistence, and audio support.
+
+
+<img width="1920" height="1080" alt="071" src="https://github.com/user-attachments/assets/3278a7a9-2398-42f6-b233-23569dea49b8" />
+
+
+This repository serves as both a playable game and an experimental game-engine playground, demonstrating real-time rendering, AI behaviors, physics systems, combat mechanics, and editor tooling implemented entirely in WinForms.
 
 
 
 
+<img width="1920" height="1080" alt="070" src="https://github.com/user-attachments/assets/f3d82c50-36d0-4e80-a19b-c6613d03e0f1" />
+
+
+
+
+
+
+Features
+Real-time combat and boss encounters
+Boss AI with customizable combat ranges
+Fireball projectiles and melee attacks
+Knockback physics and wall impact damage
+Health potion pickup and healing system
+Built-in map editor with save/load support
+Dynamic lighting and visual effects
+Audio effects and music support
+Fullscreen mode and camera tracking
 
 
 
@@ -10,10 +38,20 @@
 <img width="1920" height="1080" alt="081" src="https://github.com/user-attachments/assets/7bc1050f-cbb4-417f-ada3-fc33c2d22b57" />
 
 
-<img width="1920" height="1080" alt="070" src="https://github.com/user-attachments/assets/f3d82c50-36d0-4e80-a19b-c6613d03e0f1" />
 
 
-<img width="1920" height="1080" alt="071" src="https://github.com/user-attachments/assets/3278a7a9-2398-42f6-b233-23569dea49b8" />
+
+
+Built as a learning project exploring game development techniques using VB.NET WinForms without external game engine dependencies.
+
+
+
+
+
+
+
+
+
 
 
 
