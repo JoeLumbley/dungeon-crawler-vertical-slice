@@ -1,7 +1,24 @@
 # dungeon crawler vertical slice
 
 
+Top-Down Boss Battle Game
 
+A 2D action RPG prototype built with VB.NET and Windows Forms. Fight a powerful boss using melee combat while avoiding fireballs, managing health, and collecting potions. The project features configurable boss AI, collision physics with knockback and wall-impact damage, a built-in map editor, custom level persistence, and audio support.
+
+This repository serves as both a playable game and an experimental game-engine playground, demonstrating real-time rendering, AI behaviors, physics systems, combat mechanics, and editor tooling implemented entirely in WinForms.
+
+Features
+Real-time combat and boss encounters
+Boss AI with customizable combat ranges
+Fireball projectiles and melee attacks
+Knockback physics and wall impact damage
+Health potion pickup and healing system
+Built-in map editor with save/load support
+Dynamic lighting and visual effects
+Audio effects and music support
+Fullscreen mode and camera tracking
+
+Built as a learning project exploring game development techniques using VB.NET WinForms without external game engine dependencies.
 
 
 
