@@ -860,15 +860,6 @@ Public Class Form1
 
 
 
-
-
-
-
-
-
-
-
-
         If e.KeyCode = Keys.E Then
             If Not mapEditorActive Then
                 editorPan = GameplayViewportOffset
@@ -882,13 +873,6 @@ Public Class Form1
             Invalidate()
             Return
         End If
-
-
-
-
-
-
-
 
 
         If e.Control AndAlso e.KeyCode = Keys.S Then
