@@ -108,7 +108,7 @@ Public Class Form1
     Private activeBossRangeHandle As BossRangeHandle
 
 
-    Private showBossRanges As Boolean = True
+    Private showBossRanges As Boolean = False
 
     Private ReadOnly Property ResetButtonBounds As Rectangle
         Get
@@ -858,17 +858,38 @@ Public Class Form1
 
         End If
 
+
+
+
+
+
+
+
+
+
+
+
         If e.KeyCode = Keys.E Then
             If Not mapEditorActive Then
                 editorPan = GameplayViewportOffset
             End If
 
             mapEditorActive = Not mapEditorActive
+            showBossRanges = Not showBossRanges
+
             isResizingMapObject = False
             selectedMapObject = Nothing
             Invalidate()
             Return
         End If
+
+
+
+
+
+
+
+
 
         If e.Control AndAlso e.KeyCode = Keys.S Then
             SaveMap()
@@ -3786,16 +3807,31 @@ Public Class Form1
         End If
 
 
+
+
+
+
+
         Using f As New Font("Segoe UI", 12, FontStyle.Bold)
 
             g.DrawString(
                 $"Potions: {heroPotionCount} (Q)",
                 f,
-                Brushes.Lime,
+                Brushes.White,
                 20,
                 60)
 
         End Using
+
+
+
+
+
+
+
+
+
+
 
     End Sub
 
