@@ -76,6 +76,7 @@ Fullscreen mode and camera tracking
 
 
 
+<img width="1920" height="1080" alt="093" src="https://github.com/user-attachments/assets/6a8c3d4d-83e8-4cd4-b46e-1774d8cc947e" />
 
 
 
