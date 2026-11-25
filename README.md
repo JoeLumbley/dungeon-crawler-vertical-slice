@@ -5,8 +5,8 @@ Top-Down Boss Battle Game
 
 A 2D action RPG prototype built with VB.NET and Windows Forms. Fight a powerful boss using melee combat while avoiding fireballs, managing health, and collecting potions. The project features configurable boss AI, collision physics with knockback and wall-impact damage, a built-in map editor, custom level persistence, and audio support.
 
+<img width="1920" height="1080" alt="085" src="https://github.com/user-attachments/assets/05ac3b45-7709-4481-a3f6-bc0e759cf0f1" />
 
-<img width="1920" height="1080" alt="071" src="https://github.com/user-attachments/assets/3278a7a9-2398-42f6-b233-23569dea49b8" />
 
 
 This repository serves as both a playable game and an experimental game-engine playground, demonstrating real-time rendering, AI behaviors, physics systems, combat mechanics, and editor tooling implemented entirely in WinForms.
@@ -14,7 +14,7 @@ This repository serves as both a playable game and an experimental game-engine p
 
 
 
-<img width="1920" height="1080" alt="070" src="https://github.com/user-attachments/assets/f3d82c50-36d0-4e80-a19b-c6613d03e0f1" />
+<img width="1920" height="1080" alt="086" src="https://github.com/user-attachments/assets/95c352b4-17fe-4ee5-8199-2b7b12182000" />
 
 
 
@@ -35,9 +35,9 @@ Fullscreen mode and camera tracking
 
 
 
-<img width="1920" height="1080" alt="081" src="https://github.com/user-attachments/assets/7bc1050f-cbb4-417f-ada3-fc33c2d22b57" />
 
 
+<img width="1920" height="1080" alt="078" src="https://github.com/user-attachments/assets/e9531bee-9817-451a-8fc7-525c453f7c41" />
 
 
 
@@ -70,7 +70,6 @@ Built as a learning project exploring game development techniques using VB.NET W
 
 
 
-<img width="1920" height="1080" alt="078" src="https://github.com/user-attachments/assets/e9531bee-9817-451a-8fc7-525c453f7c41" />
 
 
 
