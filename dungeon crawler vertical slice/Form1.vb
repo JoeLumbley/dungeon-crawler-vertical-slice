@@ -3396,57 +3396,6 @@ Public Class Form1
 
         End Using
 
-
-        ' Draw toolbar buttons
-        'For i As Integer = 0 To 7
-
-        '    Dim button As New Rectangle(
-        '        18 + i * 104,
-        '        80,
-        '        96,
-        '        32)
-
-        '    Dim buttonColor As Color =
-        '    If(selectedMapType = CType(i, MapObjectType),
-        '       Color.DarkGreen,
-        '       Color.DimGray)
-
-        '    Using brush As New SolidBrush(buttonColor)
-
-
-        '        ' Draw button background
-        '        g.FillRectangle(
-        '        brush,
-        '        button)
-
-        '    End Using
-
-
-        '    ' Draw button border
-        '    g.DrawRectangle(
-        '        Pens.White,
-        '        button)
-
-        '    Dim label As String =
-        '    [Enum].GetName(
-        '        GetType(MapObjectType),
-        '        CType(i, MapObjectType))
-
-        '    Dim sf As New StringFormat With {
-        '    .Alignment = StringAlignment.Center,
-        '    .LineAlignment = StringAlignment.Center
-        '}
-
-        '    ' Draw button label text centered within the button
-        '    g.DrawString(
-        '    label,
-        '    editorButtonFont,
-        '    Brushes.White,
-        '    button,
-        '    sf)
-
-        'Next
-
         For i As Integer = 0 To [Enum].GetValues(GetType(MapObjectType)).Length - 1
 
             'Dim button As New Rectangle(
