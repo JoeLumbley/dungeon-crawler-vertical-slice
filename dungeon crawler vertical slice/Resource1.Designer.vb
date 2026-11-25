@@ -154,5 +154,15 @@ Namespace My.Resources
                 Return CType(obj,Byte())
             End Get
         End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.Byte[].
+        '''</summary>
+        Friend Shared ReadOnly Property melancholy_descent2() As Byte()
+            Get
+                Dim obj As Object = ResourceManager.GetObject("melancholy_descent2", resourceCulture)
+                Return CType(obj,Byte())
+            End Get
+        End Property
     End Class
 End Namespace

@@ -3367,8 +3367,13 @@ Public Class Form1
         Dim buttonCount As Integer =
             [Enum].GetValues(GetType(MapObjectType)).Length
 
+        'Dim toolbarWidth As Integer =
+        '    buttonCount * 104 + 16
+
+
         Dim toolbarWidth As Integer =
-            buttonCount * 104 + 16
+            buttonCount * 135 + 16
+
 
 
         ' Draw toolbar background
@@ -3444,11 +3449,20 @@ Public Class Form1
 
         For i As Integer = 0 To [Enum].GetValues(GetType(MapObjectType)).Length - 1
 
+            'Dim button As New Rectangle(
+            '    18 + i * 104,
+            '    80,
+            '    96,
+            '    32)
+
+
             Dim button As New Rectangle(
-                18 + i * 104,
+                18 + i * 135,
                 80,
-                96,
+                125,
                 32)
+
+
 
             Dim buttonColor As Color =
                 If(selectedMapType = CType(i, MapObjectType),

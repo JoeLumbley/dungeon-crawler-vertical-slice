@@ -100,17 +100,17 @@ Public Class AudioController
 
         If disposed Then Return
 
-        FadeOutAndStopActiveLoops(600)
+        FadeOutAndStopActiveLoops(1000)
 
-        If Audio.IsPlaying("bounce") Then
-            Audio.FadeOutAndStop("bounce", 600)
-        End If
+        'If Audio.IsPlaying("bounce") Then
+        '    Audio.FadeOutAndStop("bounce", 600)
+        'End If
 
         ' Wait for fade-out to complete before restarting engine
         restartTimer?.Stop()
         restartTimer?.Dispose()
 
-        restartTimer = New Timer() With {.Interval = 700}
+        restartTimer = New Timer() With {.Interval = 1200}
 
         AddHandler restartTimer.Tick,
             Sub()
@@ -133,7 +133,7 @@ Public Class AudioController
                 'RestartLoops(model)
 
 
-                PlayStartLoop(600)
+                PlayStartLoop(1000)
 
             End Sub
 
