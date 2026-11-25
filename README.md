@@ -14,8 +14,8 @@ This repository serves as both a playable game and an experimental game-engine p
 
 
 
-<img width="1920" height="1080" alt="086" src="https://github.com/user-attachments/assets/95c352b4-17fe-4ee5-8199-2b7b12182000" />
 
+<img width="1920" height="1080" alt="090" src="https://github.com/user-attachments/assets/6cd52a35-48de-4064-ae8c-5844592b2243" />
 
 
 
@@ -37,15 +37,14 @@ Fullscreen mode and camera tracking
 
 
 
-<img width="1920" height="1080" alt="078" src="https://github.com/user-attachments/assets/e9531bee-9817-451a-8fc7-525c453f7c41" />
 
 
 
 
-Built as a learning project exploring game development techniques using VB.NET WinForms without external game engine dependencies.
 
 
 
+<img width="1920" height="1080" alt="091" src="https://github.com/user-attachments/assets/926ee9a9-a722-4dee-908a-27221f6f733e" />
 
 
 
@@ -57,79 +56,7 @@ Built as a learning project exploring game development techniques using VB.NET W
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<img width="1920" height="1080" alt="079" src="https://github.com/user-attachments/assets/d88494e6-9802-466a-b750-f279224cc765" />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<img width="1920" height="1080" alt="080" src="https://github.com/user-attachments/assets/dc6b93e0-0d5c-48ef-84a0-d24519ba1969" />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<img width="1920" height="1080" alt="092" src="https://github.com/user-attachments/assets/fdea6bad-a83d-4e1b-9ada-f6b9cca73beb" />
 
 
 
