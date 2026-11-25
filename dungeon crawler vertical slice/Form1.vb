@@ -225,6 +225,56 @@ Public Class Form1
 
 
 
+
+
+    Private Const FootstepFadeMs As Integer = 100
+    Private Const FootstepStopDistance As Single = 25.0F
+
+
+
+    Private Sub UpdateFootsteps()
+
+        If heroHealth <= 0 Then
+
+            audio?.StopFootsteps(FootstepFadeMs)
+            Return
+
+        End If
+
+        Dim dx As Single =
+        heroTarget.X - heroPos.X
+
+        Dim dy As Single =
+        heroTarget.Y - heroPos.Y
+
+        Dim distance As Single =
+        CSng(Math.Sqrt(dx * dx + dy * dy))
+
+        Dim isMoving As Boolean =
+        distance > FootstepStopDistance
+
+        If isMoving Then
+
+            audio?.PlayFootstepsLoop(FootstepFadeMs)
+
+        Else
+
+            audio?.StopFootsteps(FootstepFadeMs)
+
+        End If
+
+    End Sub
+
+
+
+
+
+
+
+
+
+
+
     'Private WithEvents glowTimer As New Timer With {
     '    .Interval = 16    ' ~60 FPS
     '}
@@ -406,6 +456,8 @@ Public Class Form1
 
     Private Sub ResetGame()
 
+        audio.StopFootsteps(0)
+
         RestoreMap()
 
         For Each mapObject In mapObjects
@@ -562,6 +614,9 @@ Public Class Form1
         UpdateBossGlow(CSng(dt))
 
         UpdateHeroMovement(dt)
+
+        UpdateFootsteps()
+
 
         UpdatePotionPickups()
 

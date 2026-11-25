@@ -8,8 +8,10 @@ Public Class AudioController
     Private disposed As Boolean
 
     Private gameplayLoopVolume As Integer = 10
-    Private startLoopVolume As Integer = 150
+    Private startLoopVolume As Integer = 30
     Private pauseLoopVolume As Integer = 10
+    Private footstepLoopVolume As Integer = 300
+
 
     ' -------------------------------
     '  Audio Cooldown
@@ -48,6 +50,8 @@ Public Class AudioController
         Audio.AddSound("melancholy_descent", Path.Combine(Application.StartupPath, "melancholy_descent.mp3"))
         Audio.SetVolume("melancholy_descent", 150)
 
+        Audio.AddSound("footsteps", Path.Combine(Application.StartupPath, "footsteps.mp3"))
+        Audio.SetVolume("footsteps", 150)
 
 
         '' ---------------------------------------------------------
@@ -147,12 +151,12 @@ Public Class AudioController
         If Audio.IsPlaying("startloop") Then
             Audio.FadeOutAndStop("startloop", durationMs)
         End If
-        If Audio.IsPlaying("gameplayloop") Then
-            Audio.FadeOutAndStop("gameplayloop", durationMs)
+        If Audio.IsPlaying("footsteps") Then
+            Audio.FadeOutAndStop("footsteps", durationMs)
         End If
-        If Audio.IsPlaying("pause") Then
-            Audio.FadeOutAndStop("pause", durationMs)
-        End If
+        'If Audio.IsPlaying("pause") Then
+        '    Audio.FadeOutAndStop("pause", durationMs)
+        'End If
     End Sub
 
     Private Sub RestartLoops()
@@ -214,6 +218,61 @@ Public Class AudioController
         End If
 
     End Sub
+
+
+
+
+    Public Sub PlayFootstepsLoop(durationMs As Integer)
+
+        If Not Audio.IsPlaying("footsteps") Then
+
+            ' Fade‑in loop
+            Audio.SetVolume("footsteps", 0)
+            Audio.LoopSound("footsteps")
+            Audio.FadeVolume("footsteps", 0, footstepLoopVolume, durationMs)
+
+        End If
+
+    End Sub
+
+
+
+    Public Sub StopFootsteps(durationMs As Integer)
+
+        If Audio.IsPlaying("footsteps") Then
+
+
+
+            'Audio.FadeOutAndStop("footsteps", durationMs)
+
+            'Audio.SetVolume("footsteps", 200)
+
+
+            'Audio.SetVolume("footsteps", 100)
+
+            'Audio.SetVolume("footsteps", 50)
+
+            'Audio.SetVolume("footsteps", 25)
+
+            'Audio.SetVolume("footsteps", 12)
+
+
+            'Audio.SetVolume("footsteps", 6)
+
+            'Audio.SetVolume("footsteps", 3)
+
+            'Audio.SetVolume("footsteps", 1)
+
+            'Audio.SetVolume("footsteps", 0)
+
+
+            Audio.StopSound(
+            "footsteps")
+
+        End If
+
+    End Sub
+
 
     Public Sub PlayGamePlayLoop(durationMs As Integer)
 
