@@ -10,7 +10,7 @@ Public Class AudioController
     Private gameplayLoopVolume As Integer = 10
     Private startLoopVolume As Integer = 30
     Private pauseLoopVolume As Integer = 10
-    Private footstepLoopVolume As Integer = 300
+    Private footstepLoopVolume As Integer = 400
 
 
     ' -------------------------------
